@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\JLio.Commands\JLio.Commands.csproj" />
+    <ProjectReference Include="..\JLio.Core\JLio.Core.csproj" />
+  </ItemGroup>
+
+</Project>
