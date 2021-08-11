@@ -18,10 +18,10 @@ jobs:
       with:
         dotnet-version: 5.0.x
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore **/*.csproj
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build --no-restore -c Release **/*.csproj
     - name: Test
-      run: dotnet test --no-build --no-restore --verbosity normal
+      run: dotnet test -c Release --no-build --no-restore --verbosity normal **/*Tests.csproj
     - name: Pack
       run: dotnet pack -v normal -c Release --no-restore --include-symbols --no-build -p:PackageVersion=$GITHUB_RUN_ID !**/*Tests.csproj
