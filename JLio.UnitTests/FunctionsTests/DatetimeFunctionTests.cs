@@ -21,6 +21,8 @@ namespace JLio.UnitTests.FunctionsTests
         [TestCase("=datetime()", "{}")]
         [TestCase("=datetime('dd-MM-yyyy HH:mm')", "{}")]
         [TestCase("=datetime(UTC, 'dd-MM-yy HH:mm')", "{}")]
+        [TestCase("=datetime($.dateSelection, $.format)",
+            "{\"dateSelection\":\"UTC\",\"format\":\"HH:mm on dd-MM-yy\"}")]
         public void scriptTest(string function, string data)
         {
             var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"add\"}}]";

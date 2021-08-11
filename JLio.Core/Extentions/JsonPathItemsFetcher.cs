@@ -13,5 +13,10 @@ namespace JLio.Core.Extentions
         {
             return new SelectedTokens(data.SelectTokens(path));
         }
+
+        public JToken SelectToken(string path, JToken data)
+        {
+            return data.SelectToken(path);
+        }
     }
 }

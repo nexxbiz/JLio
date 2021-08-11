@@ -10,8 +10,6 @@ namespace JLio.Core.Models
             Function = function;
         }
 
-        public Arguments Arguments { get; }
-
         public IJLioFunction Function { get; }
 
         public JToken GetValue(JToken currentToken, JToken dataContext, IJLioExecutionOptions options)

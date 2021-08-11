@@ -7,5 +7,6 @@ namespace JLio.Core.Contracts
     {
         string CurrentObjectIndicator { get; }
         SelectedTokens SelectTokens(string path, JToken data);
+        JToken SelectToken(string path, JToken data);
     }
 }
