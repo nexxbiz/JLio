@@ -25,3 +25,7 @@ jobs:
       run: dotnet test -c Release --no-build --no-restore --verbosity normal **/*Tests.csproj
     - name: Pack
       run: dotnet pack -v normal -c Release --no-restore --include-symbols --no-build -p:PackageVersion=$GITHUB_RUN_ID !**/*Tests.csproj
+    - name: Publish Nuget to GitHub registry
+      run: dotnet nuget push "**/*.nupkg" -k ${NUGET_TOKEN} -s https://api.nuget.org/v3/index.json --skip-duplicate
+      env:
+        NUGET_TOKEN: ${{ secrets.NUGET_KEY }}
