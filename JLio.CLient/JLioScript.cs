@@ -13,7 +13,8 @@ namespace JLio.Client
 
         public static CommandLines Parse(string script, IJLioParseOptions options)
         {
-            return JsonConvert.DeserializeObject<CommandLines>(script, options.JLioCommandConverter);
+            var converters = new[] {options.JLioCommandConverter, options.JLioFunctionConverter};
+            return JsonConvert.DeserializeObject<CommandLines>(script, converters);
         }
     }
 }

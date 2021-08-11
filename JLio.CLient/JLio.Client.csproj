@@ -7,6 +7,7 @@
   <ItemGroup>
     <ProjectReference Include="..\JLio.Commands\JLio.Commands.csproj" />
     <ProjectReference Include="..\JLio.Core\JLio.Core.csproj" />
+    <ProjectReference Include="..\JLio.Functions\JLio.Functions.csproj" />
   </ItemGroup>
 
 </Project>

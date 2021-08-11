@@ -5,12 +5,14 @@ namespace JLio.Core
 {
     public static class JLioConstants
     {
-        public const char ArgumentsDelimeter = ',';
+        public const char ArgumentsDelimiter = ',';
         public const string CommandDiscriminator = "command";
         public const string CommandExecution = "Command execution";
-        public const string FunctionArgumentsEndCharacters = ")";
-        public const string FunctionArgumentsStartCharacters = "(";
+        public const char FunctionArgumentsEndCharacters = ')';
+        public const char FunctionArgumentsStartCharacters = '(';
         public const string FunctionStartCharacters = "=";
+        public const string FunctionExecution = "Function execution";
+        public const char StringIndicator = '\'';
 
         public static List<LevelPair> ArgumentLevelPairs { get; } = new List<LevelPair>
         {

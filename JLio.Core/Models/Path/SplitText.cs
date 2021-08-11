@@ -3,35 +3,48 @@ using System.Linq;
 
 namespace JLio.Core.Models.Path
 {
-    internal static class SplitText
+    public static class SplitText
     {
-        internal static ChoppedElements GetChoppedElements(string text, char argumentsDelimeter,
+        public static ChoppedElements GetChoppedElements(string text, char argumentsDelimiter,
             List<LevelPair> levelPairs)
         {
-            return SplitOnDelimiters(text, FindDelimiterIndexes(text, new[] {argumentsDelimeter}, levelPairs));
+            return SplitOnDelimiters(text, FindDelimiterIndexes(text, new[] {argumentsDelimiter}, levelPairs),
+                new[] {argumentsDelimiter});
         }
 
-        private static ChoppedElements SplitOnDelimiters(string text, List<DelimiterInfo> delimiterIndexes)
+        public static ChoppedElements GetChoppedElements(string text, char[] delimiterCharacters,
+            List<LevelPair> levelPairs)
+        {
+            return SplitOnDelimiters(text, FindDelimiterIndexes(text, delimiterCharacters, levelPairs),
+                delimiterCharacters);
+        }
+
+        private static ChoppedElements SplitOnDelimiters(string text, List<DelimiterInfo> delimiterIndexes,
+            char[] delimiterCharacters)
         {
             var result = new ChoppedElements();
             var previousIndex = -1;
             foreach (var item in delimiterIndexes.Where(i => i.Level == 0))
             {
-                result.Add(GetChoppedElement(text, previousIndex, item.Index));
+                result.Add(GetChoppedElement(text, previousIndex, item.Index, delimiterCharacters));
                 previousIndex = item.Index;
             }
 
             if (previousIndex < text.Length && text.Length > 0)
-                result.Add(GetChoppedElement(text, previousIndex, text.Length));
+                result.Add(GetChoppedElement(text, previousIndex, text.Length, delimiterCharacters));
             return result;
         }
 
-        private static ChoppedElement GetChoppedElement(string text, int previousIndex, int delimiterIndex)
+        private static ChoppedElement GetChoppedElement(string text, int previousIndex, int delimiterIndex,
+            char[] delimiterCharacters)
         {
-            return new ChoppedElement(text.Substring(previousIndex + 1, delimiterIndex - previousIndex - 1));
+            var resultText = text.Substring(previousIndex + 1, delimiterIndex - previousIndex - 1);
+            if (delimiterCharacters.Any(c => c == resultText.ToCharArray().Last()))
+                return new ChoppedElement(resultText.Substring(0, resultText.Length - 1));
+            return new ChoppedElement(resultText);
         }
 
-        private static List<DelimiterInfo> FindDelimiterIndexes(string text, char[] DelimiterCharacters,
+        private static List<DelimiterInfo> FindDelimiterIndexes(string text, char[] delimiterCharacters,
             List<LevelPair> levelPairs)
         {
             var result = new List<DelimiterInfo>();
@@ -41,7 +54,7 @@ namespace JLio.Core.Models.Path
             for (var i = 0; i < text.Length; i++)
             {
                 var character = text[i];
-                if (DelimiterCharacters.Contains(character))
+                if (delimiterCharacters.Contains(character))
                     result.Add(new DelimiterInfo {Index = i, Level = levels.Count});
                 var levelIndicator =
                     levelPairs.FirstOrDefault(l => l.OpenCharacter == character || l.CloseCharacter == character);

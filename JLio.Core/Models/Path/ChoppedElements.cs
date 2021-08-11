@@ -2,7 +2,7 @@
 
 namespace JLio.Core.Models.Path
 {
-    internal class ChoppedElements : List<ChoppedElement>
+    public class ChoppedElements : List<ChoppedElement>
     {
     }
 }
