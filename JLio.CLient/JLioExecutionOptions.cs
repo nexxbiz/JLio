@@ -10,7 +10,7 @@ namespace JLio.Client
 
         public static JLioExecutionOptions CreateDefault()
         {
-            return new JLioExecutionOptions {ItemsFetcher = new JsonPathItemsFetcher(), Logger = new ExecutionLogger()};
+            return new JLioExecutionOptions {ItemsFetcher = new JsonPathItemsFetcher(), Logger = new JLioExecutionLogger()};
         }
     }
 }

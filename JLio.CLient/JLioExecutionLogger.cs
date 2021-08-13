@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace JLio.Client
 {
-    public class ExecutionLogger : IJLioExecutionLogger
+    public class JLioExecutionLogger : IJLioExecutionLogger
     {
         public LogEntries LogEntries { get; } = new LogEntries();
 
