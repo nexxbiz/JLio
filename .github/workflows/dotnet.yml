@@ -20,7 +20,7 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore **/*.csproj
     - name: Build
-      run: dotnet build --no-restore -c Release **/*.csproj
+      run: dotnet build --no-restore -c Release
     - name: Test
       run: dotnet test -c Release --no-build --no-restore --verbosity normal **/*Tests.csproj
     - name: Pack
