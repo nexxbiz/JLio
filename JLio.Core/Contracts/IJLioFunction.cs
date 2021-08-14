@@ -11,6 +11,6 @@ namespace JLio.Core.Contracts
 
         JLioExecutionResult Execute(JToken currentToken, JToken dataContext, IJLioExecutionOptions options);
 
-        string ToScriptString();
+        string ToScript();
     }
 }

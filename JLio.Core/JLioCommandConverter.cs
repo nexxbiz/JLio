@@ -18,10 +18,7 @@ namespace JLio.Core
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            //writer.WriteValue(value);
-
-            // will not be called since the can write is set to false 
-            throw new NotImplementedException();
+            JToken.Parse(JsonConvert.SerializeObject(value)).WriteTo(writer);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue,

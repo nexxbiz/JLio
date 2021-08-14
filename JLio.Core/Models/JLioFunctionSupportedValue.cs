@@ -20,7 +20,7 @@ namespace JLio.Core.Models
 
         public string GetStringRepresentation()
         {
-            return Function.ToScriptString();
+            return Function.ToScript();
         }
     }
 }

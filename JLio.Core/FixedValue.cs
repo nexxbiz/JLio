@@ -28,7 +28,7 @@ namespace JLio.Core
             return new JLioExecutionResult(true, value);
         }
 
-        public string ToScriptString()
+        public string ToScript()
         {
             return value.ToString();
         }
@@ -37,18 +37,18 @@ namespace JLio.Core
         {
             var stringValue = value.ToString();
 
-            switch (stringValue.Substring(0, 1))
+            if (stringValue.StartsWith(JLioConstants.CurrentItemPathIndicator, System.StringComparison.InvariantCulture))
             {
-                case JLioConstants.CurrentItemPathIndicator:
-                    return new JLioExecutionResult(true,
-                        options.ItemsFetcher.SelectToken(
-                            stringValue.Replace(JLioConstants.CurrentItemPathIndicator,
-                                JLioConstants.RootPathIndicator), currentToken));
-                case JLioConstants.RootPathIndicator:
-                    return new JLioExecutionResult(true, options.ItemsFetcher.SelectToken(stringValue, dataContext));
-                default:
-                    return new JLioExecutionResult(true, value);
+                return new JLioExecutionResult(true,
+                       options.ItemsFetcher.SelectToken(
+                           stringValue.Replace(JLioConstants.CurrentItemPathIndicator,
+                               JLioConstants.RootPathIndicator), currentToken));
             }
+            else if (stringValue.StartsWith(JLioConstants.RootPathIndicator, System.StringComparison.InvariantCulture))
+            {
+                return new JLioExecutionResult(true, options.ItemsFetcher.SelectToken(stringValue, dataContext));
+            }
+            return new JLioExecutionResult(true, value);
         }
     }
 }

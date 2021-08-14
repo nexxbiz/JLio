@@ -41,10 +41,10 @@ namespace JLio.Functions
             return new JLioExecutionResult(result.Success, result.JToken);
         }
 
-        public string ToScriptString()
+        public string ToScript()
         {
             return
-                $"{FunctionName}({string.Join(JLioConstants.ArgumentsDelimiter.ToString(), arguments.Select(a => a.Function.ToScriptString()))})";
+                $"{FunctionName}({string.Join(JLioConstants.ArgumentsDelimiter.ToString(), arguments.Select(a => a.Function.ToScript()))})";
         }
 
         private DateTimeConversionResult GetToken(string dateSelection, string format, IJLioExecutionLogger logger)

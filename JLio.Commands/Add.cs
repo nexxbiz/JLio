@@ -12,7 +12,6 @@ namespace JLio.Commands
     public class Add : IJLioCommand
     {
         private IJLioExecutionOptions executionOptions;
-        //private JToken valueResult;
 
         [JsonProperty("path")]
         public string Path { get; set; }
@@ -47,7 +46,6 @@ namespace JLio.Commands
 
             if (result == false)
                 executionOptions.Logger?.Log(LogLevel.Warning, JLioConstants.CommandExecution, "Command not executed");
-
             return result;
         }
 
