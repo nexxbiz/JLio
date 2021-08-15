@@ -22,5 +22,10 @@ namespace JLio.Core
                 $"script contains a unknown command : {CommandName}");
             return new JLioExecutionResult(false, data);
         }
+
+        public bool ValidateCommandInstance()
+        {
+            return true;
+        }
     }
 }

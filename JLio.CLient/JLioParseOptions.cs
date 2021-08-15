@@ -14,7 +14,9 @@ namespace JLio.Client
         public static JLioParseOptions CreateDefault()
         {
             var commandProvider = new JLioCommandsProvider();
-            commandProvider.Register<Add>();
+            commandProvider
+                .Register<Add>()
+                .Register<Set>();
 
             var functionsProvider = new JLioFunctionsProvider();
             functionsProvider.Register<DatetimeFunction>();
