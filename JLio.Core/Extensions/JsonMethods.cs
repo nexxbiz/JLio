@@ -5,7 +5,7 @@ using JLio.Core.Models.Path;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
-namespace JLio.Core.Extentions
+namespace JLio.Core.Extensions
 {
     public static class JsonMethods
     {

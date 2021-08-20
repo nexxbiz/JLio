@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using JLio.Core;
 using JLio.Core.Contracts;
-using JLio.Core.Extentions;
+using JLio.Core.Extensions;
 using JLio.Core.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -12,6 +12,17 @@ namespace JLio.Commands
 {
     public class Set : IJLioCommand
     {
+        public Set()
+        {
+
+        }
+
+        public Set(string path, IJLioFunctionSupportedValue value)
+        {
+            Path = path;
+            Value = value;
+        }
+
         private IJLioExecutionOptions executionOptions;
 
         public string CommandName { get; } = "set";

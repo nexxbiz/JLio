@@ -2,7 +2,7 @@
 using JLio.Core.Models;
 using Newtonsoft.Json.Linq;
 
-namespace JLio.Core.Extentions
+namespace JLio.Core.Extensions
 {
     public class JsonPathItemsFetcher : IItemsFetcher
 

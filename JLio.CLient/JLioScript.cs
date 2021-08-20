@@ -1,6 +1,7 @@
 ﻿using JLio.Core.Contracts;
 using JLio.Core.Models;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace JLio.Client
 {
@@ -14,7 +15,8 @@ namespace JLio.Client
         public static CommandLines Parse(string script, IJLioParseOptions options)
         {
             var converters = new[] {options.JLioCommandConverter, options.JLioFunctionConverter};
-            return JsonConvert.DeserializeObject<CommandLines>(script, converters);
+            var lines = JsonConvert.DeserializeObject<List<IJLioCommand>>(script, converters);
+            return new CommandLines(lines);
         }
     }
 }

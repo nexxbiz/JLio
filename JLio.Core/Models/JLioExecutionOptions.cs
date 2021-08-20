@@ -1,5 +1,5 @@
 ﻿using JLio.Core.Contracts;
-using JLio.Core.Extentions;
+using JLio.Core.Extensions;
 
 namespace JLio.Core.Models
 {
@@ -10,11 +10,7 @@ namespace JLio.Core.Models
 
         public static JLioExecutionOptions CreateDefault()
         {
-            return new JLioExecutionOptions
-            {
-                Logger = null,
-                ItemsFetcher = new JsonPathItemsFetcher()
-            };
+            return new JLioExecutionOptions { ItemsFetcher = new JsonPathItemsFetcher(), Logger = new JLioExecutionLogger() };
         }
     }
 }

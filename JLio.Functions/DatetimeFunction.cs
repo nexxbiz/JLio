@@ -24,7 +24,7 @@ namespace JLio.Functions
     // format : 2012-04-23T18:25:43.511Z
     public class DatetimeFunction : IJLioFunction
     {
-        private Arguments arguments;
+        private Arguments arguments = new Arguments();
         public string FunctionName => "datetime";
 
         public IJLioFunction SetArguments(Arguments functionArguments)

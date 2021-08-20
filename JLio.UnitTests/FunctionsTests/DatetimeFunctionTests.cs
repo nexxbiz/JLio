@@ -1,4 +1,5 @@
 ﻿using JLio.Client;
+using JLio.Core.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;

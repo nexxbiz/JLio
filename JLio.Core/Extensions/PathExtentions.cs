@@ -2,7 +2,7 @@
 using System.Linq;
 using JLio.Core.Models.Path;
 
-namespace JLio.Core.Extentions
+namespace JLio.Core.Extensions
 {
     public static class PathExtentions
     {

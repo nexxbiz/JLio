@@ -3,7 +3,7 @@ using JLio.Core.Contracts;
 using JLio.Core.Models.Logging;
 using Microsoft.Extensions.Logging;
 
-namespace JLio.Client
+namespace JLio.Core.Models
 {
     public class JLioExecutionLogger : IJLioExecutionLogger
     {
