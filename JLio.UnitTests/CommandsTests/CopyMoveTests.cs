@@ -119,10 +119,8 @@ namespace JLio.UnitTests.CommandsTests
             var data = JObject.Parse("{ \"demo\" : \"item\" }");
 
             var script = new JLioScript()
-                .AddScriptLine()
                  .Copy("$.demo")
                  .To("$.copiedDemo")
-                .AddScriptLine()
                  .Move("$.copiedDemo")
                  .To("$.result")
                ;

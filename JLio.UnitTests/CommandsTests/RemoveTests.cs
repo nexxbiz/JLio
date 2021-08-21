@@ -77,9 +77,7 @@ namespace JLio.UnitTests.CommandsTests
         {
             var data = JObject.Parse("{ \"demo\" : \"old value\" , \"demo2\" : \"old value\" }");
             var script = new JLioScript()
-                .AddScriptLine()
                   .Remove("$.demo")
-                .AddScriptLine()
                   .Remove("$.demo2");
           
             var result = script.Execute(data);

@@ -2,10 +2,7 @@
 using JLio.Core.Contracts;
 using JLio.Core.Models;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using static JLio.Commands.Builders.CommonBuilders;
+
 
 namespace JLio.Commands.Builders
 {
@@ -27,14 +24,14 @@ namespace JLio.Commands.Builders
 
         }
 
-        public static AddValueContainer Add(this NewLine source, JToken value)
+        public static AddValueContainer Add(this JLioScript source, JToken value)
         {
-            return new AddValueContainer(source.Script, value);
+            return new AddValueContainer(source, value);
         }
 
-        public static AddValueAsFunctionContainer Add(this NewLine source, IJLioFunction function)
+        public static AddValueAsFunctionContainer Add(this JLioScript source, IJLioFunction function)
         {
-            return new AddValueAsFunctionContainer(source.Script, function);
+            return new AddValueAsFunctionContainer(source, function);
 
         }
 

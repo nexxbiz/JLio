@@ -78,10 +78,8 @@ namespace JLio.UnitTests.CommandsTests
         public void CanUseFluentApi()
         {
             var script = new JLioScript()
-                .AddScriptLine()
                  .Add(new JValue("new Value"))
                  .OnPath("$.demo")
-                .AddScriptLine()
                  .Add(new DatetimeFunction())
                  .OnPath("$.this.is.a.long.path.with.a.date")
                ;

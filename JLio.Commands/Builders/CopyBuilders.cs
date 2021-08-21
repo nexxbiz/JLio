@@ -1,19 +1,13 @@
-﻿using JLio.Core;
-using JLio.Core.Contracts;
-using JLio.Core.Models;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using static JLio.Commands.Builders.CommonBuilders;
+﻿using JLio.Core.Models;
+
 
 namespace JLio.Commands.Builders
 {
     public static class CopyBuilders
     {
-        public static FromPathContainer Copy(this NewLine source, string fromPath)
+        public static FromPathContainer Copy(this JLioScript source, string fromPath)
         {
-            return new FromPathContainer(source.Script, fromPath);
+            return new FromPathContainer(source, fromPath);
         }
 
         public static JLioScript To(this FromPathContainer source, string toPath)

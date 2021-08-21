@@ -2,9 +2,6 @@
 using JLio.Core.Contracts;
 using JLio.Core.Models;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace JLio.Commands.Builders
 {
@@ -26,14 +23,14 @@ namespace JLio.Commands.Builders
 
         }
 
-        public static SetValueContainer Set(this NewLine source, JToken value)
+        public static SetValueContainer Set(this JLioScript source, JToken value)
         {
-            return new SetValueContainer(source.Script, value);
+            return new SetValueContainer(source, value);
         }
 
-        public static SetValueAsFunctionContainer Set(this NewLine source, IJLioFunction function)
+        public static SetValueAsFunctionContainer Set(this JLioScript source, IJLioFunction function)
         {
-            return new SetValueAsFunctionContainer(source.Script, function);
+            return new SetValueAsFunctionContainer(source, function);
 
         }
 

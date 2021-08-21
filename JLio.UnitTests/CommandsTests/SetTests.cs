@@ -72,11 +72,9 @@ namespace JLio.UnitTests.CommandsTests
         {
             var data = JObject.Parse("{ \"demo\" : \"old value\" , \"demo2\" : \"old value\" }");
             var script = new JLioScript()
-                .AddScriptLine()
-                 .Add(new JValue("new Value"))
+                 .Set(new JValue("new Value"))
                  .OnPath("$.demo")
-                .AddScriptLine()
-                 .Add(new DatetimeFunction())
+                 .Set(new DatetimeFunction())
                  .OnPath("$.demo2")
                ;         
             var result = script.Execute(data);
@@ -84,6 +82,7 @@ namespace JLio.UnitTests.CommandsTests
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Success);
             Assert.AreNotEqual(result.Data.SelectToken("$.demo").Type, JTokenType.Null);
+            Assert.AreEqual(result.Data.SelectToken("$.demo").Value<string>(),"new Value");
             Assert.AreNotEqual(result.Data.SelectToken("$.demo2").Type, JTokenType.Null);
 
         }
