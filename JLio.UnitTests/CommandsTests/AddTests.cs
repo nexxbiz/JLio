@@ -79,11 +79,14 @@ namespace JLio.UnitTests.CommandsTests
         public void CanUseFluentApi()
         {
             var script = new CommandLines()
-                 .AddValue(new JValue("Will be replaced"))
+                .AddLine()
+                 .Add(new JValue("Will be replaced"))
                  .OnPath("$.demo")
-                 .AddValue(new DatetimeFunction())
+                .AddLine()
+                 .Add(new DatetimeFunction())
                  .OnPath("$.this.is.a.long.path.with.a.date")
-                 .SetValue(new JValue("new value by set"))
+                .AddLine()
+                 .Set(new JValue("new value by set"))
                  .OnPath("$.demo");              
             var result = script.Execute(new JObject());
 

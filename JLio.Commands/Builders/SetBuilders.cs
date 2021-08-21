@@ -26,14 +26,14 @@ namespace JLio.Commands.Builders
 
         }
 
-        public static SetValueContainer SetValue(this CommandLines source, JToken value)
+        public static SetValueContainer Set(this NewLine source, JToken value)
         {
-            return new SetValueContainer(source, value);
+            return new SetValueContainer(source.Script, value);
         }
 
-        public static SetValueAsFunctionContainer SetValue(this CommandLines source, IJLioFunction function)
+        public static SetValueAsFunctionContainer Set(this NewLine source, IJLioFunction function)
         {
-            return new SetValueAsFunctionContainer(source, function);
+            return new SetValueAsFunctionContainer(source.Script, function);
 
         }
 
