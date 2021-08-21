@@ -8,16 +8,16 @@ namespace JLio.Core.Models
     {
      
 
-        public JLioExecutionResults Execute(JToken data)
+        public JLioExecutionResult Execute(JToken data)
         {
             return Execute(data, JLioExecutionOptions.CreateDefault());
         }
 
-        public JLioExecutionResults Execute(JToken data, IJLioExecutionOptions options)
+        public JLioExecutionResult Execute(JToken data, IJLioExecutionOptions options)
         {
-            var executionResult = new JLioExecutionResults();
+            JLioExecutionResult executionResult = new JLioExecutionResult(true,data);
             ForEach(command =>
-                executionResult.Add(command.Execute(data, options))
+                executionResult = command.Execute(data, options)
             );
             return executionResult;
         }
