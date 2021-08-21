@@ -10,8 +10,4 @@
     <ProjectReference Include="..\JLio.Functions\JLio.Functions.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Extensions\" />
-  </ItemGroup>
-
 </Project>

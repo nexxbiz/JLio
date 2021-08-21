@@ -27,7 +27,7 @@ namespace JLio.UnitTests.FunctionsTests
         public void scriptTest(string function, string data)
         {
             var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"add\"}}]";
-            var result = JLioScript.Parse(script, parseOptions).Execute(JToken.Parse(data), executeOptions);
+            var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeOptions);
 
             Assert.IsTrue(result.Success);
             Assert.IsTrue(executeOptions.Logger.LogEntries.TrueForAll(i => i.Level != LogLevel.Error));

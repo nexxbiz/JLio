@@ -4,19 +4,9 @@ using Newtonsoft.Json.Linq;
 
 namespace JLio.Core.Models
 {
-    public class CommandLines 
+    public class JLioScript : List<IJLioCommand>
     {
-        List<IJLioCommand> Lines { get; set; }
-
-        public CommandLines()
-        {
-            this.Lines = new List<IJLioCommand>();
-        }
-
-        public CommandLines(List<IJLioCommand> lines)
-        {
-            this.Lines = lines;
-        }
+     
 
         public JLioExecutionResults Execute(JToken data)
         {
@@ -26,7 +16,7 @@ namespace JLio.Core.Models
         public JLioExecutionResults Execute(JToken data, IJLioExecutionOptions options)
         {
             var executionResult = new JLioExecutionResults();
-            Lines.ForEach(command =>
+            ForEach(command =>
                 executionResult.Add(command.Execute(data, options))
             );
             return executionResult;
@@ -34,7 +24,7 @@ namespace JLio.Core.Models
 
         public void AddLine(IJLioCommand command)
         {
-            Lines.Add(command);
+            Add(command);
         }
     }
 }

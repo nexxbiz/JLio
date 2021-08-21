@@ -8,18 +8,18 @@ namespace JLio.Commands.Builders
     public static class CommonBuilders
     {
 
-        public static NewLine AddLine(this CommandLines source)
+        public static NewLine AddScriptCommand(this JLioScript source)
         {
             return new NewLine(source);
         }
     }
         public class NewLine
         {
-            public NewLine(CommandLines script)
+            public NewLine(JLioScript script)
             {
                 Script = script;
             }
 
-            public CommandLines Script { get; }
+            public JLioScript Script { get; }
         }
 }

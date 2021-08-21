@@ -13,7 +13,7 @@ using System.Text;
 
 namespace JLio.UnitTests.CommandsTests
 {
-    public class AddTests
+    public class SetTests
     {
         private object parseOptions;
         private JLioExecutionOptions executeOptions;
@@ -28,34 +28,28 @@ namespace JLio.UnitTests.CommandsTests
                 "{\r\n  \"myString\": \"demo2\",\r\n  \"myNumber\": 2.2,\r\n  \"myInteger\": 20,\r\n  \"myObject\": {\r\n    \"myObject\": {\"myArray\": [\r\n      2,\r\n      20,\r\n      200,\r\n      2000\r\n    ]},\r\n    \"myArray\": [\r\n      2,\r\n      20,\r\n      200,\r\n      2000\r\n    ]\r\n  },\r\n  \"myArray\": [\r\n    2,\r\n    20,\r\n    200,\r\n    2000\r\n  ],\r\n  \"myBoolean\": true,\r\n  \"myNull\": null\r\n}");
         }
 
-        [TestCase("$.myObject.newItem", "newData")]
+        [TestCase("$.myObject.myArray", "newData")]
         [TestCase("$.NewObject.newItem.NewSubItem", "newData")]
         [TestCase("$.myArray", "newData")]
         [TestCase("$.myNull", "newData")]
-        [TestCase("$..myObject.newItem", "newData")]
         [TestCase("$..myArray", "newData")]
-        [TestCase("$.newProperty", "newData")]
-        [TestCase("$..myObject[?(@.myArray)].newProperty)",
-            "newData")] // this is not working yet  need to consult newtonsoft
-        public void CanAddValues(string path, string value)
+        public void CanSetValues(string path, string value)
         {
-            var valueToAdd = new JLioFunctionSupportedValue( new FixedValue(new JValue(value)));
-            var result = new Add(path, valueToAdd).Execute(data, executeOptions);
+            var valueToSet = new JLioFunctionSupportedValue( new FixedValue(new JValue(value)));
+            var result = new Set(path, valueToSet).Execute(data, executeOptions);
 
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Success);
         }
 
-        [TestCase("$.myObject.newItem", "newData")]
-        [TestCase("$.NewObject.newItem.NewSubItem", "newData")]
+        [TestCase("$.myObject", "newData")]
         [TestCase("$.myArray", "newData")]
-        [TestCase("$..myObject.newItem", "newData")]
+        [TestCase("$..myObject", "newData")]
         [TestCase("$..myArray", "newData")]
-        [TestCase("$.newProperty", "newData")]
-        public void CanAddCorrectValues(string path, string value)
+        public void CanSetCorrectValues(string path, string value)
         {
-            var valueToAdd = new JLioFunctionSupportedValue(new FixedValue(new JValue(value)));
-            var result = new Add(path, valueToAdd).Execute(data, executeOptions);
+            var valueToSet = new JLioFunctionSupportedValue(new FixedValue(new JValue(value)));
+            var result = new Set(path, valueToSet).Execute(data, executeOptions);
 
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Success);
@@ -63,12 +57,12 @@ namespace JLio.UnitTests.CommandsTests
             Assert.IsTrue(data.SelectTokens(path).Any());
         }
 
-        [TestCase("", "newData", "Path property for add command is missing")]
-        [TestCase("", null, "Path property for add command is missing")]
+        [TestCase("", "newData", "Path property for set command is missing")]
+        [TestCase("", null, "Path property for set command is missing")]
         public void CanExecuteWithArgumentsNotProvided(string path, string value, string message)
         {
             var valueToAdd = new JLioFunctionSupportedValue(new FixedValue(new JValue(value)));
-            var result = new Add(path, valueToAdd).Execute(data, executeOptions);
+            var result = new Set(path, valueToAdd).Execute(data, executeOptions);
 
             Assert.IsNotNull(result);
             Assert.IsFalse(result.Success);
@@ -78,20 +72,21 @@ namespace JLio.UnitTests.CommandsTests
         [Test]
         public void CanUseFluentApi()
         {
+            var data = JObject.Parse("{ \"demo\" : \"old value\" , \"demo2\" : \"old value\" }");
             var script = new JLioScript()
                 .AddScriptCommand()
                  .Add(new JValue("new Value"))
                  .OnPath("$.demo")
                 .AddScriptCommand()
                  .Add(new DatetimeFunction())
-                 .OnPath("$.this.is.a.long.path.with.a.date")
+                 .OnPath("$.demo2")
                ;         
-            var result = script.Execute(new JObject());
+            var result = script.Execute(data);
 
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Success);
             Assert.AreNotEqual(result.Data.SelectToken("$.demo").Type, JTokenType.Null);
-            Assert.AreNotEqual(result.Data.SelectToken("$.this.is.a.long.path.with.a.date").Type, JTokenType.Null);
+            Assert.AreNotEqual(result.Data.SelectToken("$.demo2").Type, JTokenType.Null);
 
         }
     }

@@ -27,7 +27,7 @@ namespace JLio.UnitTests.ScriptTextHandling
             typeof(FixedValue))]
         public void Test1(string script, Type valueType)
         {
-            var typedScript = JLioScript.Parse(script, options);
+            var typedScript = JLioConvert.Parse(script, options);
             var scriptText = JsonConvert.SerializeObject(typedScript, options.JLioFunctionConverter);
         }
     }
