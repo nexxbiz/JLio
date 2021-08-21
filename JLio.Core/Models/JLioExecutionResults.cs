@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 
 namespace JLio.Core.Models
 {
+    //todo: needs to be removed result is just one. if you want more details ececute line after line.
     public class JLioExecutionResults : List<JLioExecutionResult>
     {
         public JToken Data { get; private set; }

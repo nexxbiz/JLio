@@ -24,7 +24,7 @@ namespace JLio.Core.Models
 
         public void AddLine(IJLioCommand command)
         {
-            Add(command);
+            base.Add(command);
         }
     }
 }

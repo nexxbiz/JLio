@@ -1,4 +1,5 @@
 ﻿using JLio.Commands;
+using JLio.Commands.Builders;
 using JLio.Core.Models;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -110,6 +111,27 @@ namespace JLio.UnitTests.CommandsTests
             Assert.IsTrue(result.Success);
             Assert.IsTrue(JToken.DeepEquals(JToken.Parse(expectedValueToPath), data.SelectToken(to)));
             Assert.IsTrue(from == to || data.SelectToken(from) == null);
+        }
+
+        [Test]
+        public void CanUseFluentApi()
+        {
+            var data = JObject.Parse("{ \"demo\" : \"item\" }");
+
+            var script = new JLioScript()
+                .AddScriptLine()
+                 .Copy("$.demo")
+                 .To("$.copiedDemo")
+                .AddScriptLine()
+                 .Move("$.copiedDemo")
+                 .To("$.result")
+               ;
+            var result = script.Execute(data);
+
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.Success);
+            Assert.IsTrue( JToken.DeepEquals(result.Data.SelectToken("$.demo"), result.Data.SelectToken("$.result")));
+            Assert.IsNull(result.Data.SelectToken("$.copiedDemo"));
         }
     }
 }
