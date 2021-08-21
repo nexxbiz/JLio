@@ -16,7 +16,9 @@ namespace JLio.Client
             var commandProvider = new JLioCommandsProvider();
             commandProvider
                 .Register<Add>()
-                .Register<Set>();
+                .Register<Set>()
+                .Register<Remove>();
+
 
             var functionsProvider = new JLioFunctionsProvider();
             functionsProvider.Register<DatetimeFunction>();

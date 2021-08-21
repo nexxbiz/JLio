@@ -15,15 +15,15 @@ namespace JLio.Commands.Builders
 
         public static JLioScript OnPath(this AddValueContainer source, string path)
         {
-            source.JsonScript.AddLine(new Add(path, new JLioFunctionSupportedValue(new FixedValue(source.Value))));
-            return source.JsonScript;
+            source.Script.AddLine(new Add(path, new JLioFunctionSupportedValue(new FixedValue(source.Value))));
+            return source.Script;
 
         }
 
         public static JLioScript OnPath(this AddValueAsFunctionContainer source, string path)
         {
-            source.JsonScript.AddLine(new Add(path, new JLioFunctionSupportedValue(source.Function)));
-            return source.JsonScript;
+            source.Script.AddLine(new Add(path, new JLioFunctionSupportedValue(source.Function)));
+            return source.Script;
 
         }
 
@@ -42,11 +42,11 @@ namespace JLio.Commands.Builders
         {
             public AddValueContainer(JLioScript source, JToken value)
             {
-                JsonScript = source;
+                Script = source;
                 Value = value;
             }
 
-            internal JLioScript JsonScript { get; }
+            internal JLioScript Script { get; }
             internal JToken Value { get; }
         }
 
@@ -56,11 +56,11 @@ namespace JLio.Commands.Builders
         {
             public AddValueAsFunctionContainer(JLioScript source, IJLioFunction function)
             {
-                JsonScript = source;
+                Script = source;
                 Function = function;
             }
 
-            internal JLioScript JsonScript { get; }
+            internal JLioScript Script { get; }
             internal IJLioFunction Function { get; }
         }
 

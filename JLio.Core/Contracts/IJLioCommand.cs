@@ -7,7 +7,7 @@ namespace JLio.Core.Contracts
     {
         string CommandName { get; }
 
-        JLioExecutionResult Execute(JToken data, IJLioExecutionOptions options);
+        JLioExecutionResult Execute(JToken dataContext, IJLioExecutionOptions options);
         bool ValidateCommandInstance();
     }
 }

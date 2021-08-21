@@ -15,14 +15,12 @@ namespace JLio.UnitTests.CommandsTests
 {
     public class SetTests
     {
-        private object parseOptions;
         private JLioExecutionOptions executeOptions;
         private JToken data;
 
         [SetUp]
         public void Setup()
         {
-            parseOptions = JLioParseOptions.CreateDefault();
             executeOptions = JLioExecutionOptions.CreateDefault();
             data = JToken.Parse(
                 "{\r\n  \"myString\": \"demo2\",\r\n  \"myNumber\": 2.2,\r\n  \"myInteger\": 20,\r\n  \"myObject\": {\r\n    \"myObject\": {\"myArray\": [\r\n      2,\r\n      20,\r\n      200,\r\n      2000\r\n    ]},\r\n    \"myArray\": [\r\n      2,\r\n      20,\r\n      200,\r\n      2000\r\n    ]\r\n  },\r\n  \"myArray\": [\r\n    2,\r\n    20,\r\n    200,\r\n    2000\r\n  ],\r\n  \"myBoolean\": true,\r\n  \"myNull\": null\r\n}");
@@ -74,10 +72,10 @@ namespace JLio.UnitTests.CommandsTests
         {
             var data = JObject.Parse("{ \"demo\" : \"old value\" , \"demo2\" : \"old value\" }");
             var script = new JLioScript()
-                .AddScriptCommand()
+                .AddScriptLine()
                  .Add(new JValue("new Value"))
                  .OnPath("$.demo")
-                .AddScriptCommand()
+                .AddScriptLine()
                  .Add(new DatetimeFunction())
                  .OnPath("$.demo2")
                ;         

@@ -8,7 +8,7 @@ namespace JLio.Commands.Builders
     public static class CommonBuilders
     {
 
-        public static NewLine AddScriptCommand(this JLioScript source)
+        public static NewLine AddScriptLine(this JLioScript source)
         {
             return new NewLine(source);
         }

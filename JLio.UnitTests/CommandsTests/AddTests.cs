@@ -15,14 +15,13 @@ namespace JLio.UnitTests.CommandsTests
 {
     public class AddTests
     {
-        private object parseOptions;
+
         private JLioExecutionOptions executeOptions;
         private JToken data;
 
         [SetUp]
         public void Setup()
         {
-            parseOptions = JLioParseOptions.CreateDefault();
             executeOptions = JLioExecutionOptions.CreateDefault();
             data = JToken.Parse(
                 "{\r\n  \"myString\": \"demo2\",\r\n  \"myNumber\": 2.2,\r\n  \"myInteger\": 20,\r\n  \"myObject\": {\r\n    \"myObject\": {\"myArray\": [\r\n      2,\r\n      20,\r\n      200,\r\n      2000\r\n    ]},\r\n    \"myArray\": [\r\n      2,\r\n      20,\r\n      200,\r\n      2000\r\n    ]\r\n  },\r\n  \"myArray\": [\r\n    2,\r\n    20,\r\n    200,\r\n    2000\r\n  ],\r\n  \"myBoolean\": true,\r\n  \"myNull\": null\r\n}");
@@ -39,7 +38,7 @@ namespace JLio.UnitTests.CommandsTests
             "newData")] // this is not working yet  need to consult newtonsoft
         public void CanAddValues(string path, string value)
         {
-            var valueToAdd = new JLioFunctionSupportedValue( new FixedValue(new JValue(value)));
+            var valueToAdd = new JLioFunctionSupportedValue(new FixedValue(new JValue(value)));
             var result = new Add(path, valueToAdd).Execute(data, executeOptions);
 
             Assert.IsNotNull(result);
@@ -79,13 +78,13 @@ namespace JLio.UnitTests.CommandsTests
         public void CanUseFluentApi()
         {
             var script = new JLioScript()
-                .AddScriptCommand()
+                .AddScriptLine()
                  .Add(new JValue("new Value"))
                  .OnPath("$.demo")
-                .AddScriptCommand()
+                .AddScriptLine()
                  .Add(new DatetimeFunction())
                  .OnPath("$.this.is.a.long.path.with.a.date")
-               ;         
+               ;
             var result = script.Execute(new JObject());
 
             Assert.IsNotNull(result);
