@@ -17,7 +17,9 @@ namespace JLio.Client
             commandProvider
                 .Register<Add>()
                 .Register<Set>()
-                .Register<Remove>();
+                .Register<Remove>()
+                .Register<Copy>()
+                .Register<Move>();
 
 
             var functionsProvider = new JLioFunctionsProvider();
