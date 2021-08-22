@@ -30,7 +30,12 @@ namespace JLio.Commands
         public JLioExecutionResult Execute(JToken dataContext, IJLioExecutionOptions options)
         {
             executionOptions = options;
-            if (!ValidateCommandInstance()) return new JLioExecutionResult(false,  dataContext);
+            var validationResult = ValidateCommandInstance();
+            if (!validationResult.IsValid)
+            {
+                validationResult.ValidationMessages.ForEach(i => options.Logger?.Log(LogLevel.Warning, JLioConstants.CommandExecution, i));
+                return new JLioExecutionResult(false, dataContext);
+            };
             var targetPath = JsonPathMethods.SplitPath(Path);
             RemoveItems(dataContext);
         
@@ -75,19 +80,19 @@ namespace JLio.Commands
         }
 
 
-        public bool ValidateCommandInstance()
+
+        public ValidationResult ValidateCommandInstance()
         {
-            var result = true;
+            var result = new ValidationResult() { IsValid = true };
             if (string.IsNullOrWhiteSpace(Path))
             {
-                executionOptions.Logger?.Log(LogLevel.Warning, JLioConstants.CommandExecution,
-                    $"Path property for {CommandName} command is missing");
-                result = false;
+                result.ValidationMessages.Add($"Path property for {CommandName} command is missing");
+                result.IsValid = false;
             }
 
-            if (result == false)
-                executionOptions.Logger?.Log(LogLevel.Warning, JLioConstants.CommandExecution, "Command not executed");
+           
             return result;
         }
+      
     }
 }

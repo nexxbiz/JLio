@@ -35,7 +35,11 @@ namespace JLio.Commands
         public JLioExecutionResult Execute(JToken dataContext, IJLioExecutionOptions options)
         {
             executionOptions = options;
-            if (!ValidateCommandInstance().IsValid) return new JLioExecutionResult(false, dataContext);
+            var validationResult = ValidateCommandInstance();
+            if (!validationResult.IsValid) {
+                validationResult.ValidationMessages.ForEach(i => options.Logger?.Log(LogLevel.Warning, JLioConstants.CommandExecution, i));
+                return new JLioExecutionResult(false, dataContext);
+                    };
 
             var targetPath = JsonPathMethods.SplitPath(Path);
             JsonMethods.CheckOrCreateParentPath(dataContext, targetPath, options.ItemsFetcher, options.Logger);
