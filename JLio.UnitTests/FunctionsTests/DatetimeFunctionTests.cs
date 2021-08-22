@@ -3,6 +3,8 @@ using JLio.Core.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using JLio.Commands.Builders;
+using JLio.Functions;
 
 namespace JLio.UnitTests.FunctionsTests
 {
@@ -32,6 +34,21 @@ namespace JLio.UnitTests.FunctionsTests
             Assert.IsTrue(result.Success);
             Assert.IsTrue(executeOptions.Logger.LogEntries.TrueForAll(i => i.Level != LogLevel.Error));
             Assert.IsNotNull(result.Data.SelectToken("$.result"));
+        }
+
+        [Test]
+        public void CanbeUsedInFluentApi()
+        {
+            var script = new JLioScript()
+                 .Add(new DatetimeFunction("UTC","'dd-MM-yyyy HH:mm:ss'"))
+                 .OnPath("$.date")
+               ;
+            var result = script.Execute(new JObject());
+
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.Success);
+            Assert.AreNotEqual(result.Data.SelectToken("$.date").Type, JTokenType.Null);
+
         }
     }
 }

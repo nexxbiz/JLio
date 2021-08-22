@@ -27,6 +27,17 @@ namespace JLio.Functions
         private Arguments arguments = new Arguments();
         public string FunctionName => "datetime";
 
+        public DatetimeFunction()
+        {
+
+        }
+
+        public DatetimeFunction(params string[] arguments)
+        {
+            arguments.ToList().ForEach(a =>
+                    this.arguments.Add(new JLioFunctionSupportedValue(new FixedValue(JToken.Parse($"\"{a}\"")))));
+        }
+
         public IJLioFunction SetArguments(Arguments functionArguments)
         {
             arguments = functionArguments;
