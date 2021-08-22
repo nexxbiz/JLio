@@ -2,6 +2,7 @@
 using JLio.Core.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace JLio.Core
 {
@@ -23,9 +24,9 @@ namespace JLio.Core
             return new JLioExecutionResult(false, data);
         }
 
-        public bool ValidateCommandInstance()
+        public ValidationResult ValidateCommandInstance()
         {
-            return true;
+            return new ValidationResult { IsValid = false, ValidationMessages = new List<string>() { $"script contains a unknown command : {CommandName}" } };
         }
     }
 }
