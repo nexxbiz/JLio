@@ -14,6 +14,7 @@ namespace JLio.Client
 
         public static JLioScript Parse(string script, IJLioParseOptions options)
         {
+            if (string.IsNullOrEmpty(script)){ return new JLioScript(); }
             var converters = new[] { options.JLioCommandConverter, options.JLioFunctionConverter };
             return JsonConvert.DeserializeObject<JLioScript>(script, converters);
         }
