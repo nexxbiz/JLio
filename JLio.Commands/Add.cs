@@ -24,7 +24,7 @@ namespace JLio.Commands
         public JLioExecutionResult Execute(JToken dataContext, IJLioExecutionOptions options)
         {
             executionOptions = options;
-            if (!ValidateCommandInstance()) return new JLioExecutionResult(false, dataContext);
+            if (!ValidateCommandInstance().IsValid) return new JLioExecutionResult(false, dataContext);
 
             var targetPath = JsonPathMethods.SplitPath(Path);
             JsonMethods.CheckOrCreateParentPath(dataContext, targetPath, options.ItemsFetcher, options.Logger);
@@ -34,20 +34,7 @@ namespace JLio.Commands
             return new JLioExecutionResult(true, dataContext);
         }
 
-        public bool ValidateCommandInstance()
-        {
-            var result = true;
-            if (string.IsNullOrWhiteSpace(Path))
-            {
-                executionOptions.Logger?.Log(LogLevel.Warning, JLioConstants.CommandExecution,
-                    $"Path property for {CommandName} command is missing");
-                result = false;
-            }
-
-            if (result == false)
-                executionOptions.Logger?.Log(LogLevel.Warning, JLioConstants.CommandExecution, "Command not executed");
-            return result;
-        }
+       
 
         private void AddToObjectItems(JToken dataContext, IItemsFetcher dataFetcher, JsonSplittedPath targetPath)
         {
@@ -98,6 +85,17 @@ namespace JLio.Commands
             jArray.Add(Value.GetValue(jArray, dataContext, executionOptions));
             executionOptions.Logger?.Log(LogLevel.Information, JLioConstants.CommandExecution,
                 $"Value added to array: {jArray.Path}");
+        }
+
+        public ValidationResult ValidateCommandInstance()
+        {
+            var result = new ValidationResult() { IsValid = true };
+            if (string.IsNullOrWhiteSpace(Path))
+            {
+                result.ValidationMessages.Add($"Path property for {CommandName} command is missing");
+                result.IsValid = false;
+            }
+            return result;
         }
     }
 }
