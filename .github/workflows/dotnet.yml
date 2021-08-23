@@ -29,4 +29,4 @@ jobs:
     - name: Test
       run: dotnet test -c Release --no-build --no-restore --verbosity normal **/*Tests.csproj
     - name: Pack
-      run: dotnet pack -v normal -c Release --no-restore --include-symbols --no-build -p:PackageVersion=$GITHUB_RUN_ID !**/*Tests.csproj
+      run: dotnet pack --configuration Release /p:Version=${VERSION} --no-build --output 
