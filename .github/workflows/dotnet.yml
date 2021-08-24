@@ -32,4 +32,3 @@ jobs:
       run: dotnet pack --configuration Release --no-build --output .
     - name: Push 
       run: dotnet nuget push .\nuget\*.nupkg -s https://www.myget.org/F/transformers/api/v2/package -k ${{ secrets.MYGET_KEY }}
-      if: github.ref == 'refs/heads/main'
