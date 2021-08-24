@@ -29,6 +29,6 @@ jobs:
     - name: Test
       run: dotnet test -c Release --no-build --no-restore --verbosity normal **/*Tests.csproj
     - name: Pack
-      run: dotnet pack --configuration Release --no-build --output .
+      run: dotnet pack --configuration Release -p:PackageVersion=0.0.1-preview1 --no-build --output .
     - name: Push 
       run: dotnet nuget push .\nuget\*.nupkg -s https://www.myget.org/F/transformers/api/v2/package -k ${{ secrets.MYGET_KEY }}
