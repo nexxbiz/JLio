@@ -13,7 +13,7 @@ namespace JLio.Core.Models
             return Execute(data, JLioExecutionOptions.CreateDefault());
         }
 
-        public JLioExecutionResult Execute(JToken data, IJLioExecutionOptions options)
+        public JLioExecutionResult Execute(JToken data, IExecutionOptions options)
         {
             JLioExecutionResult executionResult = new JLioExecutionResult(true,data);
             ForEach(command =>

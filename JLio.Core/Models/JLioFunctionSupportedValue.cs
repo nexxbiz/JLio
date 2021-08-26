@@ -3,16 +3,16 @@ using Newtonsoft.Json.Linq;
 
 namespace JLio.Core.Models
 {
-    public class JLioFunctionSupportedValue : IJLioFunctionSupportedValue
+    public class JLioFunctionSupportedValue : IFunctionSupportedValue
     {
-        public JLioFunctionSupportedValue(IJLioFunction function)
+        public JLioFunctionSupportedValue(IFunction function)
         {
             Function = function;
         }
 
-        public IJLioFunction Function { get; }
+        public IFunction Function { get; }
 
-        public JToken GetValue(JToken currentToken, JToken dataContext, IJLioExecutionOptions options)
+        public JToken GetValue(JToken currentToken, JToken dataContext, IExecutionOptions options)
         {
             var result = Function.Execute(currentToken, dataContext, options);
             return result.Data;

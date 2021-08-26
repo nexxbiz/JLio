@@ -21,7 +21,6 @@ namespace JLio.Client
                 .Register<Copy>()
                 .Register<Move>();
 
-
             var functionsProvider = new JLioFunctionsProvider();
             functionsProvider.Register<DatetimeFunction>();
 

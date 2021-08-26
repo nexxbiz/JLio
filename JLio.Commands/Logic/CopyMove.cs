@@ -3,6 +3,7 @@ using JLio.Core.Contracts;
 using JLio.Core.Extensions;
 using JLio.Core.Models;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -26,33 +27,37 @@ namespace JLio.Commands.Logic
         Move
     }
 
-    internal class CopyMove
+    public abstract class CopyMove
     {
-        private eAction action;
+        //private eAction action;
         private JToken data;
-        private IJLioExecutionOptions executionOptions;
+        private IExecutionOptions executionOptions;
 
-        private string from;
+        [JsonProperty("fromPath")]
+        public string FromPath { get; set; }
 
-        private string to;
+        [JsonProperty("toPath")]
+        public string ToPath { get; set; }
 
-        internal static CopyMove Move(string from, string to)
-        {
-            return new CopyMove { from = from, to = to, action = eAction.Move };
-        }
+        
 
-        internal static CopyMove Copy(string from, string to)
-        {
-            return new CopyMove { from = from, to = to, action = eAction.Copy };
-        }
+        //internal static CopyMove Move(string from, string to)
+        //{
+        //    return new CopyMove { from = from, to = to, action = eAction.Move };
+        //}
 
-        internal JLioExecutionResult Execute(JToken dataContext, IJLioExecutionOptions options)
+        //internal static CopyMove Copy(string from, string to)
+        //{
+        //    return new CopyMove { from = from, to = to, action = eAction.Copy };
+        //}
+
+        internal JLioExecutionResult Execute(JToken dataContext, IExecutionOptions options, eAction action)
         {
             data = dataContext;
             executionOptions = options;
+           
 
-
-            var sourceItems = options.ItemsFetcher.SelectTokens(from, data);
+            var sourceItems = options.ItemsFetcher.SelectTokens(FromPath, data);
             sourceItems.ForEach(i =>
             {
                 AddToTargets(i);
@@ -89,7 +94,7 @@ namespace JLio.Commands.Logic
 
         private void AddToTargets(JToken value)
         {
-            var toPath = JsonPathMethods.SplitPath(to);
+            var toPath = JsonPathMethods.SplitPath(ToPath);
             CreateParentTargets(toPath);
             var targetItems = executionOptions.ItemsFetcher.SelectTokens(toPath.ParentElements.ToPathString(), data);
             targetItems.ForEach(t => AddToTarget(toPath.LastName, t, value));
@@ -98,7 +103,7 @@ namespace JLio.Commands.Logic
         private SelectedTokens CreateParentTargets(JsonSplittedPath toPath)
         {
             JsonMethods.CheckOrCreateParentPath(data, toPath, executionOptions.ItemsFetcher, executionOptions.Logger);
-            return executionOptions.ItemsFetcher.SelectTokens(to, data);
+            return executionOptions.ItemsFetcher.SelectTokens(ToPath, data);
         }
 
         private void AddToTarget(string propertyName, JToken jToken, JToken value)

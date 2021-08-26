@@ -2,10 +2,10 @@
 
 namespace JLio.Core.Contracts
 {
-    public interface IJLioFunctionSupportedValue
+    public interface IFunctionSupportedValue
     {
-        IJLioFunction Function { get; }
-        JToken GetValue(JToken currentToken, JToken dataContext, IJLioExecutionOptions options);
+        IFunction Function { get; }
+        JToken GetValue(JToken currentToken, JToken dataContext, IExecutionOptions options);
         string GetStringRepresentation();
     }
 }

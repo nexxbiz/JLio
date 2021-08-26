@@ -7,10 +7,7 @@ namespace JLio.Core
     public class JLioFunctionsProvider : IJLioFunctionsProvider, IJLioFunctionsProviderRegistrar
     {
         private readonly JLioFunctionRegistrations functions = new JLioFunctionRegistrations();
-
-        public int NumberOfFunctions => functions.Count;
-
-        public IJLioFunction this[string function]
+        public IFunction this[string function]
         {
             get
             {
@@ -20,25 +17,25 @@ namespace JLio.Core
             }
         }
 
-        public IJLioFunctionsProviderRegistrar Register<T>() where T : IJLioFunction
+        public IJLioFunctionsProviderRegistrar Register<T>() where T : IFunction
         {
             var function = typeof(T);
-            var functionInstance = (IJLioFunction) Activator.CreateInstance(function);
+            var functionInstance = (IFunction) Activator.CreateInstance(function);
             DeleteIfFunctionNameAlreadyExists<T>(functionInstance);
 
             functions.Add(functionInstance.FunctionName, new JLioFunctionRegistration(function));
             return this;
         }
 
-        private void DeleteIfFunctionNameAlreadyExists<T>(IJLioFunction functionInstance) where T : IJLioFunction
+        private void DeleteIfFunctionNameAlreadyExists<T>(IFunction functionInstance) where T : IFunction
         {
             if (functionInstance != null && !functions.ContainsKey(functionInstance.FunctionName))
                 functions.Remove(functionInstance.FunctionName);
         }
 
-        private static IJLioFunction CreateInstance(JLioFunctionRegistration functionRegistration)
+        private static IFunction CreateInstance(JLioFunctionRegistration functionRegistration)
         {
-            return (IJLioFunction) Activator.CreateInstance(functionRegistration.Type);
+            return (IFunction) Activator.CreateInstance(functionRegistration.Type);
         }
     }
 }

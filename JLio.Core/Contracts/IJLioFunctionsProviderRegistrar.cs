@@ -2,6 +2,6 @@
 {
     public interface IJLioFunctionsProviderRegistrar
     {
-        IJLioFunctionsProviderRegistrar Register<T>() where T : IJLioFunction;
+        IJLioFunctionsProviderRegistrar Register<T>() where T : IFunction;
     }
 }

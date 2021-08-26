@@ -8,20 +8,16 @@ namespace JLio.Commands.Builders
 {
     public static class AddBuilders
     {
-
-
         public static JLioScript OnPath(this AddValueContainer source, string path)
         {
             source.Script.AddLine(new Add(path, new JLioFunctionSupportedValue(new FixedValue(source.Value))));
             return source.Script;
-
         }
 
         public static JLioScript OnPath(this AddValueAsFunctionContainer source, string path)
         {
             source.Script.AddLine(new Add(path, new JLioFunctionSupportedValue(source.Function)));
             return source.Script;
-
         }
 
         public static AddValueContainer Add(this JLioScript source, JToken value)
@@ -29,10 +25,9 @@ namespace JLio.Commands.Builders
             return new AddValueContainer(source, value);
         }
 
-        public static AddValueAsFunctionContainer Add(this JLioScript source, IJLioFunction function)
+        public static AddValueAsFunctionContainer Add(this JLioScript source, IFunction function)
         {
             return new AddValueAsFunctionContainer(source, function);
-
         }
 
         public class AddValueContainer
@@ -42,25 +37,20 @@ namespace JLio.Commands.Builders
                 Script = source;
                 Value = value;
             }
-
             internal JLioScript Script { get; }
             internal JToken Value { get; }
         }
 
-      
-
         public class AddValueAsFunctionContainer
         {
-            public AddValueAsFunctionContainer(JLioScript source, IJLioFunction function)
+            public AddValueAsFunctionContainer(JLioScript source, IFunction function)
             {
                 Script = source;
                 Function = function;
             }
 
             internal JLioScript Script { get; }
-            internal IJLioFunction Function { get; }
+            internal IFunction Function { get; }
         }
-
-
     }
 }

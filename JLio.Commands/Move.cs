@@ -11,10 +11,10 @@ using Newtonsoft.Json.Linq;
 
 namespace JLio.Commands
 {
-    public class Move : IJLioCommand
+    public class Move : CopyMove, IJLioCommand
     {
         public string CommandName => "move";
-        private IJLioExecutionOptions executionOptions;
+        private IExecutionOptions executionOptions;
 
         public Move()
         {
@@ -27,13 +27,9 @@ namespace JLio.Commands
             ToPath = to;
         }
 
-        [JsonProperty("fromPath")]
-        public string FromPath { get; set; }
+      
 
-        [JsonProperty("toPath")]
-        public string ToPath { get; set; }
-
-        public JLioExecutionResult Execute(JToken dataContext, IJLioExecutionOptions options)
+        public JLioExecutionResult Execute(JToken dataContext, IExecutionOptions options)
         {
             executionOptions = options;
             var validationResult = ValidateCommandInstance();
@@ -42,7 +38,7 @@ namespace JLio.Commands
                 validationResult.ValidationMessages.ForEach(i => options.Logger?.Log(LogLevel.Warning, JLioConstants.CommandExecution, i));
                 return new JLioExecutionResult(false, dataContext);
             };
-            return CopyMove.Move(FromPath, ToPath).Execute(dataContext, options);
+            return Execute(dataContext, options);
         }
 
         public ValidationResult ValidateCommandInstance()

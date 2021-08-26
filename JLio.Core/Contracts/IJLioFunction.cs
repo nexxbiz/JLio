@@ -3,13 +3,13 @@ using Newtonsoft.Json.Linq;
 
 namespace JLio.Core.Contracts
 {
-    public interface IJLioFunction
+    public interface IFunction
     {
         string FunctionName { get; }
 
-        IJLioFunction SetArguments(Arguments arguments);
+        IFunction SetArguments(Arguments arguments);
 
-        JLioExecutionResult Execute(JToken currentToken, JToken dataContext, IJLioExecutionOptions options);
+        JLioExecutionResult Execute(JToken currentToken, JToken dataContext, IExecutionOptions options);
 
         string ToScript();
     }

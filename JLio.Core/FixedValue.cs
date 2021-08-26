@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 
 namespace JLio.Core
 {
-    public class FixedValue : IJLioFunction
+    public class FixedValue : IFunction
     {
         private readonly JToken value;
         private Arguments arguments;
@@ -16,13 +16,13 @@ namespace JLio.Core
 
         public string FunctionName => "FixedValue";
 
-        public IJLioFunction SetArguments(Arguments newArguments)
+        public IFunction SetArguments(Arguments newArguments)
         {
             arguments = newArguments;
             return this;
         }
 
-        public JLioExecutionResult Execute(JToken currentToken, JToken dataContext, IJLioExecutionOptions options)
+        public JLioExecutionResult Execute(JToken currentToken, JToken dataContext, IExecutionOptions options)
         {
             if (value.Type == JTokenType.String) return HandleString(currentToken, dataContext, options);
             return new JLioExecutionResult(true, value);
@@ -33,7 +33,7 @@ namespace JLio.Core
             return value.ToString();
         }
 
-        private JLioExecutionResult HandleString(JToken currentToken, JToken dataContext, IJLioExecutionOptions options)
+        private JLioExecutionResult HandleString(JToken currentToken, JToken dataContext, IExecutionOptions options)
         {
             var stringValue = value.ToString();
 

@@ -11,14 +11,14 @@ namespace JLio.Commands
 {
     public class Add : IJLioCommand
     {
-        private IJLioExecutionOptions executionOptions;
+        private IExecutionOptions executionOptions;
 
         public Add()
         {
 
         }
 
-        public Add(string path, IJLioFunctionSupportedValue value)
+        public Add(string path, IFunctionSupportedValue value)
         {
             Path = path;
             Value = value;
@@ -28,11 +28,11 @@ namespace JLio.Commands
         public string Path { get; set; }
 
         [JsonProperty("value")]
-        public IJLioFunctionSupportedValue Value { get; set; }
+        public IFunctionSupportedValue Value { get; set; }
 
         public string CommandName { get; } = "add";
 
-        public JLioExecutionResult Execute(JToken dataContext, IJLioExecutionOptions options)
+        public JLioExecutionResult Execute(JToken dataContext, IExecutionOptions options)
         {
             executionOptions = options;
             var validationResult = ValidateCommandInstance();

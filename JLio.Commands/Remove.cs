@@ -11,7 +11,7 @@ namespace JLio.Commands
 {
     public class Remove : IJLioCommand
     {
-        private IJLioExecutionOptions executionOptions;
+        private IExecutionOptions executionOptions;
 
         public Remove()
         {
@@ -27,7 +27,7 @@ namespace JLio.Commands
 
         public string CommandName => "remove";
 
-        public JLioExecutionResult Execute(JToken dataContext, IJLioExecutionOptions options)
+        public JLioExecutionResult Execute(JToken dataContext, IExecutionOptions options)
         {
             executionOptions = options;
             var validationResult = ValidateCommandInstance();

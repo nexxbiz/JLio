@@ -22,7 +22,7 @@ namespace JLio.Functions
     // default:
     // timeselection , local time now
     // format : 2012-04-23T18:25:43.511Z
-    public class DatetimeFunction : IJLioFunction
+    public class DatetimeFunction : IFunction
     {
         private Arguments arguments = new Arguments();
         public string FunctionName => "datetime";
@@ -38,13 +38,13 @@ namespace JLio.Functions
                     this.arguments.Add(new JLioFunctionSupportedValue(new FixedValue(JToken.Parse($"\"{a}\"")))));
         }
 
-        public IJLioFunction SetArguments(Arguments functionArguments)
+        public IFunction SetArguments(Arguments functionArguments)
         {
             arguments = functionArguments;
             return this;
         }
 
-        public JLioExecutionResult Execute(JToken currentToken, JToken dataContext, IJLioExecutionOptions options)
+        public JLioExecutionResult Execute(JToken currentToken, JToken dataContext, IExecutionOptions options)
         {
             var argumentValues = GetArgumentStrings(arguments, currentToken, dataContext, options);
             var argumentSettings = GetExecutionSettings(argumentValues);
@@ -116,7 +116,7 @@ namespace JLio.Functions
         }
 
         private static List<string> GetArgumentStrings(Arguments arguments, JToken currentToken, JToken dataContext,
-            IJLioExecutionOptions options)
+            IExecutionOptions options)
         {
             var argumentValues = new List<string>();
             arguments.ForEach(a => argumentValues.Add(a.GetValue(currentToken, dataContext, options).ToString()));

@@ -9,7 +9,6 @@ namespace JLio.Core
 {
     public class JLioFunctionConverter : JsonConverter
     {
-        private readonly string functionStartCharacters = JLioConstants.FunctionStartCharacters;
         private readonly IJLioFunctionsProvider provider;
 
         public JLioFunctionConverter(IJLioFunctionsProvider functionsProvider)
@@ -42,47 +41,48 @@ namespace JLio.Core
             return value;
         }
 
-        private IJLioFunctionSupportedValue ParseString(string text)
+        private IFunctionSupportedValue ParseString(string text)
         {
             if (string.IsNullOrEmpty(text)) return new JLioFunctionSupportedValue(new FixedValue(JValue.CreateNull()));
-            if (!text.StartsWith(functionStartCharacters))
+            if (!text.StartsWith(JLioConstants.FunctionStartCharacters))
                 return new JLioFunctionSupportedValue(new FixedValue(JToken.Parse($"\"{text}\"")));
-            text = text.Substring(functionStartCharacters.Length);
+            text = text.Substring(JLioConstants.FunctionStartCharacters.Length);
             var analysis = GetFunctionAndArguments(text);
             return new JLioFunctionSupportedValue(analysis.function.SetArguments(analysis.arguments));
         }
 
-        private (IJLioFunction function, Arguments arguments) GetFunctionAndArguments(string text)
+        private (IFunction function, Arguments arguments) GetFunctionAndArguments(string text)
         {
             var mainSplit = SplitText.GetChoppedElements(text,
                 new[] {JLioConstants.FunctionArgumentsStartCharacters, JLioConstants.FunctionArgumentsEndCharacters},
                 JLioConstants.ArgumentLevelPairs);
             var functionName = mainSplit[0].Text;
-            var arguments = new Arguments();
+           
             var function = provider[functionName];
-            return GetFunctionsFromArguments(text, function, arguments, mainSplit);
+            return DiscoverFunctionsUsedInArguments(text, function, mainSplit[1].Text);
         }
 
-        private (IJLioFunction function, Arguments arguments) GetFunctionsFromArguments(string text,
-            IJLioFunction function,
-            Arguments arguments, ChoppedElements mainSplit)
+        private (IFunction function, Arguments arguments) DiscoverFunctionsUsedInArguments(string text,
+            IFunction function,
+             string argumentsText)
         {
-            if (function == null) return (new FixedValue(new JValue(text)), arguments);
+            Arguments functionsArguments = new Arguments();
+            if (function == null) return (new FixedValue(new JValue(text)), functionsArguments);
 
-            SplitText.GetChoppedElements(mainSplit[1].Text, JLioConstants.ArgumentsDelimiter,
+            SplitText.GetChoppedElements(argumentsText, JLioConstants.ArgumentsDelimiter,
                 JLioConstants.ArgumentLevelPairs).ForEach(i =>
             {
-                var analysis = GetFunctionAndArguments(i.Text);
-                arguments.Add(
-                    new JLioFunctionSupportedValue(analysis.function.SetArguments(analysis.arguments)));
+                var argumentAnalysis = GetFunctionAndArguments(i.Text);
+                functionsArguments.Add(
+                    new JLioFunctionSupportedValue(argumentAnalysis.function.SetArguments(argumentAnalysis.arguments)));
             });
-            return (function, arguments);
+            return (function, functionsArguments);
         }
 
         public override bool CanConvert(Type objectType)
         {
-            return objectType.IsAssignableFrom(typeof(IJLioFunctionSupportedValue)) ||
-                   objectType == typeof(IJLioFunctionSupportedValue);
+            return objectType.IsAssignableFrom(typeof(IFunctionSupportedValue)) ||
+                   objectType == typeof(IFunctionSupportedValue);
         }
     }
 }

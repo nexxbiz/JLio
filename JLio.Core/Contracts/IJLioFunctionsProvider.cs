@@ -2,6 +2,6 @@
 {
     public interface IJLioFunctionsProvider
     {
-        IJLioFunction this[string functionName] { get; }
+        IFunction this[string functionName] { get; }
     }
 }

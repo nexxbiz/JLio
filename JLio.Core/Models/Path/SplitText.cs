@@ -35,13 +35,18 @@ namespace JLio.Core.Models.Path
             return result;
         }
 
-        private static ChoppedElement GetChoppedElement(string text, int previousIndex, int delimiterIndex,
+        private static ChoppedElement GetChoppedElement(string text, int previousDelimiterIndex, int delimiterIndex,
             char[] delimiterCharacters)
         {
-            var resultText = text.Substring(previousIndex + 1, delimiterIndex - previousIndex - 1);
+            string resultText = GetTextBetweenDelimiters(text, previousDelimiterIndex, delimiterIndex);
             if (delimiterCharacters.Any(c => c == resultText.ToCharArray().Last()))
                 return new ChoppedElement(resultText.Substring(0, resultText.Length - 1));
             return new ChoppedElement(resultText);
+        }
+
+        private static string GetTextBetweenDelimiters(string text, int previousDelimiterIndex, int delimiterIndex)
+        {
+            return text.Substring(previousDelimiterIndex + 1, delimiterIndex - previousDelimiterIndex - 1);
         }
 
         private static List<DelimiterInfo> FindDelimiterIndexes(string text, char[] delimiterCharacters,

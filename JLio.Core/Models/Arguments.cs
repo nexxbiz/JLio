@@ -3,7 +3,7 @@ using JLio.Core.Contracts;
 
 namespace JLio.Core.Models
 {
-    public class Arguments : List<IJLioFunctionSupportedValue>
+    public class Arguments : List<IFunctionSupportedValue>
     {
     }
 }

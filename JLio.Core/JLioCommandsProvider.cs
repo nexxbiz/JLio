@@ -7,9 +7,7 @@ namespace JLio.Core
     public class JLioCommandsProvider : IJLioCommandsProvider, IJLioCommandsProviderRegistrar
     {
         private readonly JLioCommandRegistrations registeredCommands = new JLioCommandRegistrations();
-
-        public int NumberOfCommands => registeredCommands.Count;
-
+      
         public IJLioCommand this[string command]
         {
             get

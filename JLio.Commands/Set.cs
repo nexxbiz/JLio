@@ -17,13 +17,13 @@ namespace JLio.Commands
 
         }
 
-        public Set(string path, IJLioFunctionSupportedValue value)
+        public Set(string path, IFunctionSupportedValue value)
         {
             Path = path;
             Value = value;
         }
 
-        private IJLioExecutionOptions executionOptions;
+        private IExecutionOptions executionOptions;
 
         public string CommandName { get; } = "set";
 
@@ -31,9 +31,9 @@ namespace JLio.Commands
         public string Path { get; set; }
 
         [JsonProperty("value")]
-        public IJLioFunctionSupportedValue Value { get; set; }
+        public IFunctionSupportedValue Value { get; set; }
 
-        public JLioExecutionResult Execute(JToken dataContext, IJLioExecutionOptions options)
+        public JLioExecutionResult Execute(JToken dataContext, IExecutionOptions options)
         {
             executionOptions = options;
             var validationResult = ValidateCommandInstance();
@@ -43,7 +43,6 @@ namespace JLio.Commands
                 return new JLioExecutionResult(false, dataContext);
             };
             var targetPath = JsonPathMethods.SplitPath(Path);
-            JsonMethods.CheckOrCreateParentPath(dataContext, targetPath, options.ItemsFetcher, options.Logger);
             SetValueToObjectItems(dataContext, targetPath);
             executionOptions.Logger?.Log(LogLevel.Information, JLioConstants.CommandExecution,
                 $"{CommandName}: completed for {targetPath.Elements.ToPathString()}");

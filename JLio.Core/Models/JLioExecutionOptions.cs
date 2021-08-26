@@ -3,7 +3,7 @@ using JLio.Core.Extensions;
 
 namespace JLio.Core.Models
 {
-    public class JLioExecutionOptions : IJLioExecutionOptions
+    public class JLioExecutionOptions : IExecutionOptions
     {
         public IItemsFetcher ItemsFetcher { get; set; }
         public IJLioExecutionLogger Logger { get; set; }
