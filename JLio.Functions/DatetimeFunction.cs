@@ -25,7 +25,6 @@ namespace JLio.Functions
     public class DatetimeFunction : IFunction
     {
         private Arguments arguments = new Arguments();
-        public string FunctionName => "datetime";
 
         public DatetimeFunction()
         {
@@ -34,8 +33,10 @@ namespace JLio.Functions
         public DatetimeFunction(params string[] arguments)
         {
             arguments.ToList().ForEach(a =>
-                    this.arguments.Add(new JLioFunctionSupportedValue(new FixedValue(JToken.Parse($"\"{a}\"")))));
+                this.arguments.Add(new JLioFunctionSupportedValue(new FixedValue(JToken.Parse($"\"{a}\"")))));
         }
+
+        public string FunctionName => "datetime";
 
         public IFunction SetArguments(Arguments functionArguments)
         {

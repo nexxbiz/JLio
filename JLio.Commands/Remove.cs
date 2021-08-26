@@ -1,7 +1,5 @@
-﻿using System.Linq;
-using JLio.Core;
+﻿using JLio.Core;
 using JLio.Core.Contracts;
-using JLio.Core.Extensions;
 using JLio.Core.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -33,15 +31,30 @@ namespace JLio.Commands
             var validationResult = ValidateCommandInstance();
             if (!validationResult.IsValid)
             {
-                validationResult.ValidationMessages.ForEach(i => options.Logger?.Log(LogLevel.Warning, JLioConstants.CommandExecution, i));
+                validationResult.ValidationMessages.ForEach(i =>
+                    options.Logger?.Log(LogLevel.Warning, JLioConstants.CommandExecution, i));
                 return new JLioExecutionResult(false, dataContext);
-            };
+            }
+
+            ;
             RemoveItems(dataContext);
 
             options.Logger?.Log(LogLevel.Information, JLioConstants.CommandExecution,
                 $"{CommandName}: completed for {Path}");
 
             return new JLioExecutionResult(true, dataContext);
+        }
+
+        public ValidationResult ValidateCommandInstance()
+        {
+            var result = new ValidationResult {IsValid = true};
+            if (string.IsNullOrWhiteSpace(Path))
+            {
+                result.ValidationMessages.Add($"Path property for {CommandName} command is missing");
+                result.IsValid = false;
+            }
+
+            return result;
         }
 
         private void RemoveItems(JToken data)
@@ -63,7 +76,7 @@ namespace JLio.Commands
                     parent.Remove();
                     break;
                 case JTokenType.Array:
-                    RemoveValuesFromArray((JArray)parent, selectedValue);
+                    RemoveValuesFromArray((JArray) parent, selectedValue);
                     break;
                 default:
                     executionOptions.Logger?.Log(LogLevel.Warning, JLioConstants.CommandExecution,
@@ -76,17 +89,6 @@ namespace JLio.Commands
         {
             var index = array.IndexOf(selectedValue);
             array.RemoveAt(index);
-        }
-
-        public ValidationResult ValidateCommandInstance()
-        {
-            var result = new ValidationResult() { IsValid = true };
-            if (string.IsNullOrWhiteSpace(Path))
-            {
-                result.ValidationMessages.Add($"Path property for {CommandName} command is missing");
-                result.IsValid = false;
-            }
-            return result;
         }
     }
 }

@@ -10,7 +10,8 @@ namespace JLio.Core.Models
 
         public static JLioExecutionOptions CreateDefault()
         {
-            return new JLioExecutionOptions { ItemsFetcher = new JsonPathItemsFetcher(), Logger = new JLioExecutionLogger() };
+            return new JLioExecutionOptions
+                {ItemsFetcher = new JsonPathItemsFetcher(), Logger = new JLioExecutionLogger()};
         }
     }
 }

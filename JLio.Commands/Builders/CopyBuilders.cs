@@ -1,6 +1,5 @@
 ﻿using JLio.Core.Models;
 
-
 namespace JLio.Commands.Builders
 {
     public static class CopyBuilders
@@ -24,8 +23,9 @@ namespace JLio.Commands.Builders
                 FromPath = fromPath;
             }
 
-            internal JLioScript Script { get; }
             internal string FromPath { get; }
+
+            internal JLioScript Script { get; }
         }
     }
 }

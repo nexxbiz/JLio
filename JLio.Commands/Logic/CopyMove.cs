@@ -5,9 +5,6 @@ using JLio.Core.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace JLio.Commands.Logic
 {
@@ -20,12 +17,6 @@ namespace JLio.Commands.Logic
     // source array[*] / multiple items -> copy move to array / multiple items (the items will be added to the array)
 
     // in all cases it the target doesn't exists the target will be created
-
-    internal enum eAction
-    {
-        Copy,
-        Move
-    }
 
     public abstract class CopyMove
     {
@@ -52,7 +43,7 @@ namespace JLio.Commands.Logic
                     RemoveItemFromSource(i);
             });
 
-            return new JLioExecutionResult(true,dataContext);
+            return new JLioExecutionResult(true, dataContext);
         }
 
         private void RemoveItemFromSource(JToken selectedValue)
@@ -100,7 +91,7 @@ namespace JLio.Commands.Logic
                 case JObject o:
                     if (JsonMethods.IsPropertyOfTypeArray(propertyName, o))
                     {
-                        AddToArray((JArray)o[propertyName], value);
+                        AddToArray((JArray) o[propertyName], value);
                         return;
                     }
                     else if (o.ContainsKey(propertyName))

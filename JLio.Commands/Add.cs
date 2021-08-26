@@ -35,10 +35,14 @@ namespace JLio.Commands
         {
             executionOptions = options;
             var validationResult = ValidateCommandInstance();
-            if (!validationResult.IsValid) {
-                validationResult.ValidationMessages.ForEach(i => options.Logger?.Log(LogLevel.Warning, JLioConstants.CommandExecution, i));
+            if (!validationResult.IsValid)
+            {
+                validationResult.ValidationMessages.ForEach(i =>
+                    options.Logger?.Log(LogLevel.Warning, JLioConstants.CommandExecution, i));
                 return new JLioExecutionResult(false, dataContext);
-                    };
+            }
+
+            ;
 
             var targetPath = JsonPathMethods.SplitPath(Path);
             JsonMethods.CheckOrCreateParentPath(dataContext, targetPath, options.ItemsFetcher, options.Logger);
@@ -48,7 +52,17 @@ namespace JLio.Commands
             return new JLioExecutionResult(true, dataContext);
         }
 
-       
+        public ValidationResult ValidateCommandInstance()
+        {
+            var result = new ValidationResult {IsValid = true};
+            if (string.IsNullOrWhiteSpace(Path))
+            {
+                result.ValidationMessages.Add($"Path property for {CommandName} command is missing");
+                result.IsValid = false;
+            }
+
+            return result;
+        }
 
         private void AddToObjectItems(JToken dataContext, IItemsFetcher dataFetcher, JsonSplittedPath targetPath)
         {
@@ -99,17 +113,6 @@ namespace JLio.Commands
             jArray.Add(Value.GetValue(jArray, dataContext, executionOptions));
             executionOptions.Logger?.Log(LogLevel.Information, JLioConstants.CommandExecution,
                 $"Value added to array: {jArray.Path}");
-        }
-
-        public ValidationResult ValidateCommandInstance()
-        {
-            var result = new ValidationResult() { IsValid = true };
-            if (string.IsNullOrWhiteSpace(Path))
-            {
-                result.ValidationMessages.Add($"Path property for {CommandName} command is missing");
-                result.IsValid = false;
-            }
-            return result;
         }
     }
 }

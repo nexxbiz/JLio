@@ -49,10 +49,9 @@ namespace JLio.Commands.Builders
                 Function = function;
             }
 
-            internal JLioScript Script { get; }
             internal IFunction Function { get; }
+
+            internal JLioScript Script { get; }
         }
-
-
     }
 }

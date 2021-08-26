@@ -53,6 +53,7 @@ namespace JLio.Core.Extensions
                     result.Add($"{path}[*]");
                     break;
             }
+
             return result;
         }
 

@@ -3,16 +3,13 @@ using JLio.Commands.Builders;
 using JLio.Core.Models;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace JLio.UnitTests.CommandsTests
 {
     public class CopyMoveTests
     {
-        private JLioExecutionOptions executeOptions;
         private JToken data;
+        private JLioExecutionOptions executeOptions;
 
         [SetUp]
         public void Setup()
@@ -40,9 +37,8 @@ namespace JLio.UnitTests.CommandsTests
         [TestCase("$.myNull", "$.myObject", "null")]
         public void PropertyCopyTests(string from, string to, string expectedValueToPath)
         {
-
             var result = new Copy(from, to).Execute(data, executeOptions);
-          
+
 
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Success);
@@ -119,16 +115,16 @@ namespace JLio.UnitTests.CommandsTests
             var data = JObject.Parse("{ \"demo\" : \"item\" }");
 
             var script = new JLioScript()
-                 .Copy("$.demo")
-                 .To("$.copiedDemo")
-                 .Move("$.copiedDemo")
-                 .To("$.result")
-               ;
+                    .Copy("$.demo")
+                    .To("$.copiedDemo")
+                    .Move("$.copiedDemo")
+                    .To("$.result")
+                ;
             var result = script.Execute(data);
 
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Success);
-            Assert.IsTrue( JToken.DeepEquals(result.Data.SelectToken("$.demo"), result.Data.SelectToken("$.result")));
+            Assert.IsTrue(JToken.DeepEquals(result.Data.SelectToken("$.demo"), result.Data.SelectToken("$.result")));
             Assert.IsNull(result.Data.SelectToken("$.copiedDemo"));
         }
     }

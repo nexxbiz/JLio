@@ -1,10 +1,10 @@
 ﻿using JLio.Client;
+using JLio.Commands.Builders;
 using JLio.Core.Models;
+using JLio.Functions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using JLio.Commands.Builders;
-using JLio.Functions;
 
 namespace JLio.UnitTests.FunctionsTests
 {
@@ -40,18 +40,17 @@ namespace JLio.UnitTests.FunctionsTests
         public void CanbeUsedInFluentApi()
         {
             var script = new JLioScript()
-                 .Add(new DatetimeFunction("UTC","'dd-MM-yyyy HH:mm:ss'"))
-                 .OnPath("$.date")
-                 .Add(new DatetimeFunction("'HH:mm:ss'"))
-                 .OnPath("$.now")
-               ;
+                    .Add(new DatetimeFunction("UTC", "'dd-MM-yyyy HH:mm:ss'"))
+                    .OnPath("$.date")
+                    .Add(new DatetimeFunction("'HH:mm:ss'"))
+                    .OnPath("$.now")
+                ;
             var result = script.Execute(new JObject());
 
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Success);
             Assert.AreNotEqual(result.Data.SelectToken("$.date").Type, JTokenType.Null);
             Assert.AreNotEqual(result.Data.SelectToken("$.now").Type, JTokenType.Null);
-
         }
     }
 }

@@ -3,7 +3,6 @@ using JLio.Core.Contracts;
 using JLio.Core.Models;
 using Newtonsoft.Json.Linq;
 
-
 namespace JLio.Commands.Builders
 {
     public static class AddBuilders
@@ -37,6 +36,7 @@ namespace JLio.Commands.Builders
                 Script = source;
                 Value = value;
             }
+
             internal JLioScript Script { get; }
             internal JToken Value { get; }
         }
@@ -49,8 +49,9 @@ namespace JLio.Commands.Builders
                 Function = function;
             }
 
-            internal JLioScript Script { get; }
             internal IFunction Function { get; }
+
+            internal JLioScript Script { get; }
         }
     }
 }

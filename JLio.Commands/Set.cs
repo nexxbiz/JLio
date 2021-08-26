@@ -7,11 +7,12 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-
 namespace JLio.Commands
 {
     public class Set : IJLioCommand
     {
+        private IExecutionOptions executionOptions;
+
         public Set()
         {
         }
@@ -22,15 +23,13 @@ namespace JLio.Commands
             Value = value;
         }
 
-        private IExecutionOptions executionOptions;
-
-        public string CommandName { get; } = "set";
-
         [JsonProperty("path")]
         public string Path { get; set; }
 
         [JsonProperty("value")]
         public IFunctionSupportedValue Value { get; set; }
+
+        public string CommandName { get; } = "set";
 
         public JLioExecutionResult Execute(JToken dataContext, IExecutionOptions options)
         {
@@ -38,9 +37,12 @@ namespace JLio.Commands
             var validationResult = ValidateCommandInstance();
             if (!validationResult.IsValid)
             {
-                validationResult.ValidationMessages.ForEach(i => options.Logger?.Log(LogLevel.Warning, JLioConstants.CommandExecution, i));
+                validationResult.ValidationMessages.ForEach(i =>
+                    options.Logger?.Log(LogLevel.Warning, JLioConstants.CommandExecution, i));
                 return new JLioExecutionResult(false, dataContext);
-            };
+            }
+
+            ;
             var targetPath = JsonPathMethods.SplitPath(Path);
             SetValueToObjectItems(dataContext, targetPath);
             executionOptions.Logger?.Log(LogLevel.Information, JLioConstants.CommandExecution,
@@ -50,12 +52,13 @@ namespace JLio.Commands
 
         public ValidationResult ValidateCommandInstance()
         {
-            var result = new ValidationResult() { IsValid = true };
+            var result = new ValidationResult {IsValid = true};
             if (string.IsNullOrWhiteSpace(Path))
             {
                 result.ValidationMessages.Add($"Path property for {CommandName} command is missing");
                 result.IsValid = false;
             }
+
             return result;
         }
 
@@ -94,15 +97,10 @@ namespace JLio.Commands
 
         private void ReplaceCurrentValueWithNew(string propertyName, JObject o, JToken dataContext)
         {
-                o[propertyName] = Value.GetValue(o[propertyName], dataContext, executionOptions);
+            o[propertyName] = Value.GetValue(o[propertyName], dataContext, executionOptions);
 
             executionOptions.Logger?.Log(LogLevel.Information, JLioConstants.CommandExecution,
                 $"Property {propertyName} on {o.Path} value has been set.");
         }
     }
 }
-
-
-
-
-

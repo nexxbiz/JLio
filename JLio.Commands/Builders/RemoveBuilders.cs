@@ -1,6 +1,5 @@
 ﻿using JLio.Core.Models;
 
-
 namespace JLio.Commands.Builders
 {
     public static class RemoveBuilders
@@ -10,6 +9,5 @@ namespace JLio.Commands.Builders
             source.AddLine(new Remove(path));
             return source;
         }
-
     }
 }

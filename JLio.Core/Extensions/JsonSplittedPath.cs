@@ -55,6 +55,7 @@ namespace JLio.Core.Extensions
 
                 if (Elements[i].HasArrayIndicator) return i;
             }
+
             return 0;
         }
     }

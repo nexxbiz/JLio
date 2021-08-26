@@ -11,7 +11,7 @@ namespace JLio.UnitTests
         {
         }
 
-        [TestCase("","{\"myObject\":{\"initialProperty\":\"initial value\"}}")]
+        [TestCase("", "{\"myObject\":{\"initialProperty\":\"initial value\"}}")]
         [TestCase("[{\"path\":\"$.myObject.newProperty\",\"value\":\"new value\",\"command\":\"add\"}]",
             "{\"myObject\":{\"initialProperty\":\"initial value\"}}")]
         public void Test1(string scriptText, string data)

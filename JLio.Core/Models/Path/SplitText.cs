@@ -38,7 +38,7 @@ namespace JLio.Core.Models.Path
         private static ChoppedElement GetChoppedElement(string text, int previousDelimiterIndex, int delimiterIndex,
             char[] delimiterCharacters)
         {
-            string resultText = GetTextBetweenDelimiters(text, previousDelimiterIndex, delimiterIndex);
+            var resultText = GetTextBetweenDelimiters(text, previousDelimiterIndex, delimiterIndex);
             if (delimiterCharacters.Any(c => c == resultText.ToCharArray().Last()))
                 return new ChoppedElement(resultText.Substring(0, resultText.Length - 1));
             return new ChoppedElement(resultText);
@@ -65,6 +65,7 @@ namespace JLio.Core.Models.Path
                     levelPairs.FirstOrDefault(l => l.OpenCharacter == character || l.CloseCharacter == character);
                 if (levelIndicator != null) HandleLevels(levels, character, levelIndicator);
             }
+
             return result;
         }
 

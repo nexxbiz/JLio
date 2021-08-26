@@ -1,4 +1,4 @@
-﻿using JLio.Client;
+﻿using System.Linq;
 using JLio.Commands;
 using JLio.Commands.Builders;
 using JLio.Core;
@@ -6,18 +6,14 @@ using JLio.Core.Models;
 using JLio.Functions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace JLio.UnitTests.CommandsTests
 {
     public class AddTests
     {
+        private JToken data;
 
         private JLioExecutionOptions executeOptions;
-        private JToken data;
 
         [SetUp]
         public void Setup()
@@ -78,19 +74,17 @@ namespace JLio.UnitTests.CommandsTests
         public void CanUseFluentApi()
         {
             var script = new JLioScript()
-                 .Add(new JValue("new Value"))
-                 .OnPath("$.demo")
-                 .Add(new DatetimeFunction())
-                 .OnPath("$.this.is.a.long.path.with.a.date")
-               ;
+                    .Add(new JValue("new Value"))
+                    .OnPath("$.demo")
+                    .Add(new DatetimeFunction())
+                    .OnPath("$.this.is.a.long.path.with.a.date")
+                ;
             var result = script.Execute(new JObject());
 
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Success);
             Assert.AreNotEqual(result.Data.SelectToken("$.demo").Type, JTokenType.Null);
             Assert.AreNotEqual(result.Data.SelectToken("$.this.is.a.long.path.with.a.date").Type, JTokenType.Null);
-
         }
     }
 }
-

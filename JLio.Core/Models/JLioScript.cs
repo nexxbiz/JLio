@@ -13,7 +13,7 @@ namespace JLio.Core.Models
 
         public JLioExecutionResult Execute(JToken data, IExecutionOptions options)
         {
-            JLioExecutionResult executionResult = new JLioExecutionResult(true,data);
+            var executionResult = new JLioExecutionResult(true, data);
             ForEach(command =>
                 executionResult = command.Execute(data, options)
             );
@@ -22,7 +22,7 @@ namespace JLio.Core.Models
 
         public void AddLine(IJLioCommand command)
         {
-            base.Add(command);
+            Add(command);
         }
     }
 }

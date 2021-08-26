@@ -1,4 +1,4 @@
-﻿using JLio.Client;
+﻿using System.Linq;
 using JLio.Commands;
 using JLio.Commands.Builders;
 using JLio.Core;
@@ -6,17 +6,13 @@ using JLio.Core.Models;
 using JLio.Functions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace JLio.UnitTests.CommandsTests
 {
     public class SetTests
     {
-        private JLioExecutionOptions executeOptions;
         private JToken data;
+        private JLioExecutionOptions executeOptions;
 
         [SetUp]
         public void Setup()
@@ -33,7 +29,7 @@ namespace JLio.UnitTests.CommandsTests
         [TestCase("$..myArray", "newData")]
         public void CanSetValues(string path, string value)
         {
-            var valueToSet = new JLioFunctionSupportedValue( new FixedValue(new JValue(value)));
+            var valueToSet = new JLioFunctionSupportedValue(new FixedValue(new JValue(value)));
             var result = new Set(path, valueToSet).Execute(data, executeOptions);
 
             Assert.IsNotNull(result);
@@ -72,20 +68,18 @@ namespace JLio.UnitTests.CommandsTests
         {
             var data = JObject.Parse("{ \"demo\" : \"old value\" , \"demo2\" : \"old value\" }");
             var script = new JLioScript()
-                 .Set(new JValue("new Value"))
-                 .OnPath("$.demo")
-                 .Set(new DatetimeFunction())
-                 .OnPath("$.demo2")
-               ;         
+                    .Set(new JValue("new Value"))
+                    .OnPath("$.demo")
+                    .Set(new DatetimeFunction())
+                    .OnPath("$.demo2")
+                ;
             var result = script.Execute(data);
 
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Success);
             Assert.AreNotEqual(result.Data.SelectToken("$.demo").Type, JTokenType.Null);
-            Assert.AreEqual(result.Data.SelectToken("$.demo").Value<string>(),"new Value");
+            Assert.AreEqual(result.Data.SelectToken("$.demo").Value<string>(), "new Value");
             Assert.AreNotEqual(result.Data.SelectToken("$.demo2").Type, JTokenType.Null);
-
         }
     }
 }
-

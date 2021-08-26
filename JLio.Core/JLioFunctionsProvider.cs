@@ -7,6 +7,7 @@ namespace JLio.Core
     public class JLioFunctionsProvider : IJLioFunctionsProvider, IJLioFunctionsProviderRegistrar
     {
         private readonly JLioFunctionRegistrations functions = new JLioFunctionRegistrations();
+
         public IFunction this[string function]
         {
             get

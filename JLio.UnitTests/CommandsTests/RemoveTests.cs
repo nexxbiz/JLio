@@ -1,21 +1,20 @@
-﻿using JLio.Commands;
+﻿using System.Linq;
+using JLio.Commands;
 using JLio.Commands.Builders;
 using JLio.Core.Models;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using System.Linq;
 
 namespace JLio.UnitTests.CommandsTests
 {
     public class RemoveTests
     {
-        private JLioExecutionOptions executeOptions;
         private JToken data;
+        private JLioExecutionOptions executeOptions;
 
         [SetUp]
         public void Setup()
         {
-
             executeOptions = JLioExecutionOptions.CreateDefault();
             data = JToken.Parse(
                 "{\r\n  \"myString\": \"demo2\",\r\n  \"myNumber\": 2.2,\r\n  \"myInteger\": 20,\r\n  \"myObject\": {\r\n    \"myObject\": {\"myArray\": [\r\n      2,\r\n      20,\r\n      200,\r\n      2000\r\n    ]},\r\n    \"myArray\": [\r\n      2,\r\n      20,\r\n      200,\r\n      2000\r\n    ]\r\n  },\r\n  \"myArray\": [\r\n    2,\r\n    20,\r\n    200,\r\n    2000\r\n  ],\r\n  \"myBoolean\": true,\r\n  \"myNull\": null\r\n}");
@@ -33,7 +32,7 @@ namespace JLio.UnitTests.CommandsTests
         public void CanRemoveProperty(string path)
         {
             var result = new Remove(path).Execute(data, executeOptions);
-          
+
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Success);
             Assert.AreEqual(0, data.SelectTokens(path).Count());
@@ -71,15 +70,14 @@ namespace JLio.UnitTests.CommandsTests
             Assert.IsTrue(executeOptions.Logger.LogEntries.Any(l => l.Message == message));
         }
 
-
         [Test]
         public void CanUseFluentApi()
         {
             var data = JObject.Parse("{ \"demo\" : \"old value\" , \"demo2\" : \"old value\" }");
             var script = new JLioScript()
-                  .Remove("$.demo")
-                  .Remove("$.demo2");
-          
+                .Remove("$.demo")
+                .Remove("$.demo2");
+
             var result = script.Execute(data);
 
             Assert.IsNotNull(result);

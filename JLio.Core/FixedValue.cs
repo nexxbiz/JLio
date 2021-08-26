@@ -1,4 +1,5 @@
-﻿using JLio.Core.Contracts;
+﻿using System;
+using JLio.Core.Contracts;
 using JLio.Core.Models;
 using Newtonsoft.Json.Linq;
 
@@ -37,17 +38,13 @@ namespace JLio.Core
         {
             var stringValue = value.ToString();
 
-            if (stringValue.StartsWith(JLioConstants.CurrentItemPathIndicator, System.StringComparison.InvariantCulture))
-            {
+            if (stringValue.StartsWith(JLioConstants.CurrentItemPathIndicator, StringComparison.InvariantCulture))
                 return new JLioExecutionResult(true,
-                       options.ItemsFetcher.SelectToken(
-                           stringValue.Replace(JLioConstants.CurrentItemPathIndicator,
-                               JLioConstants.RootPathIndicator), currentToken));
-            }
-            else if (stringValue.StartsWith(JLioConstants.RootPathIndicator, System.StringComparison.InvariantCulture))
-            {
+                    options.ItemsFetcher.SelectToken(
+                        stringValue.Replace(JLioConstants.CurrentItemPathIndicator,
+                            JLioConstants.RootPathIndicator), currentToken));
+            if (stringValue.StartsWith(JLioConstants.RootPathIndicator, StringComparison.InvariantCulture))
                 return new JLioExecutionResult(true, options.ItemsFetcher.SelectToken(stringValue, dataContext));
-            }
             return new JLioExecutionResult(true, value);
         }
     }

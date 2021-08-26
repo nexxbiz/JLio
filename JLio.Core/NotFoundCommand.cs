@@ -1,8 +1,8 @@
-﻿using JLio.Core.Contracts;
+﻿using System.Collections.Generic;
+using JLio.Core.Contracts;
 using JLio.Core.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
 
 namespace JLio.Core
 {
@@ -26,7 +26,11 @@ namespace JLio.Core
 
         public ValidationResult ValidateCommandInstance()
         {
-            return new ValidationResult { IsValid = false, ValidationMessages = new List<string>() { $"script contains a unknown command : {CommandName}" } };
+            return new ValidationResult
+            {
+                IsValid = false,
+                ValidationMessages = new List<string> {$"script contains a unknown command : {CommandName}"}
+            };
         }
     }
 }
