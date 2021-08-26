@@ -27,4 +27,4 @@ jobs:
     - name: Push
       run: dotnet nuget push **/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${GITHUB_TOKEN}
       env:
-        GITHUB_TOKEN: ${{ secrets.secrets.MYGET_KEY }}
+        GITHUB_TOKEN: ${{ secrets.MYGET_KEY }}
