@@ -34,8 +34,6 @@ namespace JLio.Core.Extensions
 
         public IEnumerable<PathElement> ConstructionPath => Elements.Skip(GetSelectionPathIndex() + 1);
 
-        // public bool ContainsRecursiveDescent => Elements.Any(i => i.RecursiveDescentIndicator);
-
         public bool IsSearchingForObjectsByName =>
             Elements.Count > 1 && Elements[Elements.Count - 2].RecursiveDescentIndicator;
 

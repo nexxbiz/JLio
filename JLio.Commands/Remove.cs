@@ -36,12 +36,11 @@ namespace JLio.Commands
                 validationResult.ValidationMessages.ForEach(i => options.Logger?.Log(LogLevel.Warning, JLioConstants.CommandExecution, i));
                 return new JLioExecutionResult(false, dataContext);
             };
-            var targetPath = JsonPathMethods.SplitPath(Path);
             RemoveItems(dataContext);
-        
-            
+
             options.Logger?.Log(LogLevel.Information, JLioConstants.CommandExecution,
-                $"{CommandName}: completed for {targetPath.Elements.ToPathString()}");
+                $"{CommandName}: completed for {Path}");
+
             return new JLioExecutionResult(true, dataContext);
         }
 
