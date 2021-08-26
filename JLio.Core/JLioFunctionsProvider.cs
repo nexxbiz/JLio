@@ -22,13 +22,13 @@ namespace JLio.Core
         {
             var function = typeof(T);
             var functionInstance = (IFunction) Activator.CreateInstance(function);
-            DeleteIfFunctionNameAlreadyExists<T>(functionInstance);
+            DeleteIfFunctionNameAlreadyExists(functionInstance);
 
             functions.Add(functionInstance.FunctionName, new JLioFunctionRegistration(function));
             return this;
         }
 
-        private void DeleteIfFunctionNameAlreadyExists<T>(IFunction functionInstance) where T : IFunction
+        private void DeleteIfFunctionNameAlreadyExists(IFunction functionInstance)
         {
             if (functionInstance != null && !functions.ContainsKey(functionInstance.FunctionName))
                 functions.Remove(functionInstance.FunctionName);

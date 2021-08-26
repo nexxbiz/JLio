@@ -30,7 +30,7 @@ namespace JLio.Commands.Logic
         [JsonProperty("toPath")]
         public string ToPath { get; set; }
 
-        internal JLioExecutionResult Execute(JToken dataContext, IExecutionOptions options, eAction action)
+        internal JLioExecutionResult Execute(JToken dataContext, IExecutionOptions options, EAction action)
         {
             data = dataContext;
             executionOptions = options;
@@ -39,7 +39,7 @@ namespace JLio.Commands.Logic
             sourceItems.ForEach(i =>
             {
                 AddToTargets(i);
-                if (action == eAction.Move)
+                if (action == EAction.Move)
                     RemoveItemFromSource(i);
             });
 
@@ -73,15 +73,9 @@ namespace JLio.Commands.Logic
         private void AddToTargets(JToken value)
         {
             var toPath = JsonPathMethods.SplitPath(ToPath);
-            CreateParentTargets(toPath);
+            JsonMethods.CheckOrCreateParentPath(data, toPath, executionOptions.ItemsFetcher, executionOptions.Logger);
             var targetItems = executionOptions.ItemsFetcher.SelectTokens(toPath.ParentElements.ToPathString(), data);
             targetItems.ForEach(t => AddToTarget(toPath.LastName, t, value));
-        }
-
-        private SelectedTokens CreateParentTargets(JsonSplittedPath toPath)
-        {
-            JsonMethods.CheckOrCreateParentPath(data, toPath, executionOptions.ItemsFetcher, executionOptions.Logger);
-            return executionOptions.ItemsFetcher.SelectTokens(ToPath, data);
         }
 
         private void AddToTarget(string propertyName, JToken jToken, JToken value)

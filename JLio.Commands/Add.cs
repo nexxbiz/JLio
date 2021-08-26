@@ -42,8 +42,6 @@ namespace JLio.Commands
                 return new JLioExecutionResult(false, dataContext);
             }
 
-            ;
-
             var targetPath = JsonPathMethods.SplitPath(Path);
             JsonMethods.CheckOrCreateParentPath(dataContext, targetPath, options.ItemsFetcher, options.Logger);
             AddToObjectItems(dataContext, options.ItemsFetcher, targetPath);

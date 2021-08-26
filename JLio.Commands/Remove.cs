@@ -36,7 +36,6 @@ namespace JLio.Commands
                 return new JLioExecutionResult(false, dataContext);
             }
 
-            ;
             RemoveItems(dataContext);
 
             options.Logger?.Log(LogLevel.Information, JLioConstants.CommandExecution,

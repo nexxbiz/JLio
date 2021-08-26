@@ -9,8 +9,6 @@ namespace JLio.Commands
 {
     public class Move : CopyMove, IJLioCommand
     {
-        private IExecutionOptions executionOptions;
-
         public Move()
         {
         }
@@ -25,7 +23,6 @@ namespace JLio.Commands
 
         public JLioExecutionResult Execute(JToken dataContext, IExecutionOptions options)
         {
-            executionOptions = options;
             var validationResult = ValidateCommandInstance();
             if (!validationResult.IsValid)
             {
@@ -34,8 +31,7 @@ namespace JLio.Commands
                 return new JLioExecutionResult(false, dataContext);
             }
 
-            ;
-            return Execute(dataContext, options, eAction.Move);
+            return Execute(dataContext, options, EAction.Move);
         }
 
         public ValidationResult ValidateCommandInstance()

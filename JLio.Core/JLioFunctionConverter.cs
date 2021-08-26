@@ -47,8 +47,8 @@ namespace JLio.Core
             if (!text.StartsWith(JLioConstants.FunctionStartCharacters))
                 return new JLioFunctionSupportedValue(new FixedValue(JToken.Parse($"\"{text}\"")));
             text = text.Substring(JLioConstants.FunctionStartCharacters.Length);
-            var analysis = GetFunctionAndArguments(text);
-            return new JLioFunctionSupportedValue(analysis.function.SetArguments(analysis.arguments));
+            var (function, arguments) = GetFunctionAndArguments(text);
+            return new JLioFunctionSupportedValue(function.SetArguments(arguments));
         }
 
         private (IFunction function, Arguments arguments) GetFunctionAndArguments(string text)
@@ -60,12 +60,11 @@ namespace JLio.Core
 
             var function = provider[functionName];
             if (mainSplit.Count > 1 && function != null)
-                return DiscoverFunctionsUsedInArguments(text, function, mainSplit[1].Text);
+                return DiscoverFunctionsUsedInArguments(function, mainSplit[1].Text);
             return (new FixedValue(new JValue(text)), new Arguments());
         }
 
-        private (IFunction function, Arguments arguments) DiscoverFunctionsUsedInArguments(string text,
-            IFunction function,
+        private (IFunction function, Arguments arguments) DiscoverFunctionsUsedInArguments(IFunction function,
             string argumentsText)
         {
             var functionsArguments = new Arguments();

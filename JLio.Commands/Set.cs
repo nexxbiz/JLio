@@ -42,7 +42,6 @@ namespace JLio.Commands
                 return new JLioExecutionResult(false, dataContext);
             }
 
-            ;
             var targetPath = JsonPathMethods.SplitPath(Path);
             SetValueToObjectItems(dataContext, targetPath);
             executionOptions.Logger?.Log(LogLevel.Information, JLioConstants.CommandExecution,

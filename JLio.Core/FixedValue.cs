@@ -8,7 +8,6 @@ namespace JLio.Core
     public class FixedValue : IFunction
     {
         private readonly JToken value;
-        private Arguments arguments;
 
         public FixedValue(JToken value)
         {
@@ -19,7 +18,6 @@ namespace JLio.Core
 
         public IFunction SetArguments(Arguments newArguments)
         {
-            arguments = newArguments;
             return this;
         }
 
