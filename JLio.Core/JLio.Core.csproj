@@ -8,5 +8,12 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.6" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
+  
+  
+  <Target Name="PrepareReleaseNotes" BeforeTargets="GenerateNuspec">
+    <PropertyGroup>
+      <PackageDescription>$([System.IO.File]::ReadAllText("$(MSBuildProjectDirectory)/../../RELEASE-NOTES"))</PackageDescription>
+    </PropertyGroup>
+  </Target>
 
 </Project>
