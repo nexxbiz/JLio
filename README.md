@@ -37,3 +37,35 @@ for every commad we need : Structure, intend, samples, fluent api
 ### Copy
 ### Move
 ### Remove
+
+## Functions
+### datetime
+
+#### Samples
+- datetime()
+- datetime(UTC)
+- datetime(startOfDay)
+- datetime(startofDayUTC)
+- datetime('dd-MM-yyyy HH:mm:ss')
+- datetime(UTC, 'dd-MM-yyyy HH:mm:ss')
+- datetime(startOfDay,'dd-MM-yyyy HH:mm:ss'
+- datetime(startOfDayUTC, 'dd-MM-yyyy HH:mm:ss')
+
+Default: datetime()
+timeselection , local time now
+format : 2012-04-23T18:25:43.511Z
+
+Sample 
+
+Script
+```json
+
+
+
+```
+
+Object
+```json
+
+
+```

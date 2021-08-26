@@ -1,9 +1,9 @@
 ﻿using JLio.Core.Contracts;
-using JLio.Core.Extentions;
+using JLio.Core.Extensions;
 
 namespace JLio.Core.Models
 {
-    public class JLioExecutionOptions : IJLioExecutionOptions
+    public class JLioExecutionOptions : IExecutionOptions
     {
         public IItemsFetcher ItemsFetcher { get; set; }
         public IJLioExecutionLogger Logger { get; set; }
@@ -11,10 +11,7 @@ namespace JLio.Core.Models
         public static JLioExecutionOptions CreateDefault()
         {
             return new JLioExecutionOptions
-            {
-                Logger = null,
-                ItemsFetcher = new JsonPathItemsFetcher()
-            };
+                {ItemsFetcher = new JsonPathItemsFetcher(), Logger = new JLioExecutionLogger()};
         }
     }
 }

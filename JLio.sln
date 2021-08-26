@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30907.101
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31606.5
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JLio.Client", "JLio.CLient\JLio.Client.csproj", "{5AD8D330-E938-46B8-9944-F6AAD2D46ECC}"
 EndProject
@@ -12,8 +12,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JLio.Functions", "JLio.Functions\JLio.Functions.csproj", "{9AD25A4F-ECD7-41A0-9B2E-3B202FE26E57}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JLio.UnitTests", "JLio.UnitTests\JLio.UnitTests.csproj", "{EA2B7791-FE0F-4696-9B75-C7E9B78C13F2}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JLio.Website", "JLio.Website\JLio.Website.csproj", "{C3B628A7-0DDE-4E79-A325-EAD0E19304AA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,10 +39,6 @@ Global
 		{EA2B7791-FE0F-4696-9B75-C7E9B78C13F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA2B7791-FE0F-4696-9B75-C7E9B78C13F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EA2B7791-FE0F-4696-9B75-C7E9B78C13F2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C3B628A7-0DDE-4E79-A325-EAD0E19304AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C3B628A7-0DDE-4E79-A325-EAD0E19304AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C3B628A7-0DDE-4E79-A325-EAD0E19304AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C3B628A7-0DDE-4E79-A325-EAD0E19304AA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

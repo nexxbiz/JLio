@@ -14,9 +14,11 @@ namespace JLio.Core
             this.provider = provider;
         }
 
+        public override bool CanWrite => false;
+
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            writer.WriteValue(value);
+            JToken.Parse(JsonConvert.SerializeObject(value)).WriteTo(writer);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue,

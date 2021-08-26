@@ -1,4 +1,5 @@
-﻿using JLio.Core.Contracts;
+﻿using System.Collections.Generic;
+using JLio.Core.Contracts;
 using JLio.Core.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -16,11 +17,20 @@ namespace JLio.Core
 
         public string CommandName { get; }
 
-        public JLioExecutionResult Execute(JToken data, IJLioExecutionOptions options)
+        public JLioExecutionResult Execute(JToken data, IExecutionOptions options)
         {
             options.Logger?.Log(LogLevel.Error, JLioConstants.CommandExecution,
                 $"script contains a unknown command : {CommandName}");
             return new JLioExecutionResult(false, data);
+        }
+
+        public ValidationResult ValidateCommandInstance()
+        {
+            return new ValidationResult
+            {
+                IsValid = false,
+                ValidationMessages = new List<string> {$"script contains a unknown command : {CommandName}"}
+            };
         }
     }
 }

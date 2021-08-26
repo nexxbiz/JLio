@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using JLio.Core;
 using JLio.Core.Contracts;
-using JLio.Core.Extentions;
+using JLio.Core.Extensions;
 using JLio.Core.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -11,64 +11,58 @@ namespace JLio.Commands
 {
     public class Add : IJLioCommand
     {
-        private FunctionAnalysis functionAnalysis;
-        private IJLioExecutionOptions options;
+        private IExecutionOptions executionOptions;
+
+        public Add()
+        {
+        }
+
+        public Add(string path, IFunctionSupportedValue value)
+        {
+            Path = path;
+            Value = value;
+        }
 
         [JsonProperty("path")]
         public string Path { get; set; }
 
         [JsonProperty("value")]
-        public JToken Value { get; set; }
+        public IFunctionSupportedValue Value { get; set; }
 
         public string CommandName { get; } = "add";
 
-        public JLioExecutionResult Execute(JToken data, IJLioExecutionOptions options)
+        public JLioExecutionResult Execute(JToken dataContext, IExecutionOptions options)
         {
-            this.options = options;
-            if (!ValidateCommandInstance()) return new JLioExecutionResult(false, data);
+            executionOptions = options;
+            var validationResult = ValidateCommandInstance();
+            if (!validationResult.IsValid)
+            {
+                validationResult.ValidationMessages.ForEach(i =>
+                    options.Logger?.Log(LogLevel.Warning, JLioConstants.CommandExecution, i));
+                return new JLioExecutionResult(false, dataContext);
+            }
+
             var targetPath = JsonPathMethods.SplitPath(Path);
-            JsonMethods.CheckOrCreateParentPath(data, targetPath, options.ItemsFetcher, options.Logger);
-            functionAnalysis = EvaluateForFunction(Value);
-            AddToObjectItems(data, options.ItemsFetcher, targetPath);
+            JsonMethods.CheckOrCreateParentPath(dataContext, targetPath, options.ItemsFetcher, options.Logger);
+            AddToObjectItems(dataContext, options.ItemsFetcher, targetPath);
             options.Logger?.Log(LogLevel.Information, JLioConstants.CommandExecution,
                 $"{CommandName}: completed for {targetPath.Elements.ToPathString()}");
-            return new JLioExecutionResult(true, data);
+            return new JLioExecutionResult(true, dataContext);
         }
 
-        private FunctionAnalysis EvaluateForFunction(JToken value)
+        public ValidationResult ValidateCommandInstance()
         {
-            return EvaluateForFunction(value.ToString());
-        }
-
-        private FunctionAnalysis EvaluateForFunction(string value)
-        {
-            return FunctionAnalysis.DoAnalysis(value);
-        }
-
-        public bool ValidateCommandInstance()
-        {
-            var result = true;
+            var result = new ValidationResult {IsValid = true};
             if (string.IsNullOrWhiteSpace(Path))
             {
-                options.Logger?.Log(LogLevel.Warning, JLioConstants.CommandExecution,
-                    $"Path property for {CommandName} command is missing");
-                result = false;
+                result.ValidationMessages.Add($"Path property for {CommandName} command is missing");
+                result.IsValid = false;
             }
-
-            if (Value.Type == JTokenType.None || Value.Type == JTokenType.Null)
-            {
-                options.Logger?.Log(LogLevel.Warning, JLioConstants.CommandExecution,
-                    $"Value for {CommandName} command is missing");
-                result = false;
-            }
-
-            if (result == false)
-                options.Logger?.Log(LogLevel.Warning, JLioConstants.CommandExecution, "Command not executed");
 
             return result;
         }
 
-        private void AddToObjectItems(JToken data, IItemsFetcher dataFetcher, JsonSplittedPath targetPath)
+        private void AddToObjectItems(JToken dataContext, IItemsFetcher dataFetcher, JsonSplittedPath targetPath)
         {
             var path = targetPath.Elements
                 .Take(targetPath.Elements.Count() - 1)
@@ -76,64 +70,47 @@ namespace JLio.Commands
             if (targetPath.IsSearchingForObjectsByName)
                 path = targetPath.Elements.ToPathString();
             var targetItems =
-                dataFetcher.SelectTokens(path, data);
-            targetItems.ForEach(i => AddValueToTarget(targetPath.LastName, i));
+                dataFetcher.SelectTokens(path, dataContext);
+            targetItems.ForEach(i => AddValueToTarget(targetPath.LastName, i, dataContext));
         }
 
-        private void AddValueToTarget(string propertyName, JToken jToken)
+        private void AddValueToTarget(string propertyName, JToken jToken, JToken dataContext)
         {
             switch (jToken)
             {
                 case JObject o:
                     if (JsonMethods.IsPropertyOfTypeArray(propertyName, o))
                     {
-                        AddToArray((JArray) o[propertyName]);
+                        AddToArray((JArray) o[propertyName], dataContext);
                         return;
                     }
                     else if (o.ContainsKey(propertyName))
                     {
-                        options.Logger?.Log(LogLevel.Warning, JLioConstants.CommandExecution,
+                        executionOptions.Logger?.Log(LogLevel.Warning, JLioConstants.CommandExecution,
                             $"Property {propertyName} already exists on {o.Path}. {CommandName} function not applied");
                         return;
                     }
 
-                    AddProperty(propertyName, o);
+                    AddProperty(propertyName, o, dataContext);
                     break;
                 case JArray a:
-                    AddToArray(a);
+                    AddToArray(a, dataContext);
                     break;
             }
         }
 
-        private void AddProperty(string propertyName, JObject o)
+        private void AddProperty(string propertyName, JObject o, JToken dataContext)
         {
-            o.Add(propertyName, GetValue(propertyName, o));
-            options.Logger?.Log(LogLevel.Information, JLioConstants.CommandExecution,
+            o.Add(propertyName, Value.GetValue(o, dataContext, executionOptions));
+            executionOptions.Logger?.Log(LogLevel.Information, JLioConstants.CommandExecution,
                 $"Property {propertyName} added to object: {o.Path}");
         }
 
-        private void AddToArray(JArray jArray)
+        private void AddToArray(JArray jArray, JToken dataContext)
         {
-            if (functionAnalysis.IsFunction)
-                jArray.Add(ExecuteFunction(jArray, options, functionAnalysis));
-            else
-                jArray.Add(Value);
-            options.Logger?.Log(LogLevel.Information, JLioConstants.CommandExecution,
+            jArray.Add(Value.GetValue(jArray, dataContext, executionOptions));
+            executionOptions.Logger?.Log(LogLevel.Information, JLioConstants.CommandExecution,
                 $"Value added to array: {jArray.Path}");
-        }
-
-        private JToken ExecuteFunction(JToken data, IJLioExecutionOptions jLioExecutionOptions,
-            FunctionAnalysis functionAnalysis)
-        {
-            return JToken.Parse("Support for functions need to be implemented");
-        }
-
-        private JToken GetValue(string propertyName, JObject o)
-        {
-            if (functionAnalysis.IsFunction)
-                return ExecuteFunction(o[propertyName], options, functionAnalysis);
-
-            return Value;
         }
     }
 }

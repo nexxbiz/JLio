@@ -11,12 +11,13 @@ namespace JLio.UnitTests
         {
         }
 
+        [TestCase("", "{\"myObject\":{\"initialProperty\":\"initial value\"}}")]
         [TestCase("[{\"path\":\"$.myObject.newProperty\",\"value\":\"new value\",\"command\":\"add\"}]",
             "{\"myObject\":{\"initialProperty\":\"initial value\"}}")]
-        public void Test1(string script, string data)
+        public void Test1(string scriptText, string data)
         {
-            var commands = JLioScript.Parse(script);
-            var result = commands.Execute(JToken.Parse(data));
+            var script = JLioConvert.Parse(scriptText);
+            var result = script.Execute(JToken.Parse(data));
 
             Assert.IsTrue(result.Success);
             Assert.IsNotNull(result.Data);
