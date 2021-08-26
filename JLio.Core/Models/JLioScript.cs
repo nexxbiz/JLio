@@ -6,8 +6,6 @@ namespace JLio.Core.Models
 {
     public class JLioScript : List<IJLioCommand>
     {
-     
-
         public JLioExecutionResult Execute(JToken data)
         {
             return Execute(data, JLioExecutionOptions.CreateDefault());

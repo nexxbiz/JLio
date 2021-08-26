@@ -10,6 +10,5 @@ namespace JLio.Core.Models
         }
 
         public Type Type { get; }
-
     }
 }

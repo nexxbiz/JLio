@@ -59,7 +59,11 @@ namespace JLio.Core
             var functionName = mainSplit[0].Text;
            
             var function = provider[functionName];
-            return DiscoverFunctionsUsedInArguments(text, function, mainSplit[1].Text);
+            if (mainSplit.Count > 1 && function != null)
+            {
+                return DiscoverFunctionsUsedInArguments(text, function, mainSplit[1].Text);
+            }
+            return (new FixedValue(new JValue(text)), new Arguments());
         }
 
         private (IFunction function, Arguments arguments) DiscoverFunctionsUsedInArguments(string text,
@@ -67,8 +71,6 @@ namespace JLio.Core
              string argumentsText)
         {
             Arguments functionsArguments = new Arguments();
-            if (function == null) return (new FixedValue(new JValue(text)), functionsArguments);
-
             SplitText.GetChoppedElements(argumentsText, JLioConstants.ArgumentsDelimiter,
                 JLioConstants.ArgumentLevelPairs).ForEach(i =>
             {

@@ -17,7 +17,6 @@ namespace JLio.Commands
 
         public Copy()
         {
-
         }
 
         public Copy(string from, string to)
@@ -25,8 +24,6 @@ namespace JLio.Commands
             FromPath = from;
             ToPath = to;
         }
-
-       
 
         public JLioExecutionResult Execute(JToken dataContext, IExecutionOptions options)
         {
@@ -37,7 +34,7 @@ namespace JLio.Commands
                 validationResult.ValidationMessages.ForEach(i => options.Logger?.Log(LogLevel.Warning, JLioConstants.CommandExecution, i));
                 return new JLioExecutionResult(false, dataContext);
             };
-            return   Execute(dataContext,options);
+            return   Execute(dataContext,options, eAction.Copy);
         }
 
         public ValidationResult ValidateCommandInstance()

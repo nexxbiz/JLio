@@ -16,7 +16,6 @@ namespace JLio.Core.Models
                 var stringBuilder = new StringBuilder();
                 LogEntries.ForEach(l =>
                     stringBuilder.AppendLine($"{l.DateTime:hh:mm:ss.fff}   {l.Level} - {l.Message}"));
-
                 return stringBuilder.ToString();
             }
         }

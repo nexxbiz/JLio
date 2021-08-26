@@ -29,7 +29,6 @@ namespace JLio.Functions
 
         public DatetimeFunction()
         {
-
         }
 
         public DatetimeFunction(params string[] arguments)
@@ -121,13 +120,6 @@ namespace JLio.Functions
             var argumentValues = new List<string>();
             arguments.ForEach(a => argumentValues.Add(a.GetValue(currentToken, dataContext, options).ToString()));
             return argumentValues;
-        }
-
-        private void AnalyseArguments()
-        {
-            if (arguments.Count > 0)
-            {
-            }
         }
 
         internal class DateTimeConversionResult

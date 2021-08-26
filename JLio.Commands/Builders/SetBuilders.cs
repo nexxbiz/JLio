@@ -7,8 +7,6 @@ namespace JLio.Commands.Builders
 {
     public static class SetBuilders
     {
-
-
         public static JLioScript OnPath(this SetValueContainer source, string path)
         {
             source.Script.AddLine(new Set(path, new JLioFunctionSupportedValue(new FixedValue(source.Value))));
@@ -29,7 +27,6 @@ namespace JLio.Commands.Builders
         public static SetValueAsFunctionContainer Set(this JLioScript source, IFunction function)
         {
             return new SetValueAsFunctionContainer(source, function);
-
         }
 
         public class SetValueContainer

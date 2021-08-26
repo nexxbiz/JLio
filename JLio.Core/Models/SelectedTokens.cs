@@ -16,15 +16,6 @@ namespace JLio.Core.Models
             get { return this.Select(t => t.Type).Distinct().Count() < 2; }
         }
 
-        public JTokenType GetTokenType
-        {
-            get
-            {
-                if (this.Any() && AreSameTokenTypes) return this.First().Type;
-                return JTokenType.Undefined;
-            }
-        }
-
         public IEnumerable<T> GetTokensBySystemType<T>()
         {
             return this.OfType<T>();

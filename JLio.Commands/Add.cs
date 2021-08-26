@@ -15,7 +15,6 @@ namespace JLio.Commands
 
         public Add()
         {
-
         }
 
         public Add(string path, IFunctionSupportedValue value)

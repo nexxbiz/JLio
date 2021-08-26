@@ -14,7 +14,6 @@ namespace JLio.Commands
     {
         public Set()
         {
-
         }
 
         public Set(string path, IFunctionSupportedValue value)
@@ -100,7 +99,6 @@ namespace JLio.Commands
             executionOptions.Logger?.Log(LogLevel.Information, JLioConstants.CommandExecution,
                 $"Property {propertyName} on {o.Path} value has been set.");
         }
-
     }
 }
 

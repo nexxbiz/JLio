@@ -65,9 +65,6 @@ namespace JLio.Core.Models.Path
                     levelPairs.FirstOrDefault(l => l.OpenCharacter == character || l.CloseCharacter == character);
                 if (levelIndicator != null) HandleLevels(levels, character, levelIndicator);
             }
-
-            //todo think about how to handle this;
-            //IsValidPathStructure = levels.Count == 0;
             return result;
         }
 

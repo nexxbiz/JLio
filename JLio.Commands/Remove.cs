@@ -78,8 +78,6 @@ namespace JLio.Commands
             array.RemoveAt(index);
         }
 
-
-
         public ValidationResult ValidateCommandInstance()
         {
             var result = new ValidationResult() { IsValid = true };
@@ -88,10 +86,7 @@ namespace JLio.Commands
                 result.ValidationMessages.Add($"Path property for {CommandName} command is missing");
                 result.IsValid = false;
             }
-
-           
             return result;
         }
-      
     }
 }

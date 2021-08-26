@@ -39,23 +39,10 @@ namespace JLio.Commands.Logic
         [JsonProperty("toPath")]
         public string ToPath { get; set; }
 
-        
-
-        //internal static CopyMove Move(string from, string to)
-        //{
-        //    return new CopyMove { from = from, to = to, action = eAction.Move };
-        //}
-
-        //internal static CopyMove Copy(string from, string to)
-        //{
-        //    return new CopyMove { from = from, to = to, action = eAction.Copy };
-        //}
-
         internal JLioExecutionResult Execute(JToken dataContext, IExecutionOptions options, eAction action)
         {
             data = dataContext;
             executionOptions = options;
-           
 
             var sourceItems = options.ItemsFetcher.SelectTokens(FromPath, data);
             sourceItems.ForEach(i =>
