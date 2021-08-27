@@ -16,6 +16,6 @@ jobs:
     - name: Pack
       run: dotnet pack --include-symbols --configuration Release /p:Version=${VERSION} --output .
     - name: Push
-      run: dotnet nuget push **/*.nupkg --source https://nuget.pkg.github.com/acraven/index.json --api-key ${GITHUB_TOKEN}
+      run: dotnet nuget push **/*.nupkg --source https://www.myget.org/F/transformers/api/v2/package --api-key ${GITHUB_TOKEN}
       env:
         GITHUB_TOKEN: ${{ secrets.MYGET_KEY }}
