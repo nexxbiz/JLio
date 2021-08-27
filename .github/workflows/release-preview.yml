@@ -14,8 +14,4 @@ jobs:
     - name: Echo version
       run: echo ${VERSION}
     - name: Pack
-      run: dotnet pack --include-symbols --verbosity detailed --configuration Release /p:Version=${VERSION} --output .
-    - name: Push
-      run: dotnet nuget push **/*.nupkg --source https://nuget.pkg.github.com/acraven/index.json --api-key ${GITHUB_TOKEN}
-      env:
-        GITHUB_TOKEN: ${{ secrets.MYGET_KEY }}
+      run: dotnet pack --include-symbols --configuration Release /p:Version=0.0.1-alpha --output .
