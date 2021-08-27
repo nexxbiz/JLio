@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Description>JLio.Client</Description>
+    <PackageDescription>testing</PackageDescription>
   </PropertyGroup>
 
   <ItemGroup>
