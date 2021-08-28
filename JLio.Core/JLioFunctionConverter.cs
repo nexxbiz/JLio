@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
 using JLio.Core.Models.Path;
@@ -80,7 +81,8 @@ namespace JLio.Core
 
         public override bool CanConvert(Type objectType)
         {
-            return objectType.IsAssignableFrom(typeof(IFunctionSupportedValue)) ||
+           return typeof(IFunctionSupportedValue).IsAssignableFrom(objectType) ||
+                   objectType is IFunctionSupportedValue ||
                    objectType == typeof(IFunctionSupportedValue);
         }
     }

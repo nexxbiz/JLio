@@ -17,5 +17,16 @@ namespace JLio.Client
             var converters = new[] {options.JLioCommandConverter, options.JLioFunctionConverter};
             return JsonConvert.DeserializeObject<JLioScript>(script, converters);
         }
+
+        public static string Stringify(JLioScript script)
+        {
+            return Stringify(script, JLioParseOptions.CreateDefault());
+        }
+
+        public static string Stringify(JLioScript script, IJLioParseOptions options)
+        {
+            var converters = new[] { options.JLioCommandConverter, options.JLioFunctionConverter };
+            return JsonConvert.SerializeObject(script,Formatting.Indented, converters);
+        }
     }
 }

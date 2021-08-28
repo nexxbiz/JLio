@@ -23,6 +23,7 @@ namespace JLio.Commands
         [JsonProperty("path")]
         public string Path { get; set; }
 
+        [JsonProperty("command")]
         public string CommandName => "remove";
 
         public JLioExecutionResult Execute(JToken dataContext, IExecutionOptions options)

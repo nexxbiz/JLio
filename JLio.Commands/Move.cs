@@ -3,6 +3,7 @@ using JLio.Core;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace JLio.Commands
@@ -19,6 +20,7 @@ namespace JLio.Commands
             ToPath = to;
         }
 
+        [JsonProperty("command")]
         public string CommandName => "move";
 
         public JLioExecutionResult Execute(JToken dataContext, IExecutionOptions options)

@@ -17,6 +17,12 @@ namespace JLio.Commands
         {
         }
 
+        public Set(string path, JToken value)
+        {
+            Path = path;
+            Value = new JLioFunctionSupportedValue(new FixedValue(value));
+        }
+
         public Set(string path, IFunctionSupportedValue value)
         {
             Path = path;
@@ -29,6 +35,7 @@ namespace JLio.Commands
         [JsonProperty("value")]
         public IFunctionSupportedValue Value { get; set; }
 
+        [JsonProperty("command")]
         public string CommandName { get; } = "set";
 
         public JLioExecutionResult Execute(JToken dataContext, IExecutionOptions options)
