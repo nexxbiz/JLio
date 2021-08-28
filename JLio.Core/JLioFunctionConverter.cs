@@ -38,7 +38,7 @@ namespace JLio.Core
             var value = JToken.Load(reader);
             if (value.Type == JTokenType.String) return ParseString(value.ToString());
 
-            return value;
+            return new JLioFunctionSupportedValue(new FixedValue(value));
         }
 
         private IFunctionSupportedValue ParseString(string text)
