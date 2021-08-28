@@ -1,13 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
- 
-    <PackageId>OctocatApp</PackageId>
-    <Authors>JLio Transformers</Authors>
-    <Company>JLio</Company>
-    <PackageDescription>JLio (jay-lio) is a structured language definition for transforming JSON objects using a transformation script with a JSON notation.</PackageDescription>
-
   </PropertyGroup>
 
   <ItemGroup>
