@@ -7,6 +7,10 @@
   <ItemGroup>
     <ProjectReference Include="..\JLio.Core\JLio.Core.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Advanced\Builders\" />
+  </ItemGroup>
    
    <Target Name="PrepareReleaseNotes" BeforeTargets="GenerateNuspec">
     <PropertyGroup>
