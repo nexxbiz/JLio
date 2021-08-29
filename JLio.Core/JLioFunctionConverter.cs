@@ -69,7 +69,7 @@ namespace JLio.Core
             var mainSplit = SplitText.GetChoppedElements(text,
                 new[] {JLioConstants.FunctionArgumentsStartCharacters, JLioConstants.FunctionArgumentsEndCharacters},
                 JLioConstants.ArgumentLevelPairs);
-            var functionName = mainSplit[0].Text.TrimStart(JLioConstants.FunctionArgumentsStartCharacters);
+            var functionName = mainSplit[0].Text.TrimStart(JLioConstants.FunctionStartCharacters.ToCharArray());
 
             var function = provider[functionName];
             if (mainSplit.Count > 1 && function != null)
