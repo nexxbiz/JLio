@@ -19,19 +19,15 @@ namespace JLio.UnitTests.ScriptTextHandling
             options = JLioParseOptions.CreateDefault();
         }
 
-        [TestCase("[{\"path\":\"$.myObject.newProperty\",\"value\":\"new value\",\"command\":\"add\"}]",
-        typeof(FixedValue))]
-        [TestCase("[{\"path\":\"$.myObject.newProperty\",\"value\":\"=datetime(UTC)\",\"command\":\"add\"}]",
-        typeof(FixedValue))]
-        [TestCase("[{\"path\":\"$.myObject.newProperty\",\"value\":\"=datetime(datetime(UTC))\",\"command\":\"add\"}]",
-        typeof(FixedValue))]
-        [TestCase(
-        "[{\"path\":\"$.myObject.newProperty\",\"value\":\"=concat('fixed', @.localPath, $. rootPath, datetime(UTC))\",\"command\":\"add\"}]",
-        typeof(FixedValue))]
-        public void Test1(string script, Type valueType)
+        [TestCase("[{\"path\":\"$.myObject.newProperty\",\"value\":\"new value\",\"command\":\"add\"}]")]
+        [TestCase("[{\"path\":\"$.myObject.newProperty\",\"value\":\"=datetime(UTC)\",\"command\":\"add\"}]")]
+        [TestCase("[{\"path\":\"$.myObject.newProperty\",\"value\":\"=datetime(datetime(UTC))\",\"command\":\"add\"}]")]
+        [TestCase("[{\"path\":\"$.myObject.newProperty\",\"value\":\"=concat('fixed', @.localPath, $.rootPath, datetime(UTC))\",\"command\":\"add\"}]")]
+        [TestCase("[{\"path\": \"$.myObject.newProperty\",\"value\": { \"new object\": \"Added by value\" },\"command\": \"add\"}]")]
+        public void CanParseAndSerializeScript(string script)
         {
-            var typedScript = JLioConvert.Parse(script, options);
-            var scriptText = JsonConvert.SerializeObject(typedScript, options.JLioFunctionConverter);
+            var scriptText2 = JLioConvert.Serialize(JLioConvert.Parse(script));
+            Assert.IsTrue(JToken.DeepEquals(JToken.Parse(script), JToken.Parse(scriptText2)));
         }
 
         [TestCase("[{\"path\":\"$.myObject.newProperty\",\"value\":\"new value\",\"command\":\"add\"}]")]
@@ -60,7 +56,7 @@ namespace JLio.UnitTests.ScriptTextHandling
         }
 
         [Test]
-        public void CanSerializeAndDEserializeScript()
+        public void CanSerializeAndDeserializeScriptForCommands()
         {
             var script = new JLioScript()
                 .Add(new JValue(0)).OnPath("$.demo")
@@ -71,10 +67,10 @@ namespace JLio.UnitTests.ScriptTextHandling
             var scriptText = string.Empty;
             Assert.DoesNotThrow(() =>
             {
-                scriptText = JLioConvert.Stringify(script);
+                scriptText = JLioConvert.Serialize(script);
             });
             Assert.IsFalse(string.IsNullOrEmpty(scriptText));
-            var scriptText2 = JLioConvert.Stringify(JLioConvert.Parse(scriptText));
+            var scriptText2 = JLioConvert.Serialize(JLioConvert.Parse(scriptText));
             Assert.IsTrue(JToken.DeepEquals(JToken.Parse(scriptText), JToken.Parse(scriptText2)));
         }
 

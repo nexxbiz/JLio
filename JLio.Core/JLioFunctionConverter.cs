@@ -22,14 +22,26 @@ namespace JLio.Core
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             var functionValue = (JLioFunctionSupportedValue) value;
-            JToken stringRepresentation;
-            if (functionValue.Function.GetType() == typeof(FixedValue))
-                stringRepresentation = new JValue(functionValue.GetStringRepresentation());
+            JToken tokenToWrite;
+            if (functionValue.Function is FixedValue f)
+            {
+                tokenToWrite = GetFixedValueToken(f, functionValue);
+            }
             else
-                stringRepresentation =
-                    JToken.Parse($"\"={((JLioFunctionSupportedValue) value).GetStringRepresentation()}\"");
+            {
+                tokenToWrite =
+                    JToken.Parse($"\"={((JLioFunctionSupportedValue)value).GetStringRepresentation()}\"");
+            }
+            tokenToWrite.WriteTo(writer);
+        }
 
-            stringRepresentation.WriteTo(writer);
+        private JToken GetFixedValueToken(FixedValue fixedValue, JLioFunctionSupportedValue value)
+        {
+            if(fixedValue.Value.Type != JTokenType.String)
+            {
+                return fixedValue.Value;
+            }
+               return  value.GetStringRepresentation();
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
@@ -47,8 +59,8 @@ namespace JLio.Core
             if (string.IsNullOrEmpty(text)) return new JLioFunctionSupportedValue(new FixedValue(JValue.CreateNull()));
             if (!text.StartsWith(JLioConstants.FunctionStartCharacters))
                 return new JLioFunctionSupportedValue(new FixedValue(JToken.Parse($"\"{text}\"")));
-            text = text.Substring(JLioConstants.FunctionStartCharacters.Length);
             var (function, arguments) = GetFunctionAndArguments(text);
+
             return new JLioFunctionSupportedValue(function.SetArguments(arguments));
         }
 
@@ -57,7 +69,7 @@ namespace JLio.Core
             var mainSplit = SplitText.GetChoppedElements(text,
                 new[] {JLioConstants.FunctionArgumentsStartCharacters, JLioConstants.FunctionArgumentsEndCharacters},
                 JLioConstants.ArgumentLevelPairs);
-            var functionName = mainSplit[0].Text;
+            var functionName = mainSplit[0].Text.TrimStart(JLioConstants.FunctionArgumentsStartCharacters);
 
             var function = provider[functionName];
             if (mainSplit.Count > 1 && function != null)
