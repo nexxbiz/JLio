@@ -22,7 +22,10 @@ namespace JLio.Client
                 .Register<Move>();
 
             var functionsProvider = new JLioFunctionsProvider();
-            functionsProvider.Register<DatetimeFunction>();
+            functionsProvider
+                .Register<DatetimeFunction>()
+                .Register<Concat>()
+                ;
 
             return new JLioParseOptions
             {
