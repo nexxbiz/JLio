@@ -22,7 +22,7 @@ namespace JLio.UnitTests.ScriptTextHandling
         [TestCase("[{\"path\":\"$.myObject.newProperty\",\"value\":\"new value\",\"command\":\"add\"}]")]
         [TestCase("[{\"path\":\"$.myObject.newProperty\",\"value\":\"=datetime(UTC)\",\"command\":\"add\"}]")]
         [TestCase("[{\"path\":\"$.myObject.newProperty\",\"value\":\"=datetime(datetime(UTC))\",\"command\":\"add\"}]")]
-        [TestCase("[{\"path\":\"$.myObject.newProperty\",\"value\":\"=concat('fixed', @.localPath, $.rootPath, datetime(UTC))\",\"command\":\"add\"}]")]
+        [TestCase("[{\"path\":\"$.myObject.newProperty\",\"value\":\"=concat('fixed',@.localPath,$.rootPath,datetime(UTC))\",\"command\":\"add\"}]")]
         [TestCase("[{\"path\": \"$.myObject.newProperty\",\"value\": { \"new object\": \"Added by value\" },\"command\": \"add\"}]")]
         public void CanParseAndSerializeScript(string script)
         {

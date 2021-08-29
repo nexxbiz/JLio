@@ -25,6 +25,7 @@ namespace JLio.Client
             functionsProvider
                 .Register<DatetimeFunction>()
                 .Register<NewGuid>()
+                .Register<Concat>()
                 ;
 
             return new JLioParseOptions

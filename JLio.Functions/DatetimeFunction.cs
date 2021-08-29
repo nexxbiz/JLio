@@ -22,29 +22,21 @@ namespace JLio.Functions
     // default:
     // timeselection , local time now
     // format : 2012-04-23T18:25:43.511Z
-    public class DatetimeFunction : IFunction
+    public class DatetimeFunction : FunctionBase
     {
-        private Arguments arguments = new Arguments();
 
-        public DatetimeFunction()
+
+        public DatetimeFunction() : base("datetime")
         {
         }
 
-        public DatetimeFunction(params string[] arguments)
+        public DatetimeFunction(params string[] arguments) : base("datetime")
         {
             arguments.ToList().ForEach(a =>
                 this.arguments.Add(new JLioFunctionSupportedValue(new FixedValue(JToken.Parse($"\"{a}\"")))));
         }
 
-        public string FunctionName => "datetime";
-
-        public IFunction SetArguments(Arguments functionArguments)
-        {
-            arguments = functionArguments;
-            return this;
-        }
-
-        public JLioExecutionResult Execute(JToken currentToken, JToken dataContext, IExecutionOptions options)
+        public override JLioExecutionResult Execute(JToken currentToken, JToken dataContext, IExecutionOptions options)
         {
             var argumentValues = GetArgumentStrings(arguments, currentToken, dataContext, options);
             var argumentSettings = GetExecutionSettings(argumentValues);
@@ -52,11 +44,6 @@ namespace JLio.Functions
             return new JLioExecutionResult(result.Success, result.JToken);
         }
 
-        public string ToScript()
-        {
-            return
-                $"{FunctionName}({string.Join(JLioConstants.ArgumentsDelimiter.ToString(), arguments.Select(a => a.Function.ToScript()))})";
-        }
 
         private DateTimeConversionResult GetToken(string dateSelection, string format, IJLioExecutionLogger logger)
         {
@@ -70,7 +57,7 @@ namespace JLio.Functions
 
             try
             {
-                var settings = new JsonSerializerSettings {DateFormatString = format};
+                var settings = new JsonSerializerSettings { DateFormatString = format };
                 datetimeConversionResult.JToken =
                     JToken.Parse(JsonConvert.SerializeObject(datetimeConversionResult.DateTime, settings));
             }
@@ -90,18 +77,17 @@ namespace JLio.Functions
             switch (dateSelection)
             {
                 case "now":
-                    return new DateTimeConversionResult {DateTime = DateTime.Now, Success = true};
+                    return new DateTimeConversionResult { DateTime = DateTime.Now, Success = true };
                 case "UTC":
-                    return new DateTimeConversionResult {DateTime = DateTime.UtcNow, Success = true};
+                    return new DateTimeConversionResult { DateTime = DateTime.UtcNow, Success = true };
                 case "startOfDay":
-                    return new DateTimeConversionResult {DateTime = DateTime.Now.Date, Success = true};
+                    return new DateTimeConversionResult { DateTime = DateTime.Now.Date, Success = true };
                 case "startOfDayUTC":
-                    return new DateTimeConversionResult {DateTime = DateTime.UtcNow.Date, Success = true};
+                    return new DateTimeConversionResult { DateTime = DateTime.UtcNow.Date, Success = true };
                 default:
-                    if (!dateSelection.StartsWith("'"))
-                        logger.Log(LogLevel.Information, JLioConstants.FunctionExecution,
-                            $"unknown datetime indication {dateSelection}, assuming this is a datetime format");
-                    return new DateTimeConversionResult {DateTime = DateTime.Now, Success = false};
+                    logger.Log(LogLevel.Information, JLioConstants.FunctionExecution,
+                        $"unknown datetime indication {dateSelection}, assuming this is a datetime format");
+                    return new DateTimeConversionResult { DateTime = DateTime.Now, Success = false };
             }
         }
 
@@ -113,14 +99,6 @@ namespace JLio.Functions
             if (argumentValues.Count > 1) format = argumentValues[1].Trim(JLioConstants.StringIndicator);
 
             return (dateSelection, format);
-        }
-
-        private static List<string> GetArgumentStrings(Arguments arguments, JToken currentToken, JToken dataContext,
-            IExecutionOptions options)
-        {
-            var argumentValues = new List<string>();
-            arguments.ForEach(a => argumentValues.Add(a.GetValue(currentToken, dataContext, options).ToString()));
-            return argumentValues;
         }
 
         internal class DateTimeConversionResult
