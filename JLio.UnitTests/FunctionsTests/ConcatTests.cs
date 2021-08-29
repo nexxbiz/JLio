@@ -20,7 +20,6 @@ namespace JLio.UnitTests.FunctionsTests
             executeOptions = JLioExecutionOptions.CreateDefault();
         }
 
-
         [TestCase("=concat()", "{}","")]
         [TestCase("=concat('a','b','c')", "{}", "abc")]
         [TestCase("=concat($.a, 'b', $.c)", "{\"a\":\"a\",\"b\":\"b\",\"c\":\"c\"}", "abc")]
