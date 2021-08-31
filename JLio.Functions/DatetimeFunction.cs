@@ -24,8 +24,6 @@ namespace JLio.Functions
     // format : 2012-04-23T18:25:43.511Z
     public class DatetimeFunction : FunctionBase
     {
-
-
         public DatetimeFunction() : base("datetime")
         {
         }
@@ -44,7 +42,6 @@ namespace JLio.Functions
             return new JLioExecutionResult(result.Success, result.JToken);
         }
 
-
         private DateTimeConversionResult GetToken(string dateSelection, string format, IJLioExecutionLogger logger)
         {
             var datetimeConversionResult = GetDateTime(dateSelection, logger);
@@ -57,7 +54,7 @@ namespace JLio.Functions
 
             try
             {
-                var settings = new JsonSerializerSettings { DateFormatString = format };
+                var settings = new JsonSerializerSettings {DateFormatString = format};
                 datetimeConversionResult.JToken =
                     JToken.Parse(JsonConvert.SerializeObject(datetimeConversionResult.DateTime, settings));
             }
@@ -77,17 +74,17 @@ namespace JLio.Functions
             switch (dateSelection)
             {
                 case "now":
-                    return new DateTimeConversionResult { DateTime = DateTime.Now, Success = true };
+                    return new DateTimeConversionResult {DateTime = DateTime.Now, Success = true};
                 case "UTC":
-                    return new DateTimeConversionResult { DateTime = DateTime.UtcNow, Success = true };
+                    return new DateTimeConversionResult {DateTime = DateTime.UtcNow, Success = true};
                 case "startOfDay":
-                    return new DateTimeConversionResult { DateTime = DateTime.Now.Date, Success = true };
+                    return new DateTimeConversionResult {DateTime = DateTime.Now.Date, Success = true};
                 case "startOfDayUTC":
-                    return new DateTimeConversionResult { DateTime = DateTime.UtcNow.Date, Success = true };
+                    return new DateTimeConversionResult {DateTime = DateTime.UtcNow.Date, Success = true};
                 default:
                     logger.Log(LogLevel.Information, JLioConstants.FunctionExecution,
                         $"unknown datetime indication {dateSelection}, assuming this is a datetime format");
-                    return new DateTimeConversionResult { DateTime = DateTime.Now, Success = false };
+                    return new DateTimeConversionResult {DateTime = DateTime.Now, Success = false};
             }
         }
 

@@ -25,8 +25,8 @@ namespace JLio.Client
 
         public static string Serialize(JLioScript script, IJLioParseOptions options)
         {
-            var converters = new[] { options.JLioCommandConverter, options.JLioFunctionConverter };
-            return JsonConvert.SerializeObject(script,Formatting.Indented, converters);
+            var converters = new[] {options.JLioCommandConverter, options.JLioFunctionConverter};
+            return JsonConvert.SerializeObject(script, Formatting.Indented, converters);
         }
     }
 }

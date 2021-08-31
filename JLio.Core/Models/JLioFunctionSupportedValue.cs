@@ -15,10 +15,8 @@ namespace JLio.Core.Models
         public JToken GetValue(JToken currentToken, JToken dataContext, IExecutionOptions options)
         {
             var result = Function.Execute(currentToken, dataContext, options);
-            if(result.Data.Type == JTokenType.String)
-            {
+            if (result.Data.Type == JTokenType.String)
                 return result.Data.ToString().Trim(JLioConstants.StringIndicator);
-            }
             return result.Data;
         }
 

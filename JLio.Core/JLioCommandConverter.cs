@@ -27,7 +27,7 @@ namespace JLio.Core
             if (reader.TokenType == JsonToken.Null) return null;
             var json = JObject.Load(reader);
             var discriminatorField = json.Property(JLioConstants.CommandDiscriminator)?.Value.ToString();
-            if (discriminatorField == null) {  return null; }
+            if (discriminatorField == null) return null;
             var foundCommand = provider[discriminatorField];
             if (foundCommand == null) return new NotFoundCommand(json.ToString());
             serializer.Populate(json.CreateReader(), foundCommand);

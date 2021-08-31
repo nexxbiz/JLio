@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using JLio.Core;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace JLio.Functions
 {
     //> - concat(arguments[])
-  
+
     public class Concat : FunctionBase
     {
-        public Concat():  base("concat")
+        public Concat() : base("concat")
         {
         }
 

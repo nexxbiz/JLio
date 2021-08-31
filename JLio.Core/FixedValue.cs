@@ -1,19 +1,18 @@
 ﻿using System;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace JLio.Core
 {
     public class FixedValue : IFunction
     {
-        public JToken Value { get; }
-
         public FixedValue(JToken value)
         {
             Value = value;
         }
+
+        public JToken Value { get; }
 
         public string FunctionName => "FixedValue";
 
