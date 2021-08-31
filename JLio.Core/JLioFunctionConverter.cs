@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
 using JLio.Core.Models.Path;
@@ -24,24 +23,17 @@ namespace JLio.Core
             var functionValue = (JLioFunctionSupportedValue) value;
             JToken tokenToWrite;
             if (functionValue.Function is FixedValue f)
-            {
                 tokenToWrite = GetFixedValueToken(f, functionValue);
-            }
             else
-            {
                 tokenToWrite =
-                    JToken.Parse($"\"={((JLioFunctionSupportedValue)value).GetStringRepresentation()}\"");
-            }
+                    JToken.Parse($"\"={((JLioFunctionSupportedValue) value).GetStringRepresentation()}\"");
             tokenToWrite.WriteTo(writer);
         }
 
         private JToken GetFixedValueToken(FixedValue fixedValue, JLioFunctionSupportedValue value)
         {
-            if(fixedValue.Value.Type != JTokenType.String)
-            {
-                return fixedValue.Value;
-            }
-               return  value.GetStringRepresentation();
+            if (fixedValue.Value.Type != JTokenType.String) return fixedValue.Value;
+            return value.GetStringRepresentation();
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
@@ -69,7 +61,8 @@ namespace JLio.Core
             var mainSplit = SplitText.GetChoppedElements(text,
                 new[] {JLioConstants.FunctionArgumentsStartCharacters, JLioConstants.FunctionArgumentsEndCharacters},
                 JLioConstants.ArgumentLevelPairs);
-            var functionName = mainSplit[0].Text.TrimStart(JLioConstants.FunctionArgumentsStartCharacters).Trim(JLioConstants.FunctionStartCharacters.ToCharArray());
+            var functionName = mainSplit[0].Text.TrimStart(JLioConstants.FunctionArgumentsStartCharacters)
+                .Trim(JLioConstants.FunctionStartCharacters.ToCharArray());
 
             var function = provider[functionName];
             if (mainSplit.Count > 1 && function != null)
@@ -93,7 +86,7 @@ namespace JLio.Core
 
         public override bool CanConvert(Type objectType)
         {
-           return typeof(IFunctionSupportedValue).IsAssignableFrom(objectType) ||
+            return typeof(IFunctionSupportedValue).IsAssignableFrom(objectType) ||
                    objectType is IFunctionSupportedValue ||
                    objectType == typeof(IFunctionSupportedValue);
         }

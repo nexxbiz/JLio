@@ -1,9 +1,7 @@
-﻿using JLio.Core.Contracts;
+﻿using System;
+using JLio.Core.Contracts;
 using JLio.Core.Models;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace JLio.Functions
 {
@@ -13,12 +11,12 @@ namespace JLio.Functions
 
         public JLioExecutionResult Execute(JToken currentToken, JToken dataContext, IExecutionOptions options)
         {
-            return new JLioExecutionResult(true,new JValue(Guid.NewGuid().ToString()));
+            return new JLioExecutionResult(true, new JValue(Guid.NewGuid().ToString()));
         }
 
         public IFunction SetArguments(Arguments arguments)
         {
-            return this;  
+            return this;
         }
 
         public string ToScript()

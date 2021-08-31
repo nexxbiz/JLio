@@ -1,11 +1,11 @@
-﻿using JLio.Client;
+﻿using System;
+using JLio.Client;
 using JLio.Commands.Builders;
 using JLio.Core.Models;
 using JLio.Functions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using System;
 
 namespace JLio.UnitTests.FunctionsTests
 {
