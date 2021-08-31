@@ -1,7 +1,6 @@
-﻿using JLio.Commands.Advanced;
-using JLio.Core.Models;
+﻿using JLio.Core.Models;
 
-namespace JLio.Commands.Builders
+namespace JLio.Commands.Advanced.Builders
 {
     public static class MergeBuilders
     {

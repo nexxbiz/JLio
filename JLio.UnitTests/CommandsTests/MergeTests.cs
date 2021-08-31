@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using JLio.Commands.Advanced;
-using JLio.Commands.Builders;
+using JLio.Commands.Advanced.Builders;
 using JLio.Core.Models;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
