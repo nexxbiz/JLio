@@ -1,28 +1,29 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using JLio.Commands.Advanced;
 using Newtonsoft.Json.Linq;
 
 namespace JLio.Commands.Logic
 {
     public static class ArrayHelpers
     {
-        internal static List<JToken> FindTargetArrayElementForKeys(JToken target, JToken itemToMatch, List<string> keys)
+        internal static List<JToken> FindTargetArrayElementForKeys(JToken item, JToken itemToMatch, List<string> keys)
         {
             var result = new List<JToken>();
             if (keys.Any())
-                target.Where(t => AllKeyMatch(t, keys, itemToMatch)).ToList()
+                item.Where(t => AllKeyMatch(t, keys, itemToMatch)).ToList()
                     .ForEach(t => result.Add(t));
             else
-                target.Where(t => JToken.DeepEquals(t, itemToMatch)).ToList()
+                item.Where(t => JToken.DeepEquals(t, itemToMatch)).ToList()
                     .ForEach(t => result.Add(t));
             return result;
         }
 
-        internal static bool AllKeyMatch(JToken targetItem, List<string> keys, JToken itemToMatch)
+        internal static bool AllKeyMatch(JToken item, List<string> keys, JToken itemToMatch)
         {
             var matchResult = keys.All(k =>
             {
-                var result = AreTheSameValue(k, targetItem, itemToMatch);
+                var result = AreTheSameValue(k, item, itemToMatch);
 
                 return result;
             });
@@ -43,14 +44,14 @@ namespace JLio.Commands.Logic
         }
 
         internal static (bool Found, JToken Item, int Index) FindInArray(JArray array, JToken item,
-            List<int> notAllowedIndexes)
+            List<int> notAllowedIndexes, CompareArraySettings settings)
         {
             var found = false;
             JToken foundItem = null;
             var foundIndex = -1;
             for (var i = 0; i < array.Count; i++)
             {
-                if (notAllowedIndexes.Contains(i) || !JToken.DeepEquals(array[i], item)) continue;
+                if (notAllowedIndexes.Contains(i) || !AreTheSame(array[i], item, settings?.KeyPaths)) continue;
                 found = true;
                 foundItem = array[i];
                 foundIndex = i;
@@ -58,6 +59,13 @@ namespace JLio.Commands.Logic
             }
 
             return (found, foundItem, foundIndex);
+        }
+
+        private static bool AreTheSame(JToken item, JToken itemToMatch, List<string> keys)
+        {
+            if (keys != null && keys.Count > 0 && item.Type == JTokenType.Object &&
+                itemToMatch.Type == JTokenType.Object) return AllKeyMatch(item, keys, itemToMatch);
+            return JToken.DeepEquals(item, itemToMatch);
         }
     }
 }

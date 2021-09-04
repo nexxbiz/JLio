@@ -29,7 +29,7 @@ namespace JLio.UnitTests.FunctionsTests
         [TestCase("=datetime(UTC, 'dd-MM-yy HH:mm')", "{}")]
         [TestCase("=datetime($.dateSelection, $.format)",
             "{\"dateSelection\":\"UTC\",\"format\":\"HH:mm on dd-MM-yy\"}")]
-        public void scriptTest(string function, string data)
+        public void ScriptTest(string function, string data)
         {
             var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"add\"}}]";
             var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeOptions);

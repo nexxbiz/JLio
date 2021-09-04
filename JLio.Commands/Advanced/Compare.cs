@@ -184,26 +184,29 @@ namespace JLio.Commands.Advanced
             return result;
         }
 
-        private CompareResults CompareArrayItem(JArray source, JArray target, JToken token,
+        private CompareResults CompareArrayItem(JArray source, JArray target, JToken sourceItemToCompare,
             List<int> foundTargetIndexes)
         {
-            if (token.Type == JTokenType.Object)
-                return CompareObjectArrayItem(source, target, token, foundTargetIndexes);
-            return CompareValueTypeArrayItem(source, target, token, foundTargetIndexes);
-        }
+            var result = new CompareResults();
+            var settings = Settings.ArraySettings.FirstOrDefault(i => i.ArrayPath == source.Path);
 
-        private CompareResults CompareValueTypeArrayItem(JArray source, JArray target, JToken token,
-            List<int> foundTargetIndexes)
-        {
-            var IsInSource = ArrayHelpers.FindInArray(source, token, foundTargetIndexes);
-            var IsInTarget = ArrayHelpers.FindInArray(target, token, foundTargetIndexes);
+            var IsInTarget = ArrayHelpers.FindInArray(target, sourceItemToCompare, foundTargetIndexes, settings);
 
             if (IsInTarget.Found) foundTargetIndexes.Add(IsInTarget.Index);
 
-            return IsInSource.Found && IsInTarget.Found
-                ? new CompareResults(GetInBothArraysResult(source, target, token.ToString(Formatting.None)))
-                : new CompareResults(GetIsInOneOfArraysResult(source, IsInSource.Found, target, IsInTarget.Found,
-                    token.ToString(Formatting.None)));
+            if (IsInTarget.Found)
+            {
+                if (sourceItemToCompare.Type == JTokenType.Object)
+                    result.AddRange(CompareTokens(sourceItemToCompare, IsInTarget.Item));
+                result.Add(GetInBothArraysResult(source, target, sourceItemToCompare.ToString(Formatting.None)));
+            }
+            else
+            {
+                result.Add(GetIsInOneOfArraysResult(source, true, target, IsInTarget.Found,
+                    sourceItemToCompare.ToString(Formatting.None)));
+            }
+
+            return result;
         }
 
         private CompareResult GetInBothArraysResult(JArray source, JArray target, string value)
@@ -237,12 +240,6 @@ namespace JLio.Commands.Advanced
                     $"Content of the array is different. Source: ({sourcePath}) --> {inSource} - Target:({targetPath}) --> {inTarget}. Value:{value}",
                 IsDifference = true
             };
-        }
-
-        private CompareResults CompareObjectArrayItem(JArray source, JArray target, JToken token,
-            List<int> foundTargetIndexes)
-        {
-            return new CompareResults();
         }
 
         private CompareResult GetDifferentCountOfArrayItemsResult(JArray source, JArray target)
@@ -418,26 +415,26 @@ namespace JLio.Commands.Advanced
                 IsDifference = false
             };
         }
+    }
 
-        public class CompareArraySettings
-        {
-            [JsonProperty("arrayPath")]
-            public string ArrayPath { get; set; } = string.Empty;
+    public class CompareArraySettings
+    {
+        [JsonProperty("arrayPath")]
+        public string ArrayPath { get; set; } = string.Empty;
 
-            [JsonProperty("keyPaths")]
-            public List<string> KeyPaths { get; set; } = new List<string>();
+        [JsonProperty("keyPaths")]
+        public List<string> KeyPaths { get; set; } = new List<string>();
 
-            [JsonProperty("uniqueIndexMatching")]
-            public bool UniqueIndexMatching { get; set; }
-        }
+        [JsonProperty("uniqueIndexMatching")]
+        public bool UniqueIndexMatching { get; set; }
+    }
 
-        public class CompareSettings
-        {
-            [JsonProperty("arraySettings")]
-            public List<CompareArraySettings> ArraySettings { get; set; } = new List<CompareArraySettings>();
+    public class CompareSettings
+    {
+        [JsonProperty("arraySettings")]
+        public List<CompareArraySettings> ArraySettings { get; set; } = new List<CompareArraySettings>();
 
-            [JsonProperty("resultTypes")]
-            public List<string> ResultTypes { get; set; } = new List<string>();
-        }
+        [JsonProperty("resultTypes")]
+        public List<string> ResultTypes { get; set; } = new List<string>();
     }
 }

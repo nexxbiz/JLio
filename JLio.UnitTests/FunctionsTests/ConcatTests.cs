@@ -25,15 +25,16 @@ namespace JLio.UnitTests.FunctionsTests
         [TestCase("=concat($.a, 'b', $.c)", "{\"a\":\"a\",\"b\":\"b\",\"c\":\"c\"}", "abc")]
         [TestCase("=concat($.a, $.b, $.c)",
             "{\"a\":\"a\",\"b\":\"b\",\"c\":\"c\"}", "abc")]
-        public void scriptTest(string function, string data, string resultValue)
+        public void ScriptTest(string function, string data, string resultValue)
         {
             var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"add\"}}]";
             var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeOptions);
 
             Assert.IsTrue(result.Success);
             Assert.IsTrue(executeOptions.Logger.LogEntries.TrueForAll(i => i.Level != LogLevel.Error));
+            Assert.IsFalse(string.IsNullOrEmpty(executeOptions.Logger.LogText));
             Assert.IsNotNull(result.Data.SelectToken("$.result"));
-            Assert.AreEqual(resultValue, result.Data.SelectToken("$.result").ToString());
+            Assert.AreEqual(resultValue, result.Data.SelectToken("$.result")?.ToString());
         }
 
         [Test]

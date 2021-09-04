@@ -1,4 +1,5 @@
-﻿using JLio.Commands.Advanced;
+﻿using System.Collections.Generic;
+using JLio.Commands.Advanced;
 using JLio.Commands.Advanced.Models;
 using JLio.Core.Models;
 using Newtonsoft.Json.Linq;
@@ -35,13 +36,43 @@ namespace JLio.UnitTests.CommandsTests
         [TestCase("{\"first\": {\"a\" : 1 },\"second\": {\"a\" : 1, \"b\" : 1 }}", true)]
         [TestCase("{\"first\": {\"a\" : 1 ,\"b\" : 1 },\"second\": {\"a\" : 1, \"b\" : 1 }}", false)]
         [TestCase("{\"first\":[1,2,2,3],\"second\":[2,3,3,4]}", true)]
-        public void CanCompare(string dataText, bool different)
+        public void CanComparePrimitives(string dataText, bool different)
         {
             var data = JToken.Parse(dataText);
             var result = new Compare
             {
                 FirstPath = "$.first", SecondPath = "$.second", ResultPath = "$.result",
-                Settings = new Compare.CompareSettings()
+                Settings = new CompareSettings()
+            }.Execute(data, executeOptions);
+
+            var compareResults = result.Data.SelectToken("$.result")?.ToObject<CompareResults>();
+
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(compareResults);
+            Assert.AreEqual(different, compareResults?.ContainsIsDifferenceResult());
+        }
+
+        [TestCase(
+            "{\"first\":[{\"id\":1,\"value\":1},{\"id\":2,\"value\":2},{\"id\":3,\"value\":3}],\"second\":[{\"id\":3,\"value\":3},{\"id\":2,\"value\":2},{\"id\":1,\"value\":1}]}",
+            false)]
+        [TestCase(
+            "{\"first\":[{\"id\":1,\"value\":2},{\"id\":2,\"value\":2},{\"id\":3,\"value\":3}],\"second\":[{\"id\":3,\"value\":3},{\"id\":2,\"value\":2},{\"id\":1,\"value\":1}]}",
+            true)]
+        public void CanCompareObjects(string dataText, bool different)
+        {
+            var data = JToken.Parse(dataText);
+            var result = new Compare
+            {
+                FirstPath = "$.first",
+                SecondPath = "$.second",
+                ResultPath = "$.result",
+                Settings = new CompareSettings
+                {
+                    ArraySettings = new List<CompareArraySettings>
+                    {
+                        new CompareArraySettings {ArrayPath = "first", KeyPaths = new List<string> {"id"}}
+                    }
+                }
             }.Execute(data, executeOptions);
 
             var compareResults = result.Data.SelectToken("$.result")?.ToObject<CompareResults>();
@@ -60,7 +91,7 @@ namespace JLio.UnitTests.CommandsTests
                 FirstPath = "$.first.sub",
                 SecondPath = "$.second",
                 ResultPath = "$.result",
-                Settings = new Compare.CompareSettings()
+                Settings = new CompareSettings()
             }.Execute(data, executeOptions);
 
             var compareResults = result.Data.SelectToken("$.result")?.ToObject<CompareResults>();

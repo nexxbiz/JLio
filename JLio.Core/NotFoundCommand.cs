@@ -15,7 +15,7 @@ namespace JLio.Core
 
         public JLioCommandRegistration CommandRegistration { get; set; }
 
-        public string CommandName { get; }
+        public string CommandName { get; } = "";
 
         public JLioExecutionResult Execute(JToken data, IExecutionOptions options)
         {
