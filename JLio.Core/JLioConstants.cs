@@ -13,8 +13,6 @@ namespace JLio.Core
         public const string FunctionStartCharacters = "=";
         public const string FunctionExecution = "Function execution";
         public const char StringIndicator = '\'';
-        public const string CurrentItemPathIndicator = "@";
-        public const string RootPathIndicator = "$";
 
         public static List<LevelPair> ArgumentLevelPairs { get; } = new List<LevelPair>
         {

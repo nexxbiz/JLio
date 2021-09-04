@@ -52,20 +52,9 @@ namespace JLio.Functions
                 datetimeConversionResult.Success = true;
             }
 
-            try
-            {
-                var settings = new JsonSerializerSettings {DateFormatString = format};
-                datetimeConversionResult.JToken =
-                    JToken.Parse(JsonConvert.SerializeObject(datetimeConversionResult.DateTime, settings));
-            }
-            catch (Exception)
-            {
-                logger.Log(LogLevel.Error, JLioConstants.FunctionExecution,
-                    $"faulty conversion of the date due to the formatting {format}.");
-                datetimeConversionResult.JToken = JToken.Parse(JsonConvert.SerializeObject(DateTime.Now));
-                datetimeConversionResult.Success = false;
-            }
-
+            var settings = new JsonSerializerSettings {DateFormatString = format};
+            datetimeConversionResult.JToken =
+                JToken.Parse(JsonConvert.SerializeObject(datetimeConversionResult.DateTime, settings));
             return datetimeConversionResult;
         }
 

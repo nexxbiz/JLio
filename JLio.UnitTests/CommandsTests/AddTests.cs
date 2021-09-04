@@ -58,6 +58,20 @@ namespace JLio.UnitTests.CommandsTests
             Assert.IsTrue(data.SelectTokens(path).Any());
         }
 
+        [TestCase("$.newProperty", "{\"demo\" : 3}")]
+        public void CanAddCorrectValuesAsTokens(string path, string value)
+        {
+            var tokenToAdd = JToken.Parse(value);
+            var valueToAdd = new JLioFunctionSupportedValue(new FixedValue(tokenToAdd));
+            var result = new Add(path, valueToAdd).Execute(data, executeOptions);
+
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.Success);
+            Assert.IsTrue(data.SelectTokens(path).All(i => i.Type != JTokenType.Null));
+            Assert.IsTrue(data.SelectTokens(path).Any());
+            Assert.IsTrue(JToken.DeepEquals(data.SelectToken(path), tokenToAdd));
+        }
+
         [TestCase("", "newData", "Path property for add command is missing")]
         [TestCase("", null, "Path property for add command is missing")]
         public void CanExecuteWithArgumentsNotProvided(string path, string value, string message)

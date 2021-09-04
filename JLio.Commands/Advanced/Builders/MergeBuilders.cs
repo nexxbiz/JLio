@@ -1,4 +1,5 @@
-﻿using JLio.Core.Models;
+﻿using JLio.Commands.Advanced.Settings;
+using JLio.Core.Models;
 
 namespace JLio.Commands.Advanced.Builders
 {
@@ -12,14 +13,14 @@ namespace JLio.Commands.Advanced.Builders
         public static JLioScript Using(this MergeWithContainer source, MergeSettings settings)
         {
             source.Script.AddLine(new Merge
-                {Path = source.Path, TargetPath = source.TargetPath, MergeSettings = settings});
+                {Path = source.Path, TargetPath = source.TargetPath, Settings = settings});
             return source.Script;
         }
 
         public static JLioScript DefaultSettings(this MergeWithContainer source)
         {
             source.Script.AddLine(new Merge
-                {Path = source.Path, TargetPath = source.TargetPath, MergeSettings = MergeSettings.CreateDefault()});
+                {Path = source.Path, TargetPath = source.TargetPath, Settings = MergeSettings.CreateDefault()});
             return source.Script;
         }
 

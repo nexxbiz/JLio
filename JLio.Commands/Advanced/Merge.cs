@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using JLio.Core;
+﻿using System.Linq;
+using JLio.Commands.Advanced.Settings;
+using JLio.Commands.Logic;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
 using Newtonsoft.Json;
@@ -20,21 +20,21 @@ namespace JLio.Commands.Advanced
         {
             Path = path;
             TargetPath = targetPath;
-            MergeSettings = MergeSettings.CreateDefault();
+            Settings = MergeSettings.CreateDefault();
         }
 
         public Merge(string path, string targetPath, MergeSettings settings)
         {
             Path = path;
             TargetPath = targetPath;
-            MergeSettings = settings;
+            Settings = settings;
         }
-
-        [JsonProperty("settings")]
-        public MergeSettings MergeSettings { get; set; }
 
         [JsonProperty("path")]
         public string Path { get; set; }
+
+        [JsonProperty("settings")]
+        public MergeSettings Settings { get; set; }
 
         [JsonProperty("targetPath")]
         public string TargetPath { get; set; }
@@ -90,62 +90,22 @@ namespace JLio.Commands.Advanced
         {
             if (arraySettings.KeyPaths.Any())
                 AdditemsWithKeyMatch(target, itemToAdd, arraySettings);
-            else if (!arraySettings.UniqueItemsWithoutKeys || !IsItemInTarget(target, itemToAdd)) target.Add(itemToAdd);
+            else if (!arraySettings.UniqueItemsWithoutKeys || !ArrayHelpers.IsItemInArray(target, itemToAdd))
+                target.Add(itemToAdd);
         }
 
         private void AdditemsWithKeyMatch(JArray target, JToken itemToAdd, MergeArraySettings arraySettings)
         {
-            var targetItems = FindTargetArrayElementForKeys(target, itemToAdd, arraySettings.KeyPaths);
+            var targetItems = ArrayHelpers.FindTargetArrayElementForKeys(target, itemToAdd, arraySettings.KeyPaths);
             if (!targetItems.Any())
                 target.Add(itemToAdd);
             else
                 targetItems.ForEach(t => MergeElements(itemToAdd, t));
         }
 
-        internal List<JToken> FindTargetArrayElementForKeys(JToken target, JToken itemToMatch, List<string> keys)
-        {
-            var result = new List<JToken>();
-
-
-            if (keys.Any())
-                target.Where(t => { return AllKeyMatch(t, keys, itemToMatch); }
-                    ).ToList()
-                    .ForEach(t => result.Add(t));
-            else
-                target.Where(t => JToken.DeepEquals(t, itemToMatch)).ToList()
-                    .ForEach(t => result.Add(t));
-
-            return result;
-        }
-
-        internal bool AllKeyMatch(JToken targetItem, List<string> keys, JToken itemToMatch)
-        {
-            var matchResult = keys.All(k =>
-            {
-                var result = AreTheSameValue(k, targetItem, itemToMatch);
-
-                return result;
-            });
-            return matchResult;
-        }
-
-        private bool AreTheSameValue(string jsonPath, JToken firstElement, JToken secondElement)
-        {
-            jsonPath = $"{JLioConstants.RootPathIndicator}.{jsonPath}"; //TODO: TRICKY , WATCH CLOSELY
-            var firstKeyValue = firstElement.SelectToken(jsonPath);
-            var secondKeyValue = secondElement.SelectToken(jsonPath);
-
-            return JToken.DeepEquals(firstKeyValue, secondKeyValue);
-        }
-
-        private bool IsItemInTarget(JArray target, JToken itemToAdd)
-        {
-            return target.Any(t => JToken.DeepEquals(t, itemToAdd));
-        }
-
         private MergeArraySettings GetMergeSettingsForArray(JToken jtoken)
         {
-            return MergeSettings
+            return Settings
                        .ArraySettings
                        .FirstOrDefault(a => a.ArrayPath == GetPathFor(jtoken))
                    ?? new MergeArraySettings();
@@ -154,7 +114,7 @@ namespace JLio.Commands.Advanced
         private string GetPathFor(JToken jtoken)
         {
             if (jtoken == null)
-                return JLioConstants.RootPathIndicator;
+                return executionOptions.ItemsFetcher.RootPathIndicator;
             if (jtoken.Type == JTokenType.Array || jtoken.Type == JTokenType.Object)
                 return GetPathFor(jtoken.Parent);
             if (jtoken.Type == JTokenType.Property)
@@ -177,15 +137,15 @@ namespace JLio.Commands.Advanced
         {
             var MatchSuccess = ObjectsMatchOnMatchSettings(source, target);
 
-            if (MatchSuccess || !MergeSettings.MatchSettings.HasKeys)
+            if (MatchSuccess || !Settings.MatchSettings.HasKeys)
                 foreach (var property in ((JObject) source).Properties())
                     MergeProperties(property, (JObject) target);
         }
 
         private bool ObjectsMatchOnMatchSettings(JToken source, JToken target)
         {
-            var result = AllKeyMatch(target, MergeSettings.MatchSettings.KeyPaths, source);
-            return MergeSettings.MatchSettings.HasKeys && result;
+            var result = ArrayHelpers.AllKeyMatch(target, Settings.MatchSettings.KeyPaths, source);
+            return Settings.MatchSettings.HasKeys && result;
         }
 
         private void MergeProperties(JProperty property, JObject target)
@@ -196,7 +156,7 @@ namespace JLio.Commands.Advanced
             }
             else
             {
-                if (MergeSettings.Strategy != MergeSettings.STRATEGY_ONLY_VALUES) AddProperty(target, property);
+                if (Settings.Strategy != MergeSettings.STRATEGY_ONLY_VALUES) AddProperty(target, property);
             }
         }
 
@@ -204,7 +164,7 @@ namespace JLio.Commands.Advanced
         {
             if (AreDifferentTypes(target[property.Name], property.Value) || !IsComplexType(property.Value))
             {
-                if (MergeSettings.Strategy != MergeSettings.STRATEGY_ONLY_STRUCTURE)
+                if (Settings.Strategy != MergeSettings.STRATEGY_ONLY_STRUCTURE)
                     target[property.Name].Replace(property.Value);
             }
             else

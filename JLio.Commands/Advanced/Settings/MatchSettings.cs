@@ -2,7 +2,7 @@
 using System.Linq;
 using Newtonsoft.Json;
 
-namespace JLio.Commands.Advanced
+namespace JLio.Commands.Advanced.Settings
 {
     public class MatchSettings
     {

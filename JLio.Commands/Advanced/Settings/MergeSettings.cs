@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace JLio.Commands.Advanced
+namespace JLio.Commands.Advanced.Settings
 {
     public class MergeSettings
     {

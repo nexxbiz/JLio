@@ -7,7 +7,9 @@ namespace JLio.Core.Extensions
     public class JsonPathItemsFetcher : IItemsFetcher
 
     {
-        public string CurrentObjectIndicator { get; } = "@";
+        public string CurrentItemPathIndicator { get; } = "@";
+
+        public string PathDelimiter { get; } = ".";
 
         public SelectedTokens SelectTokens(string path, JToken data)
         {
@@ -18,5 +20,7 @@ namespace JLio.Core.Extensions
         {
             return data.SelectToken(path);
         }
+
+        public string RootPathIndicator { get; } = "$";
     }
 }

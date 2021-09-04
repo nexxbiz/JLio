@@ -20,7 +20,10 @@ namespace JLio.UnitTests.FunctionsTests
             executeOptions = JLioExecutionOptions.CreateDefault();
         }
 
+        [TestCase("=datetime(now)", "{}")]
         [TestCase("=datetime(UTC)", "{}")]
+        [TestCase("=datetime(startOfDay)", "{}")]
+        [TestCase("=datetime(startOfDayUTC)", "{}")]
         [TestCase("=datetime()", "{}")]
         [TestCase("=datetime('dd-MM-yyyy HH:mm')", "{}")]
         [TestCase("=datetime(UTC, 'dd-MM-yy HH:mm')", "{}")]
