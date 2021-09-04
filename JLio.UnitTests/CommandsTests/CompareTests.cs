@@ -17,6 +17,7 @@ namespace JLio.UnitTests.CommandsTests
             executeOptions = JLioExecutionOptions.CreateDefault();
         }
 
+        [TestCase("{\"first\":10,\"second\":true}", false)]
         [TestCase("{\"first\":true,\"second\":true}", false)]
         [TestCase("{\"first\":true,\"second\":false}", true)]
         [TestCase("{\"first\":false,\"second\":true}", true)]
