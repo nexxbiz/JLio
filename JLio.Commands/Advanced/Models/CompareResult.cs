@@ -1,16 +1,9 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace JLio.Commands.Advanced.Models
 {
     public class CompareResult
     {
-        [JsonProperty("arrayFilter", NullValueHandling = NullValueHandling.Ignore)]
-        public string ArrayFilter { get; set; }
-
-        [JsonProperty("compareValue", NullValueHandling = NullValueHandling.Ignore)]
-        public JToken CompareValue { get; set; }
-
         [JsonProperty("description")]
         public string Description { get; set; }
 

@@ -4,8 +4,8 @@
     {
         TypeDifference,
         ValueDifference,
-        SameValues,
         ArrayDifference,
-        StructureDifference
+        StructureDifference,
+        NoDifference
     }
 }

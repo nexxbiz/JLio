@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using JLio.Commands.Advanced;
 using JLio.Commands.Advanced.Models;
 using JLio.Core.Models;
@@ -17,7 +18,9 @@ namespace JLio.UnitTests.CommandsTests
             executeOptions = JLioExecutionOptions.CreateDefault();
         }
 
-        [TestCase("{\"first\":10,\"second\":true}", false)]
+        [TestCase("{\"first\":1,\"second\":true}", true)]
+        [TestCase("{\"first\":\"1\",\"second\":true}", true)]
+        [TestCase("{\"first\":10,\"second\":true}", true)]
         [TestCase("{\"first\":true,\"second\":true}", false)]
         [TestCase("{\"first\":true,\"second\":false}", true)]
         [TestCase("{\"first\":false,\"second\":true}", true)]
@@ -37,6 +40,8 @@ namespace JLio.UnitTests.CommandsTests
         [TestCase("{\"first\": {\"a\" : 1 },\"second\": {\"a\" : 1, \"b\" : 1 }}", true)]
         [TestCase("{\"first\": {\"a\" : 1 ,\"b\" : 1 },\"second\": {\"a\" : 1, \"b\" : 1 }}", false)]
         [TestCase("{\"first\":[1,2,2,3],\"second\":[2,3,3,4]}", true)]
+        [TestCase("{\"first\":[[1,2],[4,5]],\"second\":[[5,4],[2,1]]}", false)]
+        [TestCase("{\"first\":[[1,2],[4,6]],\"second\":[[5,4],[2,1]]}", true)]
         public void CanComparePrimitives(string dataText, bool different)
         {
             var data = JToken.Parse(dataText);
@@ -100,6 +105,30 @@ namespace JLio.UnitTests.CommandsTests
             Assert.IsNotNull(result);
             Assert.IsNotNull(compareResults);
             Assert.AreEqual(different, compareResults?.ContainsIsDifferenceResult());
+        }
+
+        [Test]
+        public void CanHaveMultipleTokensForCompareResults()
+        {
+            //Arrange
+            var data = JToken.Parse(
+                "{\"result\":[{},{}], \"rootObject\" : {\"firstProperty\":1,\"secondObjectProperty\":{\"secondValue\":2},\"ArrayProperty\":[1,{\"arrayObjectItemProperty\":4}]}}");
+
+            var sut = new Compare
+            {
+                FirstPath = "$.rootObject",
+                SecondPath = "$.rootObject",
+                ResultPath = "$.result[*]",
+                Settings = new CompareSettings()
+            };
+
+            //Act
+            var result = sut.Execute(data, executeOptions);
+
+            //Assert
+            Assert.That(result.Data.SelectToken("$.result[0]")?.ToString(), Is.EqualTo(
+                result.Data.SelectToken("$.result[1]")?.ToString()));
+            Assert.IsTrue(result.Data.SelectToken("$.result[0]")?.Any());
         }
     }
 }

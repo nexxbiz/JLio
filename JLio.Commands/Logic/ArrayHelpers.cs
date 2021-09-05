@@ -65,7 +65,17 @@ namespace JLio.Commands.Logic
         {
             if (keys != null && keys.Count > 0 && item.Type == JTokenType.Object &&
                 itemToMatch.Type == JTokenType.Object) return AllKeyMatch(item, keys, itemToMatch);
+            if (item.Type is JTokenType.Array && itemToMatch.Type == JTokenType.Array)
+                return ArrayCompareWithOrderingForPrimitiveComparison(item, itemToMatch);
+
             return JToken.DeepEquals(item, itemToMatch);
+        }
+
+        private static bool ArrayCompareWithOrderingForPrimitiveComparison(JToken item, JToken itemToMatch)
+        {
+            var first = new JArray(((JArray) item).OrderBy(i => i));
+            var Second = new JArray(((JArray) itemToMatch).OrderBy(i => i));
+            return JToken.DeepEquals(first, Second);
         }
     }
 }

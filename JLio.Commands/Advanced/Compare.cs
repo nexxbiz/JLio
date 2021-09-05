@@ -355,7 +355,7 @@ namespace JLio.Commands.Advanced
             {
                 FirstPath = sourcePath,
                 SecondPath = targetPath,
-                DifferenceType = DifferenceType.SameValues,
+                DifferenceType = DifferenceType.NoDifference,
                 DifferenceSubType = eDifferenceSubType.Equals,
                 Description =
                     $"the values are the same. Source: ({sourcePath}) - Target:({targetPath}) --> {value}",

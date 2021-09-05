@@ -85,6 +85,9 @@ namespace JLio.Commands
             switch (jToken)
             {
                 case JObject o:
+                    if (!o.ContainsKey(propertyName) && o.SelectToken(propertyName) != null)
+                        ReplaceTargetTokenWithNewValue(o.SelectToken(propertyName), dataContext);
+
                     if (!o.ContainsKey(propertyName))
                     {
                         executionOptions.Logger?.Log(LogLevel.Information, JLioConstants.CommandExecution,
@@ -99,6 +102,13 @@ namespace JLio.Commands
                         $"can't set value on a array on {a.Path}. {CommandName} functionality not applied.");
                     break;
             }
+        }
+
+        private void ReplaceTargetTokenWithNewValue(JToken currentJObject, JToken dataContext)
+        {
+            currentJObject.Replace(Value.GetValue(currentJObject, dataContext, executionOptions));
+            executionOptions.Logger?.Log(LogLevel.Information, JLioConstants.CommandExecution,
+                $"Value has been set on object at path {currentJObject.Path}.");
         }
 
         private void ReplaceCurrentValueWithNew(string propertyName, JObject o, JToken dataContext)
