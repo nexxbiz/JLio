@@ -436,5 +436,10 @@ namespace JLio.Commands.Advanced
 
         [JsonProperty("resultTypes")]
         public List<string> ResultTypes { get; set; } = new List<string>();
+
+        public static CompareSettings CreateDefault()
+        {
+            return new CompareSettings();
+        }
     }
 }

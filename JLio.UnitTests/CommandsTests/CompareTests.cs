@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using JLio.Commands.Advanced;
+using JLio.Commands.Advanced.Builders;
 using JLio.Commands.Advanced.Models;
 using JLio.Core.Models;
 using Newtonsoft.Json.Linq;
@@ -129,6 +130,22 @@ namespace JLio.UnitTests.CommandsTests
             Assert.That(result.Data.SelectToken("$.result[0]")?.ToString(), Is.EqualTo(
                 result.Data.SelectToken("$.result[1]")?.ToString()));
             Assert.IsTrue(result.Data.SelectToken("$.result[0]")?.Any());
+        }
+
+        [Test]
+        public void CanUseFluentApi()
+        {
+            var script = new JLioScript()
+                    .Compare("$.first")
+                    .With("$.second")
+                    .DefaultSettings()
+                    .SetResultOn("$.result")
+                ;
+            var result = script.Execute(JToken.Parse("{\"first\":true,\"second\":true}"));
+
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.Success);
+            Assert.AreNotEqual(result.Data.SelectToken("$.result")?.Type, JTokenType.Null);
         }
     }
 }
