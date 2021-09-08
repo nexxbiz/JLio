@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using JLio.Commands.Advanced.Models;
+using JLio.Commands.Advanced.Settings;
 using JLio.Commands.Builders;
 using JLio.Commands.Logic;
 using JLio.Core.Contracts;
@@ -43,11 +44,17 @@ namespace JLio.Commands.Advanced
             foreach (var source in options.ItemsFetcher.SelectTokens(FirstPath, dataContext))
             foreach (var target in options.ItemsFetcher.SelectTokens(SecondPath, dataContext))
                 compareResults.AddRange(CompareTokens(source, target));
-
+            var filteredResults = FilterCompareResult(compareResults);
             SetResults(dataContext, JToken.FromObject(compareResults));
 
-
             return new JLioExecutionResult(true, dataContext);
+        }
+
+        public CompareResults FilterCompareResult(CompareResults results)
+        {
+            if (Settings.ResultTypes == null || !Settings.ResultTypes.Any()) return results;
+
+            return new CompareResults(results.Where(r => Settings.ResultTypes.Contains(r.DifferenceType)).ToList());
         }
 
         private void SetResults(JToken dataContext, JToken compareResults)
@@ -414,32 +421,6 @@ namespace JLio.Commands.Advanced
                     $"the types are the same. Source: ({sourcePath}) --> {source.Type} - Target:({targetPath}) --> {target.Type}",
                 IsDifference = false
             };
-        }
-    }
-
-    public class CompareArraySettings
-    {
-        [JsonProperty("arrayPath")]
-        public string ArrayPath { get; set; } = string.Empty;
-
-        [JsonProperty("keyPaths")]
-        public List<string> KeyPaths { get; set; } = new List<string>();
-
-        [JsonProperty("uniqueIndexMatching")]
-        public bool UniqueIndexMatching { get; set; }
-    }
-
-    public class CompareSettings
-    {
-        [JsonProperty("arraySettings")]
-        public List<CompareArraySettings> ArraySettings { get; set; } = new List<CompareArraySettings>();
-
-        [JsonProperty("resultTypes")]
-        public List<string> ResultTypes { get; set; } = new List<string>();
-
-        public static CompareSettings CreateDefault()
-        {
-            return new CompareSettings();
         }
     }
 }

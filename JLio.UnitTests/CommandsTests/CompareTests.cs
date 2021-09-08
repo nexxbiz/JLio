@@ -3,6 +3,7 @@ using System.Linq;
 using JLio.Commands.Advanced;
 using JLio.Commands.Advanced.Builders;
 using JLio.Commands.Advanced.Models;
+using JLio.Commands.Advanced.Settings;
 using JLio.Core.Models;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -138,7 +139,7 @@ namespace JLio.UnitTests.CommandsTests
             var script = new JLioScript()
                     .Compare("$.first")
                     .With("$.second")
-                    .DefaultSettings()
+                    .UsingDefaultSettings()
                     .SetResultOn("$.result")
                 ;
             var result = script.Execute(JToken.Parse("{\"first\":true,\"second\":true}"));
@@ -146,6 +147,32 @@ namespace JLio.UnitTests.CommandsTests
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Success);
             Assert.AreNotEqual(result.Data.SelectToken("$.result")?.Type, JTokenType.Null);
+        }
+
+        [Test]
+        public void CanUseFilteringResultApi()
+        {
+            var settings = new CompareSettings
+            {
+                ResultTypes = new List<DifferenceType>
+                {
+                    DifferenceType.TypeDifference
+                }
+            };
+
+            var script = new JLioScript()
+                    .Compare("$.first")
+                    .With("$.second")
+                    .Using(settings)
+                    .SetResultOn("$.result")
+                ;
+            var result = script.Execute(JToken.Parse("{\"first\":true,\"second\":true}"));
+            var compareResults = result.Data.SelectToken("$.result")?.ToObject<CompareResults>();
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.Success);
+            Assert.AreNotEqual(result.Data.SelectToken("$.result")?.Type, JTokenType.Null);
+            Assert.IsNotNull(compareResults);
+            Assert.IsFalse(compareResults.All(r => settings.ResultTypes.Contains(r.DifferenceType)));
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using JLio.Commands.Advanced;
+using JLio.Commands.Advanced.Settings;
 using Newtonsoft.Json.Linq;
 
 namespace JLio.Commands.Logic

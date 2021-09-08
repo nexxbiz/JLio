@@ -1,4 +1,5 @@
-﻿using JLio.Core.Models;
+﻿using JLio.Commands.Advanced.Settings;
+using JLio.Core.Models;
 
 namespace JLio.Commands.Advanced.Builders
 {
@@ -15,7 +16,7 @@ namespace JLio.Commands.Advanced.Builders
                 settings);
         }
 
-        public static CompareSettingsContainer DefaultSettings(this CompareWithContainer source)
+        public static CompareSettingsContainer UsingDefaultSettings(this CompareWithContainer source)
         {
             return source.Using(CompareSettings.CreateDefault());
         }

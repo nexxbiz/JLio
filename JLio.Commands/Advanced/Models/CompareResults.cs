@@ -14,6 +14,11 @@ namespace JLio.Commands.Advanced.Models
             Add(result);
         }
 
+        public CompareResults(List<CompareResult> items)
+        {
+            AddRange(items);
+        }
+
         public bool ContainsIsDifferenceResult()
         {
             return this.Any(i => i.IsDifference);
