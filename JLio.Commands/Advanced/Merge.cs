@@ -39,6 +39,7 @@ namespace JLio.Commands.Advanced
         [JsonProperty("targetPath")]
         public string TargetPath { get; set; }
 
+        [JsonProperty("command")]
         public string CommandName => "merge";
 
         public JLioExecutionResult Execute(JToken dataContext, IExecutionOptions options)

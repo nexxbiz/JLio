@@ -20,7 +20,7 @@ namespace JLio.Commands.Advanced
         [JsonProperty("firstPath")]
         public string FirstPath { get; set; }
 
-        [JsonProperty("ResultPath")]
+        [JsonProperty("resultPath")]
         public string ResultPath { get; set; }
 
         [JsonProperty("secondPath")]
@@ -29,11 +29,37 @@ namespace JLio.Commands.Advanced
         [JsonProperty("settings")]
         public CompareSettings Settings { get; set; }
 
+        [JsonProperty("command")]
         public string CommandName { get; } = "compare";
 
         public ValidationResult ValidateCommandInstance()
         {
-            throw new NotImplementedException();
+            var result = new ValidationResult {IsValid = true};
+            if (string.IsNullOrWhiteSpace(FirstPath))
+            {
+                result.ValidationMessages.Add($"FirstPath property for {CommandName} command is missing");
+                result.IsValid = false;
+            }
+
+            if (string.IsNullOrWhiteSpace(SecondPath))
+            {
+                result.ValidationMessages.Add($"SecondPath Path property for {CommandName} command is missing");
+                result.IsValid = false;
+            }
+
+            if (string.IsNullOrWhiteSpace(ResultPath))
+            {
+                result.ValidationMessages.Add($"ResultPath Path property for {CommandName} command is missing");
+                result.IsValid = false;
+            }
+
+            if (Settings == null)
+            {
+                result.ValidationMessages.Add($"Settings property property for {CommandName} command is missing");
+                result.IsValid = false;
+            }
+
+            return result;
         }
 
         public JLioExecutionResult Execute(JToken dataContext, IExecutionOptions executionOptions)
@@ -45,12 +71,12 @@ namespace JLio.Commands.Advanced
             foreach (var target in options.ItemsFetcher.SelectTokens(SecondPath, dataContext))
                 compareResults.AddRange(CompareTokens(source, target));
             var filteredResults = FilterCompareResult(compareResults);
-            SetResults(dataContext, JToken.FromObject(compareResults));
+            SetResults(dataContext, JToken.FromObject(filteredResults));
 
             return new JLioExecutionResult(true, dataContext);
         }
 
-        public CompareResults FilterCompareResult(CompareResults results)
+        private CompareResults FilterCompareResult(CompareResults results)
         {
             if (Settings.ResultTypes == null || !Settings.ResultTypes.Any()) return results;
 

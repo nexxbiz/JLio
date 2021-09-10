@@ -12,13 +12,20 @@ namespace JLio.Commands.Advanced.Builders
 
         public static CompareSettingsContainer Using(this CompareWithContainer source, CompareSettings settings)
         {
-            return new CompareSettingsContainer(source.Script, source.Path, source.SecondPath,
+            return new CompareSettingsContainer(source.Script, source.FirstPath, source.SecondPath,
                 settings);
         }
 
-        public static CompareSettingsContainer UsingDefaultSettings(this CompareWithContainer source)
+        public static JLioScript SetResultOn(this CompareWithContainer source, string resultPath)
         {
-            return source.Using(CompareSettings.CreateDefault());
+            source.Script.AddLine(new Compare
+            {
+                FirstPath = source.FirstPath,
+                Settings = CompareSettings.CreateDefault(),
+                ResultPath = resultPath,
+                SecondPath = source.SecondPath
+            });
+            return source.Script;
         }
 
         public static JLioScript SetResultOn(this CompareSettingsContainer source, string resultPath)
@@ -76,11 +83,11 @@ namespace JLio.Commands.Advanced.Builders
             public CompareWithContainer(ComparePathContainer source, string secondPath)
             {
                 Script = source.Script;
-                Path = source.FirstPath;
+                FirstPath = source.FirstPath;
                 SecondPath = secondPath;
             }
 
-            internal string Path { get; }
+            internal string FirstPath { get; }
             internal JLioScript Script { get; }
             internal string SecondPath { get; }
         }

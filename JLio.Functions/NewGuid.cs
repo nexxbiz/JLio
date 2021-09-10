@@ -5,23 +5,15 @@ using Newtonsoft.Json.Linq;
 
 namespace JLio.Functions
 {
-    public class NewGuid : IFunction
+    public class NewGuid : FunctionBase
     {
-        public string FunctionName => "newGuid";
+        public NewGuid() : base("newGuid")
+        {
+        }
 
-        public JLioExecutionResult Execute(JToken currentToken, JToken dataContext, IExecutionOptions options)
+        public override JLioExecutionResult Execute(JToken currentToken, JToken dataContext, IExecutionOptions options)
         {
             return new JLioExecutionResult(true, new JValue(Guid.NewGuid().ToString()));
-        }
-
-        public IFunction SetArguments(Arguments arguments)
-        {
-            return this;
-        }
-
-        public string ToScript()
-        {
-            return $"{FunctionName}()";
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using JLio.Client;
+using JLio.Commands.Advanced.Builders;
 using JLio.Commands.Builders;
 using JLio.Core.Models;
 using Microsoft.Extensions.Logging;
@@ -91,6 +92,8 @@ namespace JLio.UnitTests.ScriptTextHandling
                 .Set(new JValue(1)).OnPath("$.demo")
                 .Move("$.demo").To("$.otherDemo")
                 .Copy("$.otherDemo").To(" $.demo")
+                .Compare("$.first").With("$.second").SetResultOn("$.result")
+                .Merge("$.first").With("$.second").UsingDefaultSettings()
                 .Remove("$.demo");
             var scriptText = string.Empty;
             Assert.DoesNotThrow(() => { scriptText = JLioConvert.Serialize(script); });

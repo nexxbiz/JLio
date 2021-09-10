@@ -1,4 +1,5 @@
 ﻿using JLio.Commands;
+using JLio.Commands.Advanced;
 using JLio.Core;
 using JLio.Core.Contracts;
 using JLio.Functions;
@@ -19,7 +20,9 @@ namespace JLio.Client
                 .Register<Set>()
                 .Register<Remove>()
                 .Register<Copy>()
-                .Register<Move>();
+                .Register<Move>()
+                .Register<Compare>()
+                .Register<Merge>();
 
             var functionsProvider = new JLioFunctionsProvider();
             functionsProvider

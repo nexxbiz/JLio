@@ -204,7 +204,7 @@ namespace JLio.UnitTests.CommandsTests
         public void CanUseFluentApi()
         {
             var script = new JLioScript()
-                    .Merge("$.first").With("$.result").DefaultSettings()
+                    .Merge("$.first").With("$.result").UsingDefaultSettings()
                     .Merge("$.first").With("$.result").Using(new MergeSettings())
                 ;
             var result = script.Execute(new JObject());

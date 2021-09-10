@@ -139,7 +139,6 @@ namespace JLio.UnitTests.CommandsTests
             var script = new JLioScript()
                     .Compare("$.first")
                     .With("$.second")
-                    .UsingDefaultSettings()
                     .SetResultOn("$.result")
                 ;
             var result = script.Execute(JToken.Parse("{\"first\":true,\"second\":true}"));
@@ -172,7 +171,7 @@ namespace JLio.UnitTests.CommandsTests
             Assert.IsTrue(result.Success);
             Assert.AreNotEqual(result.Data.SelectToken("$.result")?.Type, JTokenType.Null);
             Assert.IsNotNull(compareResults);
-            Assert.IsFalse(compareResults.All(r => settings.ResultTypes.Contains(r.DifferenceType)));
+            Assert.IsTrue(compareResults.All(r => settings.ResultTypes.Contains(r.DifferenceType)));
         }
     }
 }

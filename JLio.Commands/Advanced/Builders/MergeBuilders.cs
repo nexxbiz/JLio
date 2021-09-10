@@ -17,7 +17,7 @@ namespace JLio.Commands.Advanced.Builders
             return source.Script;
         }
 
-        public static JLioScript DefaultSettings(this MergeWithContainer source)
+        public static JLioScript UsingDefaultSettings(this MergeWithContainer source)
         {
             source.Script.AddLine(new Merge
                 {Path = source.Path, TargetPath = source.TargetPath, Settings = MergeSettings.CreateDefault()});
