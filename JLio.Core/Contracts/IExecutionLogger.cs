@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace JLio.Core.Contracts
 {
-    public interface IJLioExecutionLogger
+    public interface IExecutionLogger
     {
         LogEntries LogEntries { get; }
         string LogText { get; }

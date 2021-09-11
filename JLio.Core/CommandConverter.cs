@@ -5,11 +5,11 @@ using Newtonsoft.Json.Linq;
 
 namespace JLio.Core
 {
-    public class JLioCommandConverter : JsonConverter
+    public class CommandConverter : JsonConverter
     {
-        private readonly IJLioCommandsProvider provider;
+        private readonly ICommandsProvider provider;
 
-        public JLioCommandConverter(IJLioCommandsProvider provider)
+        public CommandConverter(ICommandsProvider provider)
         {
             this.provider = provider;
         }
@@ -26,7 +26,7 @@ namespace JLio.Core
         {
             if (reader.TokenType == JsonToken.Null) return null;
             var json = JObject.Load(reader);
-            var discriminatorField = json.Property(JLioConstants.CommandDiscriminator)?.Value.ToString();
+            var discriminatorField = json.Property(Constants.CommandDiscriminator)?.Value.ToString();
             if (discriminatorField == null) return null;
             var foundCommand = provider[discriminatorField];
             if (foundCommand == null) return new NotFoundCommand(json.ToString());
@@ -36,7 +36,7 @@ namespace JLio.Core
 
         public override bool CanConvert(Type objectType)
         {
-            return objectType.IsAssignableFrom(typeof(IJLioCommand));
+            return objectType.IsAssignableFrom(typeof(ICommand));
         }
     }
 }

@@ -7,14 +7,14 @@ using Newtonsoft.Json;
 
 namespace JLio.Client
 {
-    public class ParseOptions : IJLioParseOptions
+    public class ParseOptions : IParseOptions
     {
         public JsonConverter JLioFunctionConverter { get; set; }
         public JsonConverter JLioCommandConverter { get; set; }
 
         public static ParseOptions CreateDefault()
         {
-            var commandProvider = new JLioCommandsProvider();
+            var commandProvider = new CommandsProvider();
             commandProvider
                 .Register<Add>()
                 .Register<Set>()
@@ -24,7 +24,7 @@ namespace JLio.Client
                 .Register<Compare>()
                 .Register<Merge>();
 
-            var functionsProvider = new JLioFunctionsProvider();
+            var functionsProvider = new FunctionsProvider();
             functionsProvider
                 .Register<DatetimeFunction>()
                 .Register<NewGuid>()
@@ -33,8 +33,8 @@ namespace JLio.Client
 
             return new ParseOptions
             {
-                JLioCommandConverter = new JLioCommandConverter(commandProvider),
-                JLioFunctionConverter = new JLioFunctionConverter(functionsProvider)
+                JLioCommandConverter = new CommandConverter(commandProvider),
+                JLioFunctionConverter = new FunctionConverter(functionsProvider)
             };
         }
     }

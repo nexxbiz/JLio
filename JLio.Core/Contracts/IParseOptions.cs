@@ -2,7 +2,7 @@
 
 namespace JLio.Core.Contracts
 {
-    public interface IJLioParseOptions
+    public interface IParseOptions
     {
         JsonConverter JLioCommandConverter { get; set; }
         JsonConverter JLioFunctionConverter { get; set; }

@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 
 namespace JLio.Core.Models
 {
-    public abstract class CommandBase : IJLioCommand
+    public abstract class CommandBase : ICommand
     {
         [JsonProperty("command")]
         public string CommandName => FirstCharToLowerCase(GetType().Name);

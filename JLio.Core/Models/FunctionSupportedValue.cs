@@ -3,9 +3,9 @@ using Newtonsoft.Json.Linq;
 
 namespace JLio.Core.Models
 {
-    public class JLioFunctionSupportedValue : IFunctionSupportedValue
+    public class FunctionSupportedValue : IFunctionSupportedValue
     {
-        public JLioFunctionSupportedValue(IFunction function)
+        public FunctionSupportedValue(IFunction function)
         {
             Function = function;
         }
@@ -16,7 +16,7 @@ namespace JLio.Core.Models
         {
             var result = Function.Execute(currentToken, dataContext, options);
             if (result.Data.Type == JTokenType.String)
-                return result.Data.ToString().Trim(JLioConstants.StringIndicator);
+                return result.Data.ToString().Trim(Constants.StringIndicator);
             return result.Data;
         }
 

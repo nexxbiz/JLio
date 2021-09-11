@@ -30,13 +30,13 @@ namespace JLio.Commands
             if (!validationResult.IsValid)
             {
                 validationResult.ValidationMessages.ForEach(i =>
-                    options.Logger?.Log(LogLevel.Warning, JLioConstants.CommandExecution, i));
+                    options.Logger?.Log(LogLevel.Warning, Constants.CommandExecution, i));
                 return new JLioExecutionResult(false, dataContext);
             }
 
             RemoveItems(dataContext);
 
-            options.Logger?.Log(LogLevel.Information, JLioConstants.CommandExecution,
+            options.Logger?.Log(LogLevel.Information, Constants.CommandExecution,
                 $"{CommandName}: completed for {Path}");
 
             return new JLioExecutionResult(true, dataContext);
@@ -59,7 +59,7 @@ namespace JLio.Commands
             var targetItems =
                 executionOptions.ItemsFetcher.SelectTokens(Path, data);
             if (targetItems.Count == 0)
-                executionOptions.Logger?.Log(LogLevel.Warning, JLioConstants.CommandExecution,
+                executionOptions.Logger?.Log(LogLevel.Warning, Constants.CommandExecution,
                     $"{Path} did not retrieve any items");
             targetItems.ForEach(RemoveItemFromTarget);
         }
@@ -76,7 +76,7 @@ namespace JLio.Commands
                     RemoveValuesFromArray((JArray) parent, selectedValue);
                     break;
                 default:
-                    executionOptions.Logger?.Log(LogLevel.Warning, JLioConstants.CommandExecution,
+                    executionOptions.Logger?.Log(LogLevel.Warning, Constants.CommandExecution,
                         $"{CommandName} only works on properties or items in array's");
                     break;
             }

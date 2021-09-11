@@ -12,12 +12,12 @@ namespace JLio.UnitTests.CommandsTests
     public class SetTests
     {
         private JToken data;
-        private JLioExecutionOptions executeOptions;
+        private ExecutionOptions executeOptions;
 
         [SetUp]
         public void Setup()
         {
-            executeOptions = JLioExecutionOptions.CreateDefault();
+            executeOptions = ExecutionOptions.CreateDefault();
             data = JToken.Parse(
                 "{\r\n  \"myString\": \"demo2\",\r\n  \"myNumber\": 2.2,\r\n  \"myInteger\": 20,\r\n  \"myObject\": {\r\n    \"myObject\": {\"myArray\": [\r\n      2,\r\n      20,\r\n      200,\r\n      2000\r\n    ]},\r\n    \"myArray\": [\r\n      2,\r\n      20,\r\n      200,\r\n      2000\r\n    ]\r\n  },\r\n  \"myArray\": [\r\n    2,\r\n    20,\r\n    200,\r\n    2000\r\n  ],\r\n  \"myBoolean\": true,\r\n  \"myNull\": null\r\n}");
         }
@@ -29,7 +29,7 @@ namespace JLio.UnitTests.CommandsTests
         [TestCase("$..myArray", "newData")]
         public void CanSetValues(string path, string value)
         {
-            var valueToSet = new JLioFunctionSupportedValue(new FixedValue(new JValue(value)));
+            var valueToSet = new FunctionSupportedValue(new FixedValue(new JValue(value)));
             var result = new Set(path, valueToSet).Execute(data, executeOptions);
 
             Assert.IsNotNull(result);
@@ -42,7 +42,7 @@ namespace JLio.UnitTests.CommandsTests
         [TestCase("$..myArray", "newData")]
         public void CanSetCorrectValues(string path, string value)
         {
-            var valueToSet = new JLioFunctionSupportedValue(new FixedValue(new JValue(value)));
+            var valueToSet = new FunctionSupportedValue(new FixedValue(new JValue(value)));
             var result = new Set(path, valueToSet).Execute(data, executeOptions);
 
             Assert.IsNotNull(result);
@@ -55,7 +55,7 @@ namespace JLio.UnitTests.CommandsTests
         [TestCase("", null, "Path property for set command is missing")]
         public void CanExecuteWithArgumentsNotProvided(string path, string value, string message)
         {
-            var valueToAdd = new JLioFunctionSupportedValue(new FixedValue(new JValue(value)));
+            var valueToAdd = new FunctionSupportedValue(new FixedValue(new JValue(value)));
             var result = new Set(path, valueToAdd).Execute(data, executeOptions);
 
             Assert.IsNotNull(result);

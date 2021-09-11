@@ -1,6 +1,6 @@
 ﻿namespace JLio.Core.Contracts
 {
-    public interface IJLioFunctionsProvider
+    public interface IFunctionsProvider
     {
         IFunction this[string functionName] { get; }
     }

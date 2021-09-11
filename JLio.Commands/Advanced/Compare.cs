@@ -69,7 +69,7 @@ namespace JLio.Commands.Advanced
             if (!validationResult.IsValid)
             {
                 validationResult.ValidationMessages.ForEach(i =>
-                    options.Logger?.Log(LogLevel.Warning, JLioConstants.CommandExecution, i));
+                    options.Logger?.Log(LogLevel.Warning, Constants.CommandExecution, i));
                 return new JLioExecutionResult(false, dataContext);
             }
 

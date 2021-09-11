@@ -27,7 +27,7 @@ namespace JLio.Functions
         public string ToScript()
         {
             return
-                $"{FunctionName}({string.Join(JLioConstants.ArgumentsDelimiter.ToString(), arguments.Select(a => a.Function.ToScript()))})";
+                $"{FunctionName}({string.Join(Constants.ArgumentsDelimiter.ToString(), arguments.Select(a => a.Function.ToScript()))})";
         }
 
         public abstract JLioExecutionResult Execute(JToken currentToken, JToken dataContext, IExecutionOptions options);

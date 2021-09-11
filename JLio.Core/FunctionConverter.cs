@@ -7,11 +7,11 @@ using Newtonsoft.Json.Linq;
 
 namespace JLio.Core
 {
-    public class JLioFunctionConverter : JsonConverter
+    public class FunctionConverter : JsonConverter
     {
-        private readonly IJLioFunctionsProvider provider;
+        private readonly IFunctionsProvider provider;
 
-        public JLioFunctionConverter(IJLioFunctionsProvider functionsProvider)
+        public FunctionConverter(IFunctionsProvider functionsProvider)
         {
             provider = functionsProvider ?? throw new ArgumentNullException(nameof(functionsProvider));
         }
@@ -20,17 +20,17 @@ namespace JLio.Core
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var functionValue = (JLioFunctionSupportedValue) value;
+            var functionValue = (FunctionSupportedValue) value;
             JToken tokenToWrite;
             if (functionValue.Function is FixedValue f)
                 tokenToWrite = GetFixedValueToken(f, functionValue);
             else
                 tokenToWrite =
-                    JToken.Parse($"\"={((JLioFunctionSupportedValue) value).GetStringRepresentation()}\"");
+                    JToken.Parse($"\"={((FunctionSupportedValue) value).GetStringRepresentation()}\"");
             tokenToWrite.WriteTo(writer);
         }
 
-        private JToken GetFixedValueToken(FixedValue fixedValue, JLioFunctionSupportedValue value)
+        private JToken GetFixedValueToken(FixedValue fixedValue, FunctionSupportedValue value)
         {
             if (fixedValue.Value.Type != JTokenType.String) return fixedValue.Value;
             return value.GetStringRepresentation();
@@ -43,26 +43,26 @@ namespace JLio.Core
             var value = JToken.Load(reader);
             if (value.Type == JTokenType.String) return ParseString(value.ToString());
 
-            return new JLioFunctionSupportedValue(new FixedValue(value));
+            return new FunctionSupportedValue(new FixedValue(value));
         }
 
         private IFunctionSupportedValue ParseString(string text)
         {
-            if (string.IsNullOrEmpty(text)) return new JLioFunctionSupportedValue(new FixedValue(JValue.CreateNull()));
-            if (!text.StartsWith(JLioConstants.FunctionStartCharacters))
-                return new JLioFunctionSupportedValue(new FixedValue(JToken.Parse($"\"{text}\"")));
+            if (string.IsNullOrEmpty(text)) return new FunctionSupportedValue(new FixedValue(JValue.CreateNull()));
+            if (!text.StartsWith(Constants.FunctionStartCharacters))
+                return new FunctionSupportedValue(new FixedValue(JToken.Parse($"\"{text}\"")));
             var (function, arguments) = GetFunctionAndArguments(text);
 
-            return new JLioFunctionSupportedValue(function.SetArguments(arguments));
+            return new FunctionSupportedValue(function.SetArguments(arguments));
         }
 
         private (IFunction function, Arguments arguments) GetFunctionAndArguments(string text)
         {
             var mainSplit = SplitText.GetChoppedElements(text,
-                new[] {JLioConstants.FunctionArgumentsStartCharacters, JLioConstants.FunctionArgumentsEndCharacters},
-                JLioConstants.ArgumentLevelPairs);
-            var functionName = mainSplit[0].Text.TrimStart(JLioConstants.FunctionArgumentsStartCharacters)
-                .Trim(JLioConstants.FunctionStartCharacters.ToCharArray());
+                new[] {Constants.FunctionArgumentsStartCharacters, Constants.FunctionArgumentsEndCharacters},
+                Constants.ArgumentLevelPairs);
+            var functionName = mainSplit[0].Text.TrimStart(Constants.FunctionArgumentsStartCharacters)
+                .Trim(Constants.FunctionStartCharacters.ToCharArray());
 
             var function = provider[functionName];
             if (mainSplit.Count > 1 && function != null)
@@ -74,12 +74,12 @@ namespace JLio.Core
             string argumentsText)
         {
             var functionsArguments = new Arguments();
-            SplitText.GetChoppedElements(argumentsText, JLioConstants.ArgumentsDelimiter,
-                JLioConstants.ArgumentLevelPairs).ForEach(i =>
+            SplitText.GetChoppedElements(argumentsText, Constants.ArgumentsDelimiter,
+                Constants.ArgumentLevelPairs).ForEach(i =>
             {
                 var argumentAnalysis = GetFunctionAndArguments(i.Text);
                 functionsArguments.Add(
-                    new JLioFunctionSupportedValue(argumentAnalysis.function.SetArguments(argumentAnalysis.arguments)));
+                    new FunctionSupportedValue(argumentAnalysis.function.SetArguments(argumentAnalysis.arguments)));
             });
             return (function, functionsArguments);
         }

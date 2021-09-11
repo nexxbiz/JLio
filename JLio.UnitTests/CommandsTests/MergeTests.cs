@@ -10,12 +10,12 @@ namespace JLio.UnitTests.CommandsTests
 {
     public class MergeTests
     {
-        private JLioExecutionOptions executeOptions;
+        private ExecutionOptions executeOptions;
 
         [SetUp]
         public void Setup()
         {
-            executeOptions = JLioExecutionOptions.CreateDefault();
+            executeOptions = ExecutionOptions.CreateDefault();
         }
 
         [Test]

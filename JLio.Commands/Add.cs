@@ -20,7 +20,7 @@ namespace JLio.Commands
         public Add(string path, JToken value)
         {
             Path = path;
-            Value = new JLioFunctionSupportedValue(new FixedValue(value));
+            Value = new FunctionSupportedValue(new FixedValue(value));
         }
 
         public Add(string path, IFunctionSupportedValue value)
@@ -42,14 +42,14 @@ namespace JLio.Commands
             if (!validationResult.IsValid)
             {
                 validationResult.ValidationMessages.ForEach(i =>
-                    options.Logger?.Log(LogLevel.Warning, JLioConstants.CommandExecution, i));
+                    options.Logger?.Log(LogLevel.Warning, Constants.CommandExecution, i));
                 return new JLioExecutionResult(false, dataContext);
             }
 
             var targetPath = JsonPathMethods.SplitPath(Path);
             JsonMethods.CheckOrCreateParentPath(dataContext, targetPath, options.ItemsFetcher, options.Logger);
             AddToObjectItems(dataContext, options.ItemsFetcher, targetPath);
-            options.Logger?.Log(LogLevel.Information, JLioConstants.CommandExecution,
+            options.Logger?.Log(LogLevel.Information, Constants.CommandExecution,
                 $"{CommandName}: completed for {targetPath.Elements.ToPathString()}");
             return new JLioExecutionResult(true, dataContext);
         }
@@ -90,7 +90,7 @@ namespace JLio.Commands
                     }
                     else if (o.ContainsKey(propertyName))
                     {
-                        executionOptions.Logger?.Log(LogLevel.Warning, JLioConstants.CommandExecution,
+                        executionOptions.Logger?.Log(LogLevel.Warning, Constants.CommandExecution,
                             $"Property {propertyName} already exists on {o.Path}. {CommandName} function not applied");
                         return;
                     }
@@ -106,14 +106,14 @@ namespace JLio.Commands
         private void AddProperty(string propertyName, JObject o, JToken dataContext)
         {
             o.Add(propertyName, Value.GetValue(o, dataContext, executionOptions));
-            executionOptions.Logger?.Log(LogLevel.Information, JLioConstants.CommandExecution,
+            executionOptions.Logger?.Log(LogLevel.Information, Constants.CommandExecution,
                 $"Property {propertyName} added to object: {o.Path}");
         }
 
         private void AddToArray(JArray jArray, JToken dataContext)
         {
             jArray.Add(Value.GetValue(jArray, dataContext, executionOptions));
-            executionOptions.Logger?.Log(LogLevel.Information, JLioConstants.CommandExecution,
+            executionOptions.Logger?.Log(LogLevel.Information, Constants.CommandExecution,
                 $"Value added to array: {jArray.Path}");
         }
     }

@@ -12,12 +12,12 @@ namespace JLio.UnitTests.CommandsTests
 {
     public class CompareTests
     {
-        private JLioExecutionOptions executeOptions;
+        private ExecutionOptions executeOptions;
 
         [SetUp]
         public void Setup()
         {
-            executeOptions = JLioExecutionOptions.CreateDefault();
+            executeOptions = ExecutionOptions.CreateDefault();
         }
 
         [TestCase("{\"first\":1,\"second\":true}", true)]

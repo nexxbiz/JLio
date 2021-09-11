@@ -2,9 +2,9 @@
 
 namespace JLio.Core.Models
 {
-    public class JLioFunctionRegistration
+    public class FunctionRegistration
     {
-        public JLioFunctionRegistration(Type type)
+        public FunctionRegistration(Type type)
         {
             Type = type;
         }

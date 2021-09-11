@@ -10,14 +10,14 @@ namespace JLio.UnitTests.FunctionsTests
 {
     public class ConcatTests
     {
-        private JLioExecutionOptions executeOptions;
+        private ExecutionOptions executeOptions;
         private ParseOptions parseOptions;
 
         [SetUp]
         public void Setup()
         {
             parseOptions = ParseOptions.CreateDefault();
-            executeOptions = JLioExecutionOptions.CreateDefault();
+            executeOptions = ExecutionOptions.CreateDefault();
         }
 
         [TestCase("=concat()", "{}", "")]

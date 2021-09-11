@@ -31,7 +31,7 @@ namespace JLio.Functions
         public DatetimeFunction(params string[] arguments) : base("datetime")
         {
             arguments.ToList().ForEach(a =>
-                this.arguments.Add(new JLioFunctionSupportedValue(new FixedValue(JToken.Parse($"\"{a}\"")))));
+                this.arguments.Add(new FunctionSupportedValue(new FixedValue(JToken.Parse($"\"{a}\"")))));
         }
 
         public override JLioExecutionResult Execute(JToken currentToken, JToken dataContext, IExecutionOptions options)
@@ -42,7 +42,7 @@ namespace JLio.Functions
             return new JLioExecutionResult(result.Success, result.JToken);
         }
 
-        private DateTimeConversionResult GetToken(string dateSelection, string format, IJLioExecutionLogger logger)
+        private DateTimeConversionResult GetToken(string dateSelection, string format, IExecutionLogger logger)
         {
             var datetimeConversionResult = GetDateTime(dateSelection, logger);
             if (!datetimeConversionResult.Success)
@@ -58,7 +58,7 @@ namespace JLio.Functions
             return datetimeConversionResult;
         }
 
-        private DateTimeConversionResult GetDateTime(string dateSelection, IJLioExecutionLogger logger)
+        private DateTimeConversionResult GetDateTime(string dateSelection, IExecutionLogger logger)
         {
             switch (dateSelection)
             {
@@ -71,7 +71,7 @@ namespace JLio.Functions
                 case "startOfDayUTC":
                     return new DateTimeConversionResult {DateTime = DateTime.UtcNow.Date, Success = true};
                 default:
-                    logger.Log(LogLevel.Information, JLioConstants.FunctionExecution,
+                    logger.Log(LogLevel.Information, Constants.FunctionExecution,
                         $"unknown datetime indication {dateSelection}, assuming this is a datetime format");
                     return new DateTimeConversionResult {DateTime = DateTime.Now, Success = false};
             }
@@ -81,8 +81,8 @@ namespace JLio.Functions
         {
             var dateSelection = "now";
             var format = "yyyy-MM-ddTHH:mm:ss.fffZ";
-            if (argumentValues.Count > 0) dateSelection = argumentValues[0].Trim(JLioConstants.StringIndicator);
-            if (argumentValues.Count > 1) format = argumentValues[1].Trim(JLioConstants.StringIndicator);
+            if (argumentValues.Count > 0) dateSelection = argumentValues[0].Trim(Constants.StringIndicator);
+            if (argumentValues.Count > 1) format = argumentValues[1].Trim(Constants.StringIndicator);
 
             return (dateSelection, format);
         }

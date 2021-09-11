@@ -2,9 +2,9 @@
 
 namespace JLio.Core.Models
 {
-    public class JLioCommandRegistration
+    public class CommandRegistration
     {
-        public JLioCommandRegistration(Type type)
+        public CommandRegistration(Type type)
         {
             Type = type;
         }

@@ -69,7 +69,7 @@ namespace JLio.UnitTests.ScriptTextHandling
         [TestCase("[{\"path\":\"$.myObject.newProperty\",\"value\":\"new value\",\"command\":\"unknown\"}]", "{}")]
         public void CanParseAndExecuteWithLogging(string scriptText, string data)
         {
-            var options = JLioExecutionOptions.CreateDefault();
+            var options = ExecutionOptions.CreateDefault();
             var script = JLioConvert.Parse(scriptText);
             var result = script.Execute(JToken.Parse(data), options);
 

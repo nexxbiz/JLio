@@ -5,11 +5,11 @@ using Newtonsoft.Json.Linq;
 
 namespace JLio.Core.Models
 {
-    public class JLioScript : List<IJLioCommand>
+    public class JLioScript : List<ICommand>
     {
         public JLioExecutionResult Execute(JToken data)
         {
-            return Execute(data, JLioExecutionOptions.CreateDefault());
+            return Execute(data, ExecutionOptions.CreateDefault());
         }
 
         public JLioExecutionResult Execute(JToken data, IExecutionOptions options)
@@ -21,7 +21,7 @@ namespace JLio.Core.Models
             return executionResult;
         }
 
-        public void AddLine(IJLioCommand command)
+        public void AddLine(ICommand command)
         {
             Add(command);
         }

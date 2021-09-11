@@ -9,13 +9,13 @@ namespace JLio.Commands.Builders
     {
         public static JLioScript OnPath(this SetValueContainer source, string path)
         {
-            source.Script.AddLine(new Set(path, new JLioFunctionSupportedValue(new FixedValue(source.Value))));
+            source.Script.AddLine(new Set(path, new FunctionSupportedValue(new FixedValue(source.Value))));
             return source.Script;
         }
 
         public static JLioScript OnPath(this SetValueAsFunctionContainer source, string path)
         {
-            source.Script.AddLine(new Set(path, new JLioFunctionSupportedValue(source.Function)));
+            source.Script.AddLine(new Set(path, new FunctionSupportedValue(source.Function)));
             return source.Script;
         }
 

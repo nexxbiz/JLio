@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 
 namespace JLio.Core.Contracts
 {
-    public interface IJLioCommand
+    public interface ICommand
     {
         string CommandName { get; }
 

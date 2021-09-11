@@ -4,9 +4,9 @@ using JLio.Core.Models;
 
 namespace JLio.Core
 {
-    public class JLioFunctionsProvider : IJLioFunctionsProvider, IJLioFunctionsProviderRegistrar
+    public class FunctionsProvider : IFunctionsProvider, IFunctionsProviderRegistrar
     {
-        private readonly JLioFunctionRegistrations functions = new JLioFunctionRegistrations();
+        private readonly FunctionRegistrations functions = new FunctionRegistrations();
 
         public IFunction this[string function]
         {
@@ -18,13 +18,13 @@ namespace JLio.Core
             }
         }
 
-        public IJLioFunctionsProviderRegistrar Register<T>() where T : IFunction
+        public IFunctionsProviderRegistrar Register<T>() where T : IFunction
         {
             var function = typeof(T);
             var functionInstance = (IFunction) Activator.CreateInstance(function);
             DeleteIfFunctionNameAlreadyExists(functionInstance);
 
-            functions.Add(functionInstance.FunctionName, new JLioFunctionRegistration(function));
+            functions.Add(functionInstance.FunctionName, new FunctionRegistration(function));
             return this;
         }
 
@@ -34,7 +34,7 @@ namespace JLio.Core
                 functions.Remove(functionInstance.FunctionName);
         }
 
-        private static IFunction CreateInstance(JLioFunctionRegistration functionRegistration)
+        private static IFunction CreateInstance(FunctionRegistration functionRegistration)
         {
             return (IFunction) Activator.CreateInstance(functionRegistration.Type);
         }
