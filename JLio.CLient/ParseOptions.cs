@@ -7,12 +7,12 @@ using Newtonsoft.Json;
 
 namespace JLio.Client
 {
-    public class JLioParseOptions : IJLioParseOptions
+    public class ParseOptions : IJLioParseOptions
     {
         public JsonConverter JLioFunctionConverter { get; set; }
         public JsonConverter JLioCommandConverter { get; set; }
 
-        public static JLioParseOptions CreateDefault()
+        public static ParseOptions CreateDefault()
         {
             var commandProvider = new JLioCommandsProvider();
             commandProvider
@@ -31,7 +31,7 @@ namespace JLio.Client
                 .Register<Concat>()
                 ;
 
-            return new JLioParseOptions
+            return new ParseOptions
             {
                 JLioCommandConverter = new JLioCommandConverter(commandProvider),
                 JLioFunctionConverter = new JLioFunctionConverter(functionsProvider)

@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 
 namespace JLio.Commands
 {
-    public class Add : IJLioCommand
+    public class Add : CommandBase
     {
         private IExecutionOptions executionOptions;
 
@@ -35,10 +35,7 @@ namespace JLio.Commands
         [JsonProperty("value")]
         public IFunctionSupportedValue Value { get; set; }
 
-        [JsonProperty("command")]
-        public string CommandName { get; } = "add";
-
-        public JLioExecutionResult Execute(JToken dataContext, IExecutionOptions options)
+        public override JLioExecutionResult Execute(JToken dataContext, IExecutionOptions options)
         {
             executionOptions = options;
             var validationResult = ValidateCommandInstance();
@@ -57,7 +54,7 @@ namespace JLio.Commands
             return new JLioExecutionResult(true, dataContext);
         }
 
-        public ValidationResult ValidateCommandInstance()
+        public override ValidationResult ValidateCommandInstance()
         {
             var result = new ValidationResult {IsValid = true};
             if (string.IsNullOrWhiteSpace(Path))

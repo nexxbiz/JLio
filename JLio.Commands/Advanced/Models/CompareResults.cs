@@ -21,7 +21,7 @@ namespace JLio.Commands.Advanced.Models
 
         public bool ContainsIsDifferenceResult()
         {
-            return this.Any(i => i.IsDifference);
+            return this.Any(i => i.FoundDifference);
         }
     }
 }

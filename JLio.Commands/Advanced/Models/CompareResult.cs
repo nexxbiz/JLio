@@ -19,8 +19,8 @@ namespace JLio.Commands.Advanced.Models
         [JsonProperty("firstPath", NullValueHandling = NullValueHandling.Ignore)]
         public string FirstPath { get; set; }
 
-        [JsonProperty("isDifference")]
-        public bool IsDifference { get; set; }
+        [JsonProperty("foundDifference")]
+        public bool FoundDifference { get; set; }
 
         [JsonProperty("secondPath", NullValueHandling = NullValueHandling.Ignore)]
         public string SecondPath { get; set; }

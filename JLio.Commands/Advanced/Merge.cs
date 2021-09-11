@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 
 namespace JLio.Commands.Advanced
 {
-    public class Merge : IJLioCommand
+    public class Merge : CommandBase
     {
         private IExecutionOptions executionOptions;
 
@@ -39,10 +39,7 @@ namespace JLio.Commands.Advanced
         [JsonProperty("targetPath")]
         public string TargetPath { get; set; }
 
-        [JsonProperty("command")]
-        public string CommandName => "merge";
-
-        public JLioExecutionResult Execute(JToken dataContext, IExecutionOptions options)
+        public override JLioExecutionResult Execute(JToken dataContext, IExecutionOptions options)
         {
             executionOptions = options;
 
@@ -54,7 +51,7 @@ namespace JLio.Commands.Advanced
             return new JLioExecutionResult(true, dataContext);
         }
 
-        public ValidationResult ValidateCommandInstance()
+        public override ValidationResult ValidateCommandInstance()
         {
             var result = new ValidationResult {IsValid = true};
             if (string.IsNullOrWhiteSpace(Path))

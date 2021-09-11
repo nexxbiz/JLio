@@ -8,7 +8,7 @@ namespace JLio.Client
     {
         public static JLioScript Parse(string script)
         {
-            return Parse(script, JLioParseOptions.CreateDefault());
+            return Parse(script, ParseOptions.CreateDefault());
         }
 
         public static JLioScript Parse(string script, IJLioParseOptions options)
@@ -20,7 +20,7 @@ namespace JLio.Client
 
         public static string Serialize(JLioScript script)
         {
-            return Serialize(script, JLioParseOptions.CreateDefault());
+            return Serialize(script, ParseOptions.CreateDefault());
         }
 
         public static string Serialize(JLioScript script, IJLioParseOptions options)

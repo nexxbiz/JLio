@@ -6,6 +6,7 @@
         LessThan,
         greaterThan,
         Equals,
-        Differs
+        NotEquals,
+        IndexDifference
     }
 }

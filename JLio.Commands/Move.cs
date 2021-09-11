@@ -3,12 +3,11 @@ using JLio.Core;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace JLio.Commands
 {
-    public class Move : CopyMove, IJLioCommand
+    public class Move : CopyMove
     {
         public Move()
         {
@@ -20,10 +19,7 @@ namespace JLio.Commands
             ToPath = to;
         }
 
-        [JsonProperty("command")]
-        public string CommandName => "move";
-
-        public JLioExecutionResult Execute(JToken dataContext, IExecutionOptions options)
+        public override JLioExecutionResult Execute(JToken dataContext, IExecutionOptions options)
         {
             var validationResult = ValidateCommandInstance();
             if (!validationResult.IsValid)
@@ -36,7 +32,7 @@ namespace JLio.Commands
             return Execute(dataContext, options, EAction.Move);
         }
 
-        public ValidationResult ValidateCommandInstance()
+        public override ValidationResult ValidateCommandInstance()
         {
             var result = new ValidationResult {IsValid = true};
             if (string.IsNullOrWhiteSpace(FromPath))

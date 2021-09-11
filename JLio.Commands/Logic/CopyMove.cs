@@ -18,7 +18,7 @@ namespace JLio.Commands.Logic
 
     // in all cases it the target doesn't exists the target will be created
 
-    public abstract class CopyMove
+    public abstract class CopyMove : CommandBase
     {
         //private eAction action;
         private JToken data;

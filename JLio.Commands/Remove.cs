@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 
 namespace JLio.Commands
 {
-    public class Remove : IJLioCommand
+    public class Remove : CommandBase
     {
         private IExecutionOptions executionOptions;
 
@@ -23,10 +23,7 @@ namespace JLio.Commands
         [JsonProperty("path")]
         public string Path { get; set; }
 
-        [JsonProperty("command")]
-        public string CommandName => "remove";
-
-        public JLioExecutionResult Execute(JToken dataContext, IExecutionOptions options)
+        public override JLioExecutionResult Execute(JToken dataContext, IExecutionOptions options)
         {
             executionOptions = options;
             var validationResult = ValidateCommandInstance();
@@ -45,7 +42,7 @@ namespace JLio.Commands
             return new JLioExecutionResult(true, dataContext);
         }
 
-        public ValidationResult ValidateCommandInstance()
+        public override ValidationResult ValidateCommandInstance()
         {
             var result = new ValidationResult {IsValid = true};
             if (string.IsNullOrWhiteSpace(Path))

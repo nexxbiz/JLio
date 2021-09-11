@@ -11,12 +11,12 @@ namespace JLio.UnitTests.FunctionsTests
     public class DatetimeFunctionTests
     {
         private JLioExecutionOptions executeOptions;
-        private JLioParseOptions parseOptions;
+        private ParseOptions parseOptions;
 
         [SetUp]
         public void Setup()
         {
-            parseOptions = JLioParseOptions.CreateDefault();
+            parseOptions = ParseOptions.CreateDefault();
             executeOptions = JLioExecutionOptions.CreateDefault();
         }
 

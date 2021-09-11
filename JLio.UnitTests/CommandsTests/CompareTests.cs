@@ -44,6 +44,7 @@ namespace JLio.UnitTests.CommandsTests
         [TestCase("{\"first\":[1,2,2,3],\"second\":[2,3,3,4]}", true)]
         [TestCase("{\"first\":[[1,2],[4,5]],\"second\":[[5,4],[2,1]]}", false)]
         [TestCase("{\"first\":[[1,2],[4,6]],\"second\":[[5,4],[2,1]]}", true)]
+        [TestCase("{\"first\":[1,2],\"second\":[2,1]}", false)]
         public void CanComparePrimitives(string dataText, bool different)
         {
             var data = JToken.Parse(dataText);
@@ -51,6 +52,30 @@ namespace JLio.UnitTests.CommandsTests
             {
                 FirstPath = "$.first", SecondPath = "$.second", ResultPath = "$.result",
                 Settings = new CompareSettings()
+            }.Execute(data, executeOptions);
+
+            var compareResults = result.Data.SelectToken("$.result")?.ToObject<CompareResults>();
+
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(compareResults);
+            Assert.AreEqual(different, compareResults?.ContainsIsDifferenceResult());
+        }
+
+        [TestCase("{\"first\":[1,2],\"second\":[1,2]}", false)]
+        [TestCase("{\"first\":[1,2],\"second\":[2,1]}", true)]
+        public void CanCompareWithUniqueIndexSettings(string dataText, bool different)
+        {
+            var data = JToken.Parse(dataText);
+            var result = new Compare
+            {
+                FirstPath = "$.first",
+                SecondPath = "$.second",
+                ResultPath = "$.result",
+                Settings = new CompareSettings
+                {
+                    ArraySettings = new List<CompareArraySettings>
+                        {new CompareArraySettings {ArrayPath = "$.first", UniqueIndexMatching = true}}
+                }
             }.Execute(data, executeOptions);
 
             var compareResults = result.Data.SelectToken("$.result")?.ToObject<CompareResults>();

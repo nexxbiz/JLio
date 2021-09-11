@@ -13,7 +13,7 @@ using Newtonsoft.Json.Linq;
 
 namespace JLio.Commands.Advanced
 {
-    public class Compare : IJLioCommand
+    public class Compare : CommandBase
     {
         private IExecutionOptions options;
 
@@ -29,10 +29,7 @@ namespace JLio.Commands.Advanced
         [JsonProperty("settings")]
         public CompareSettings Settings { get; set; }
 
-        [JsonProperty("command")]
-        public string CommandName { get; } = "compare";
-
-        public ValidationResult ValidateCommandInstance()
+        public override ValidationResult ValidateCommandInstance()
         {
             var result = new ValidationResult {IsValid = true};
             if (string.IsNullOrWhiteSpace(FirstPath))
@@ -43,26 +40,26 @@ namespace JLio.Commands.Advanced
 
             if (string.IsNullOrWhiteSpace(SecondPath))
             {
-                result.ValidationMessages.Add($"SecondPath Path property for {CommandName} command is missing");
+                result.ValidationMessages.Add($"SecondPath property for {CommandName} command is missing");
                 result.IsValid = false;
             }
 
             if (string.IsNullOrWhiteSpace(ResultPath))
             {
-                result.ValidationMessages.Add($"ResultPath Path property for {CommandName} command is missing");
+                result.ValidationMessages.Add($"ResultPath property for {CommandName} command is missing");
                 result.IsValid = false;
             }
 
             if (Settings == null)
             {
-                result.ValidationMessages.Add($"Settings property property for {CommandName} command is missing");
+                result.ValidationMessages.Add($"Settings property for {CommandName} command is missing");
                 result.IsValid = false;
             }
 
             return result;
         }
 
-        public JLioExecutionResult Execute(JToken dataContext, IExecutionOptions executionOptions)
+        public override JLioExecutionResult Execute(JToken dataContext, IExecutionOptions executionOptions)
         {
             options = executionOptions;
             var compareResults = new CompareResults();
@@ -177,10 +174,10 @@ namespace JLio.Commands.Advanced
                 FirstPath = sourcePath,
                 SecondPath = targetPath,
                 DifferenceType = DifferenceType.StructureDifference,
-                DifferenceSubType = eDifferenceSubType.Differs,
+                DifferenceSubType = eDifferenceSubType.NotEquals,
                 Description =
-                    $"Structure is different. Source: ({sourcePath}{options.ItemsFetcher.PathDelimiter}{propertyName}) -->  {source.ContainsKey(propertyName)} - Target:({targetPath}{options.ItemsFetcher.PathDelimiter}{propertyName}) -->  {target.ContainsKey(propertyName)}",
-                IsDifference = true
+                    $"The structure is different. Source: ({sourcePath}{options.ItemsFetcher.PathDelimiter}{propertyName}) -->  {source.ContainsKey(propertyName)} - Target:({targetPath}{options.ItemsFetcher.PathDelimiter}{propertyName}) -->  {target.ContainsKey(propertyName)}",
+                FoundDifference = true
             };
         }
 
@@ -221,25 +218,32 @@ namespace JLio.Commands.Advanced
             List<int> foundTargetIndexes)
         {
             var result = new CompareResults();
-            var settings = Settings.ArraySettings.FirstOrDefault(i => i.ArrayPath == source.Path);
+            var settings = Settings.ArraySettings.FirstOrDefault(i => i.ArrayPath == $"$.{source.Path}");
 
             var IsInTarget = ArrayHelpers.FindInArray(target, sourceItemToCompare, foundTargetIndexes, settings);
 
             if (IsInTarget.Found) foundTargetIndexes.Add(IsInTarget.Index);
 
             if (IsInTarget.Found)
-            {
-                if (sourceItemToCompare.Type == JTokenType.Object)
-                    result.AddRange(CompareTokens(sourceItemToCompare, IsInTarget.Item));
-                result.Add(GetInBothArraysResult(source, target, sourceItemToCompare.ToString(Formatting.None)));
-            }
+                HandleFoundInBothArrays(source, target, sourceItemToCompare, result, IsInTarget, settings);
             else
-            {
-                result.Add(GetIsInOneOfArraysResult(source, true, target, IsInTarget.Found,
+                result.Add(GetIsInOneOfArraysResult(source, true, target, false,
                     sourceItemToCompare.ToString(Formatting.None)));
-            }
 
             return result;
+        }
+
+        private void HandleFoundInBothArrays(JArray source, JArray target, JToken sourceItemToCompare,
+            CompareResults result,
+            (bool Found, JToken Item, int Index) IsInTarget, CompareArraySettings settings)
+        {
+            if (sourceItemToCompare.Type == JTokenType.Object)
+                result.AddRange(CompareTokens(sourceItemToCompare, IsInTarget.Item));
+            result.Add(GetInBothArraysResult(source, target, sourceItemToCompare.ToString(Formatting.None)));
+            var sourceIndex = source.IndexOf(sourceItemToCompare);
+            if (settings != null && settings.UniqueIndexMatching && IsInTarget.Index != sourceIndex)
+                result.Add(GetInBothArraysDifferentIndexResult(source, sourceIndex, target, IsInTarget.Index,
+                    sourceItemToCompare.ToString(Formatting.None)));
         }
 
         private CompareResult GetInBothArraysResult(JArray source, JArray target, string value)
@@ -250,11 +254,28 @@ namespace JLio.Commands.Advanced
             {
                 FirstPath = sourcePath,
                 SecondPath = targetPath,
-                DifferenceType = DifferenceType.ValueDifference,
+                DifferenceType = DifferenceType.ArrayDifference,
                 DifferenceSubType = eDifferenceSubType.Equals,
                 Description =
                     $"Both arrays contain Value:{value} . Source: ({sourcePath}) - Target:({targetPath})",
-                IsDifference = false
+                FoundDifference = false
+            };
+        }
+
+        private CompareResult GetInBothArraysDifferentIndexResult(JArray source, int sourceIndex, JArray target,
+            int targetIndex, string value)
+        {
+            var sourcePath = GetPath(source, options.ItemsFetcher);
+            var targetPath = GetPath(target, options.ItemsFetcher);
+            return new CompareResult
+            {
+                FirstPath = sourcePath,
+                SecondPath = targetPath,
+                DifferenceType = DifferenceType.ArrayDifference,
+                DifferenceSubType = eDifferenceSubType.IndexDifference,
+                Description =
+                    $"Index of items are Different . Source: ({sourcePath}[sourceIndex]) - Target:({targetPath}[targetIndex])",
+                FoundDifference = true
             };
         }
 
@@ -268,10 +289,10 @@ namespace JLio.Commands.Advanced
                 FirstPath = sourcePath,
                 SecondPath = targetPath,
                 DifferenceType = DifferenceType.ValueDifference,
-                DifferenceSubType = eDifferenceSubType.Differs,
+                DifferenceSubType = eDifferenceSubType.NotEquals,
                 Description =
-                    $"Content of the array is different. Source: ({sourcePath}) --> {inSource} - Target:({targetPath}) --> {inTarget}. Value:{value}",
-                IsDifference = true
+                    $"The content of the array is different. Source: ({sourcePath}) --> {inSource} - Target:({targetPath}) --> {inTarget}. Value:{value}",
+                FoundDifference = true
             };
         }
 
@@ -286,8 +307,8 @@ namespace JLio.Commands.Advanced
                 DifferenceType = DifferenceType.ValueDifference,
                 DifferenceSubType = eDifferenceSubType.Equals,
                 Description =
-                    $"array's have different number of items. Source: ({sourcePath}): {source.Count}  - Target:({targetPath}): {target.Count} ",
-                IsDifference = false
+                    $"The array's have different number of items. Source: ({sourcePath}): {source.Count}  - Target:({targetPath}): {target.Count} ",
+                FoundDifference = false
             };
         }
 
@@ -303,7 +324,7 @@ namespace JLio.Commands.Advanced
                 DifferenceSubType = eDifferenceSubType.Equals,
                 Description =
                     $"Both array's have {source.Count} items. Source: ({sourcePath}) - Target:({targetPath})",
-                IsDifference = false
+                FoundDifference = false
             };
         }
 
@@ -353,8 +374,8 @@ namespace JLio.Commands.Advanced
                 DifferenceType = DifferenceType.ValueDifference,
                 DifferenceSubType = subType,
                 Description =
-                    $"the values are different {subType}. Source: ({sourcePath}) --> {sourceValue} - Target:({targetPath}) --> {targetValue}",
-                IsDifference = true
+                    $"The values are different {subType}. Source: ({sourcePath}) --> {sourceValue} - Target:({targetPath}) --> {targetValue}",
+                FoundDifference = true
             };
         }
 
@@ -391,8 +412,8 @@ namespace JLio.Commands.Advanced
                 DifferenceType = DifferenceType.NoDifference,
                 DifferenceSubType = eDifferenceSubType.Equals,
                 Description =
-                    $"the values are the same. Source: ({sourcePath}) - Target:({targetPath}) --> {value}",
-                IsDifference = false
+                    $"The values are the same. Source: ({sourcePath}) - Target:({targetPath}) --> {value}",
+                FoundDifference = false
             };
         }
 
@@ -411,10 +432,10 @@ namespace JLio.Commands.Advanced
                 FirstPath = sourcePath,
                 SecondPath = targetPath,
                 DifferenceType = DifferenceType.ValueDifference,
-                DifferenceSubType = eDifferenceSubType.Differs,
+                DifferenceSubType = eDifferenceSubType.NotEquals,
                 Description =
-                    $"the values are different. Source: ({sourcePath}) --> {sourceValue} - Target:({targetPath}) --> {targetValue}",
-                IsDifference = true
+                    $"The values are different. Source: ({sourcePath}) --> {sourceValue} - Target:({targetPath}) --> {targetValue}",
+                FoundDifference = true
             };
         }
 
@@ -429,8 +450,8 @@ namespace JLio.Commands.Advanced
 
                 DifferenceType = DifferenceType.TypeDifference,
                 Description =
-                    $"the types are different. Source: ({sourcePath}) --> {source.Type} - Target:({targetPath}) --> {target.Type}",
-                IsDifference = true
+                    $"The types are different. Source: ({sourcePath}) --> {source.Type} - Target:({targetPath}) --> {target.Type}",
+                FoundDifference = true
             };
         }
 
@@ -444,8 +465,8 @@ namespace JLio.Commands.Advanced
                 SecondPath = targetPath,
                 DifferenceType = DifferenceType.TypeDifference,
                 Description =
-                    $"the types are the same. Source: ({sourcePath}) --> {source.Type} - Target:({targetPath}) --> {target.Type}",
-                IsDifference = false
+                    $"The types are the same. Source: ({sourcePath}) --> {source.Type} - Target:({targetPath}) --> {target.Type}",
+                FoundDifference = false
             };
         }
     }
