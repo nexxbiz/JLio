@@ -6,8 +6,10 @@ using JLio.Commands.Advanced.Models;
 using JLio.Commands.Advanced.Settings;
 using JLio.Commands.Builders;
 using JLio.Commands.Logic;
+using JLio.Core;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -63,6 +65,13 @@ namespace JLio.Commands.Advanced
         {
             options = executionOptions;
             var compareResults = new CompareResults();
+            var validationResult = ValidateCommandInstance();
+            if (!validationResult.IsValid)
+            {
+                validationResult.ValidationMessages.ForEach(i =>
+                    options.Logger?.Log(LogLevel.Warning, JLioConstants.CommandExecution, i));
+                return new JLioExecutionResult(false, dataContext);
+            }
 
             foreach (var source in options.ItemsFetcher.SelectTokens(FirstPath, dataContext))
             foreach (var target in options.ItemsFetcher.SelectTokens(SecondPath, dataContext))

@@ -58,6 +58,31 @@ namespace JLio.UnitTests.CommandsTests
             Assert.IsTrue(data.SelectTokens(path).Any());
         }
 
+        [TestCase("$.NewObject.newItem.NewSubItem", "newData")]
+        public void CanAddCorrectValuesWithOtherConstructor(string path, string value)
+        {
+            var result = new Add(path, new JValue(value)).Execute(data, executeOptions);
+
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.Success);
+            Assert.IsTrue(data.SelectTokens(path).All(i => i.Type != JTokenType.Null));
+            Assert.IsTrue(data.SelectTokens(path).Any());
+        }
+
+        [TestCase("$.myObject.newItem", "newData")]
+        public void CanAddCorrectValuesWithEmptyConstructor(string path, string value)
+        {
+            var command = new Add
+                {Path = path, Value = new JLioFunctionSupportedValue(new FixedValue(new JValue(value)))};
+
+            var result = command.Execute(data, executeOptions);
+
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.Success);
+            Assert.IsTrue(data.SelectTokens(path).All(i => i.Type != JTokenType.Null));
+            Assert.IsTrue(data.SelectTokens(path).Any());
+        }
+
         [TestCase("$.newProperty", "{\"demo\" : 3}")]
         public void CanAddCorrectValuesAsTokens(string path, string value)
         {

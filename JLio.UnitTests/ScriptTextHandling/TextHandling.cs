@@ -3,6 +3,7 @@ using System.Linq;
 using JLio.Client;
 using JLio.Commands.Advanced.Builders;
 using JLio.Commands.Builders;
+using JLio.Core.Extensions;
 using JLio.Core.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -100,6 +101,14 @@ namespace JLio.UnitTests.ScriptTextHandling
             Assert.IsFalse(string.IsNullOrEmpty(scriptText));
             var scriptText2 = JLioConvert.Serialize(JLioConvert.Parse(scriptText));
             Assert.IsTrue(JToken.DeepEquals(JToken.Parse(scriptText), JToken.Parse(scriptText2)));
+        }
+
+        [TestCase("$.ite", 4)]
+        public void GetIntellisense(string text, int numberOfItems)
+        {
+            var dataObject = JToken.Parse("{\"item1\":1,\"item11\":11,\"item111\":111,\"item1111\":1111}");
+            var intellisense = JsonPathMethods.GetIntellisense(text, dataObject, new JsonPathItemsFetcher());
+            Assert.AreEqual(numberOfItems, intellisense.Count);
         }
     }
 }

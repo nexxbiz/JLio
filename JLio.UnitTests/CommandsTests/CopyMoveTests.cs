@@ -1,4 +1,5 @@
-﻿using JLio.Commands;
+﻿using System.Linq;
+using JLio.Commands;
 using JLio.Commands.Builders;
 using JLio.Core.Models;
 using Newtonsoft.Json.Linq;
@@ -126,6 +127,26 @@ namespace JLio.UnitTests.CommandsTests
             Assert.IsTrue(result.Success);
             Assert.IsTrue(JToken.DeepEquals(result.Data.SelectToken("$.demo"), result.Data.SelectToken("$.result")));
             Assert.IsNull(result.Data.SelectToken("$.copiedDemo"));
+        }
+
+        [Test]
+        public void CanExecuteCopyWithoutParametersSet()
+        {
+            var command = new Copy();
+            var result = command.Execute(JToken.Parse("{\"first\":true,\"second\":true}"), executeOptions);
+            Assert.IsNotNull(result);
+            Assert.IsFalse(result.Success);
+            Assert.IsTrue(executeOptions.Logger.LogEntries.Any());
+        }
+
+        [Test]
+        public void CanExecuteMoveWithoutParametersSet()
+        {
+            var command = new Move();
+            var result = command.Execute(JToken.Parse("{\"first\":true,\"second\":true}"), executeOptions);
+            Assert.IsNotNull(result);
+            Assert.IsFalse(result.Success);
+            Assert.IsTrue(executeOptions.Logger.LogEntries.Any());
         }
     }
 }

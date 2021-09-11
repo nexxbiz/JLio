@@ -45,7 +45,12 @@ namespace JLio.UnitTests.CommandsTests
         [TestCase("{\"first\":[[1,2],[4,5]],\"second\":[[5,4],[2,1]]}", false)]
         [TestCase("{\"first\":[[1,2],[4,6]],\"second\":[[5,4],[2,1]]}", true)]
         [TestCase("{\"first\":[1,2],\"second\":[2,1]}", false)]
-        public void CanComparePrimitives(string dataText, bool different)
+        [TestCase("{\"first\":[1,2],\"second\":null}", true)]
+        [TestCase("{\"first\":null,\"second\":[1,2]}", true)]
+        [TestCase("{\"first\":null,\"second\":null}", false)]
+        [TestCase("{\"first\": \"2009-02-15T00:00:00Z\",\"second\":true}", true)]
+        [TestCase("{\"first\": \"2009-02-15T00:00:00Z\",\"second\":\"2009-02-16T00:00:00Z\"}", true)]
+        public void CanCompare(string dataText, bool different)
         {
             var data = JToken.Parse(dataText);
             var result = new Compare
@@ -103,7 +108,37 @@ namespace JLio.UnitTests.CommandsTests
                 {
                     ArraySettings = new List<CompareArraySettings>
                     {
-                        new CompareArraySettings {ArrayPath = "first", KeyPaths = new List<string> {"id"}}
+                        new CompareArraySettings {ArrayPath = "$.first", KeyPaths = new List<string> {"id"}}
+                    }
+                }
+            }.Execute(data, executeOptions);
+
+            var compareResults = result.Data.SelectToken("$.result")?.ToObject<CompareResults>();
+
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(compareResults);
+            Assert.AreEqual(different, compareResults?.ContainsIsDifferenceResult());
+        }
+
+        [TestCase(
+            "{\"first\":[{\"id\":1,\"value\":1},{\"id\":2,\"value\":2},{\"id\":3,\"value\":3}],\"second\":[{\"id\":3,\"value\":3},{\"id\":2,\"value\":2},{\"id\":1,\"value\":1}]}",
+            false)]
+        [TestCase(
+            "{\"first\":[{\"id\":1,\"value\":2},{\"id\":2,\"value\":2},{\"id\":3,\"value\":3}],\"second\":[{\"id\":3,\"value\":3},{\"id\":2,\"value\":2},{\"id\":1,\"value\":1}]}",
+            true)]
+        public void CanCompareObjectsWithSettingsNoKeys(string dataText, bool different)
+        {
+            var data = JToken.Parse(dataText);
+            var result = new Compare
+            {
+                FirstPath = "$.first",
+                SecondPath = "$.second",
+                ResultPath = "$.result",
+                Settings = new CompareSettings
+                {
+                    ArraySettings = new List<CompareArraySettings>
+                    {
+                        new CompareArraySettings {ArrayPath = "$.first"}
                     }
                 }
             }.Execute(data, executeOptions);
@@ -197,6 +232,16 @@ namespace JLio.UnitTests.CommandsTests
             Assert.AreNotEqual(result.Data.SelectToken("$.result")?.Type, JTokenType.Null);
             Assert.IsNotNull(compareResults);
             Assert.IsTrue(compareResults.All(r => settings.ResultTypes.Contains(r.DifferenceType)));
+        }
+
+        [Test]
+        public void CanExecuteWithNoParametersSet()
+        {
+            var command = new Compare();
+            var result = command.Execute(JToken.Parse("{\"first\":true,\"second\":true}"), executeOptions);
+            Assert.IsNotNull(result);
+            Assert.IsFalse(result.Success);
+            Assert.IsTrue(executeOptions.Logger.LogEntries.Any());
         }
     }
 }

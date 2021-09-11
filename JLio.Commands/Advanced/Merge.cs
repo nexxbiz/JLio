@@ -1,8 +1,10 @@
 ﻿using System.Linq;
 using JLio.Commands.Advanced.Settings;
 using JLio.Commands.Logic;
+using JLio.Core;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -42,6 +44,13 @@ namespace JLio.Commands.Advanced
         public override JLioExecutionResult Execute(JToken dataContext, IExecutionOptions options)
         {
             executionOptions = options;
+            var validationResult = ValidateCommandInstance();
+            if (!validationResult.IsValid)
+            {
+                validationResult.ValidationMessages.ForEach(i =>
+                    options.Logger?.Log(LogLevel.Warning, JLioConstants.CommandExecution, i));
+                return new JLioExecutionResult(false, dataContext);
+            }
 
             var sourceTokens = options.ItemsFetcher.SelectTokens(Path, dataContext);
             var targetTokens = options.ItemsFetcher.SelectTokens(TargetPath, dataContext);
