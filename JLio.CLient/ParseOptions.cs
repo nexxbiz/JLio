@@ -26,7 +26,7 @@ namespace JLio.Client
 
             var functionsProvider = new FunctionsProvider();
             functionsProvider
-                .Register<DatetimeFunction>()
+                .Register<Datetime>()
                 .Register<NewGuid>()
                 .Register<Concat>()
                 ;

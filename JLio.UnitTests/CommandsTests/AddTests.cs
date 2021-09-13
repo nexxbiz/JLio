@@ -115,7 +115,7 @@ namespace JLio.UnitTests.CommandsTests
             var script = new JLioScript()
                     .Add(new JValue("new Value"))
                     .OnPath("$.demo")
-                    .Add(new DatetimeFunction())
+                    .Add(new Datetime())
                     .OnPath("$.this.is.a.long.path.with.a.date")
                 ;
             var result = script.Execute(new JObject());

@@ -70,7 +70,7 @@ namespace JLio.UnitTests.CommandsTests
             var script = new JLioScript()
                     .Set(new JValue("new Value"))
                     .OnPath("$.demo")
-                    .Set(new DatetimeFunction())
+                    .Set(new Datetime())
                     .OnPath("$.demo2")
                 ;
             var result = script.Execute(data);

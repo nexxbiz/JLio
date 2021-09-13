@@ -22,13 +22,13 @@ namespace JLio.Functions
     // default:
     // timeselection , local time now
     // format : 2012-04-23T18:25:43.511Z
-    public class DatetimeFunction : FunctionBase
+    public class Datetime : FunctionBase
     {
-        public DatetimeFunction() : base("datetime")
+        public Datetime()
         {
         }
 
-        public DatetimeFunction(params string[] arguments) : base("datetime")
+        public Datetime(params string[] arguments)
         {
             arguments.ToList().ForEach(a =>
                 this.arguments.Add(new FunctionSupportedValue(new FixedValue(JToken.Parse($"\"{a}\"")))));

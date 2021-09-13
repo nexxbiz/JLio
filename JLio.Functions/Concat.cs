@@ -10,11 +10,11 @@ namespace JLio.Functions
 
     public class Concat : FunctionBase
     {
-        public Concat() : base("concat")
+        public Concat()
         {
         }
 
-        public Concat(params string[] arguments) : base("concat")
+        public Concat(params string[] arguments)
         {
             arguments.ToList().ForEach(a =>
                 this.arguments.Add(new FunctionSupportedValue(new FixedValue(JToken.Parse($"\"{a}\"")))));

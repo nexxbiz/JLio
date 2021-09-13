@@ -1,22 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using JLio.Core;
 using JLio.Core.Contracts;
-using JLio.Core.Models;
+using JLio.Core.Extensions;
 using Newtonsoft.Json.Linq;
 
-namespace JLio.Functions
+namespace JLio.Core.Models
 {
     public abstract class FunctionBase : IFunction
     {
         public Arguments arguments = new Arguments();
 
-        public FunctionBase(string functionName)
-        {
-            FunctionName = functionName;
-        }
-
-        public string FunctionName { get; }
+        public string FunctionName => GetType().Name.CamelCasing();
 
         public IFunction SetArguments(Arguments functionArguments)
         {

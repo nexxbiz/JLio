@@ -43,9 +43,9 @@ namespace JLio.UnitTests.FunctionsTests
         public void CanbeUsedInFluentApi()
         {
             var script = new JLioScript()
-                    .Add(new DatetimeFunction("UTC", "'dd-MM-yyyy HH:mm:ss'"))
+                    .Add(new Datetime("UTC", "'dd-MM-yyyy HH:mm:ss'"))
                     .OnPath("$.date")
-                    .Add(new DatetimeFunction("'HH:mm:ss'"))
+                    .Add(new Datetime("'HH:mm:ss'"))
                     .OnPath("$.now")
                 ;
             var result = script.Execute(new JObject());
