@@ -18,7 +18,7 @@ namespace JLio.UnitTests.SplitTextTests
         [TestCase("demo[demo2]", new[] {"demo[demo2]"})]
         public void ArgumentsTest(string initial, string[] elements)
         {
-            var result = SplitText.GetChoppedElements(initial, ',', Constants.ArgumentLevelPairs);
+            var result = SplitText.GetChoppedElements(initial, ',', CoreConstants.ArgumentLevelPairs);
 
             Assert.AreEqual(elements.Length, result.Count);
             for (var i = 0; i < elements.Length; i++) Assert.AreEqual(elements[i], result[i].Text);
@@ -35,7 +35,7 @@ namespace JLio.UnitTests.SplitTextTests
         [TestCase("demo[(1,4)](arg1,arg2[2])", new[] {"demo[(1,4)]", "arg1,arg2[2]"})]
         public void FunctionsTest(string initial, string[] elements)
         {
-            var result = SplitText.GetChoppedElements(initial, new[] {'(', ')'}, Constants.ArgumentLevelPairs);
+            var result = SplitText.GetChoppedElements(initial, new[] {'(', ')'}, CoreConstants.ArgumentLevelPairs);
 
             Assert.AreEqual(elements.Length, result.Count);
             for (var i = 0; i < elements.Length; i++) Assert.AreEqual(elements[i], result[i].Text);

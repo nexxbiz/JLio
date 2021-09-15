@@ -25,7 +25,7 @@ namespace JLio.Commands
             if (!validationResult.IsValid)
             {
                 validationResult.ValidationMessages.ForEach(i =>
-                    options.Logger?.Log(LogLevel.Warning, Constants.CommandExecution, i));
+                    options.Logger?.Log(LogLevel.Warning, CoreConstants.CommandExecution, i));
                 return new JLioExecutionResult(false, dataContext);
             }
 
@@ -34,18 +34,12 @@ namespace JLio.Commands
 
         public override ValidationResult ValidateCommandInstance()
         {
-            var result = new ValidationResult {IsValid = true};
+            var result = new ValidationResult();
             if (string.IsNullOrWhiteSpace(FromPath))
-            {
                 result.ValidationMessages.Add($"FromPath property for {CommandName} command is missing");
-                result.IsValid = false;
-            }
 
             if (string.IsNullOrWhiteSpace(ToPath))
-            {
                 result.ValidationMessages.Add($"ToPath property for {CommandName} command is missing");
-                result.IsValid = false;
-            }
 
             return result;
         }

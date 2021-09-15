@@ -3,7 +3,7 @@ using JLio.Core.Models.Path;
 
 namespace JLio.Core
 {
-    public static class Constants
+    public static class CoreConstants
     {
         public const char ArgumentsDelimiter = ',';
         public const string CommandDiscriminator = "command";

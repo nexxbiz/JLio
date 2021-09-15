@@ -63,7 +63,7 @@ namespace JLio.Core.Extensions
                 else
                 {
                     currentObject?.Add(pathElement.ElementName, new JObject());
-                    logger?.Log(LogLevel.Information, Constants.CommandExecution,
+                    logger?.Log(LogLevel.Information, CoreConstants.CommandExecution,
                         $"Property {pathElement.ElementName} added to {currentObject?.Path} as an object");
                 }
 

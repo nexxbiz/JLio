@@ -4,7 +4,7 @@
     {
         NotSet,
         LessThan,
-        greaterThan,
+        GreaterThan,
         Equals,
         NotEquals,
         IndexDifference

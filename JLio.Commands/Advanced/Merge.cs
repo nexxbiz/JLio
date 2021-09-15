@@ -48,7 +48,7 @@ namespace JLio.Commands.Advanced
             if (!validationResult.IsValid)
             {
                 validationResult.ValidationMessages.ForEach(i =>
-                    options.Logger?.Log(LogLevel.Warning, Constants.CommandExecution, i));
+                    options.Logger?.Log(LogLevel.Warning, CoreConstants.CommandExecution, i));
                 return new JLioExecutionResult(false, dataContext);
             }
 
@@ -62,18 +62,12 @@ namespace JLio.Commands.Advanced
 
         public override ValidationResult ValidateCommandInstance()
         {
-            var result = new ValidationResult {IsValid = true};
+            var result = new ValidationResult();
             if (string.IsNullOrWhiteSpace(Path))
-            {
                 result.ValidationMessages.Add($"Path property for {CommandName} command is missing");
-                result.IsValid = false;
-            }
 
             if (string.IsNullOrWhiteSpace(TargetPath))
-            {
                 result.ValidationMessages.Add($"Target Path property for {CommandName} command is missing");
-                result.IsValid = false;
-            }
 
             return result;
         }

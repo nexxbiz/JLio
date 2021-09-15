@@ -71,7 +71,7 @@ namespace JLio.Functions
                 case "startOfDayUTC":
                     return new DateTimeConversionResult {DateTime = DateTime.UtcNow.Date, Success = true};
                 default:
-                    logger.Log(LogLevel.Information, Constants.FunctionExecution,
+                    logger.Log(LogLevel.Information, CoreConstants.FunctionExecution,
                         $"unknown datetime indication {dateSelection}, assuming this is a datetime format");
                     return new DateTimeConversionResult {DateTime = DateTime.Now, Success = false};
             }
@@ -81,8 +81,8 @@ namespace JLio.Functions
         {
             var dateSelection = "now";
             var format = "yyyy-MM-ddTHH:mm:ss.fffZ";
-            if (argumentValues.Count > 0) dateSelection = argumentValues[0].Trim(Constants.StringIndicator);
-            if (argumentValues.Count > 1) format = argumentValues[1].Trim(Constants.StringIndicator);
+            if (argumentValues.Count > 0) dateSelection = argumentValues[0].Trim(CoreConstants.StringIndicator);
+            if (argumentValues.Count > 1) format = argumentValues[1].Trim(CoreConstants.StringIndicator);
 
             return (dateSelection, format);
         }

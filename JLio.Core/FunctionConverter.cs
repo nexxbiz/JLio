@@ -49,7 +49,7 @@ namespace JLio.Core
         private IFunctionSupportedValue ParseString(string text)
         {
             if (string.IsNullOrEmpty(text)) return new FunctionSupportedValue(new FixedValue(JValue.CreateNull()));
-            if (!text.StartsWith(Constants.FunctionStartCharacters))
+            if (!text.StartsWith(CoreConstants.FunctionStartCharacters))
                 return new FunctionSupportedValue(new FixedValue(JToken.Parse($"\"{text}\"")));
             var (function, arguments) = GetFunctionAndArguments(text);
 
@@ -59,10 +59,10 @@ namespace JLio.Core
         private (IFunction function, Arguments arguments) GetFunctionAndArguments(string text)
         {
             var mainSplit = SplitText.GetChoppedElements(text,
-                new[] {Constants.FunctionArgumentsStartCharacters, Constants.FunctionArgumentsEndCharacters},
-                Constants.ArgumentLevelPairs);
-            var functionName = mainSplit[0].Text.TrimStart(Constants.FunctionArgumentsStartCharacters)
-                .Trim(Constants.FunctionStartCharacters.ToCharArray());
+                new[] {CoreConstants.FunctionArgumentsStartCharacters, CoreConstants.FunctionArgumentsEndCharacters},
+                CoreConstants.ArgumentLevelPairs);
+            var functionName = mainSplit[0].Text.TrimStart(CoreConstants.FunctionArgumentsStartCharacters)
+                .Trim(CoreConstants.FunctionStartCharacters.ToCharArray());
 
             var function = provider[functionName];
             if (mainSplit.Count > 1 && function != null)
@@ -74,8 +74,8 @@ namespace JLio.Core
             string argumentsText)
         {
             var functionsArguments = new Arguments();
-            SplitText.GetChoppedElements(argumentsText, Constants.ArgumentsDelimiter,
-                Constants.ArgumentLevelPairs).ForEach(i =>
+            SplitText.GetChoppedElements(argumentsText, CoreConstants.ArgumentsDelimiter,
+                CoreConstants.ArgumentLevelPairs).ForEach(i =>
             {
                 var argumentAnalysis = GetFunctionAndArguments(i.Text);
                 functionsArguments.Add(

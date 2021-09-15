@@ -33,30 +33,18 @@ namespace JLio.Commands.Advanced
 
         public override ValidationResult ValidateCommandInstance()
         {
-            var result = new ValidationResult {IsValid = true};
+            var result = new ValidationResult();
             if (string.IsNullOrWhiteSpace(FirstPath))
-            {
                 result.ValidationMessages.Add($"FirstPath property for {CommandName} command is missing");
-                result.IsValid = false;
-            }
 
             if (string.IsNullOrWhiteSpace(SecondPath))
-            {
                 result.ValidationMessages.Add($"SecondPath property for {CommandName} command is missing");
-                result.IsValid = false;
-            }
 
             if (string.IsNullOrWhiteSpace(ResultPath))
-            {
                 result.ValidationMessages.Add($"ResultPath property for {CommandName} command is missing");
-                result.IsValid = false;
-            }
 
             if (Settings == null)
-            {
                 result.ValidationMessages.Add($"Settings property for {CommandName} command is missing");
-                result.IsValid = false;
-            }
 
             return result;
         }
@@ -68,14 +56,17 @@ namespace JLio.Commands.Advanced
             var validationResult = ValidateCommandInstance();
             if (!validationResult.IsValid)
             {
-                validationResult.ValidationMessages.ForEach(i =>
-                    options.Logger?.Log(LogLevel.Warning, Constants.CommandExecution, i));
+                if (options.Logger != null)
+                    validationResult.ValidationMessages.ForEach(i =>
+                        options.Logger.Log(LogLevel.Warning, CoreConstants.CommandExecution, i));
+
                 return new JLioExecutionResult(false, dataContext);
             }
 
             foreach (var source in options.ItemsFetcher.SelectTokens(FirstPath, dataContext))
             foreach (var target in options.ItemsFetcher.SelectTokens(SecondPath, dataContext))
                 compareResults.AddRange(CompareTokens(source, target));
+
             var filteredResults = FilterCompareResult(compareResults);
             SetResults(dataContext, JToken.FromObject(filteredResults));
 
@@ -111,11 +102,11 @@ namespace JLio.Commands.Advanced
             var result = new CompareResults();
             if (source.Type != target.Type)
             {
-                result.Add(GetDifferentTypeResult(source, target));
+                result.Add(CompareResult.GetDifferentTypeResult(source, target, options.ItemsFetcher));
             }
             else
             {
-                result.Add(GetSameTypeResult(source, target));
+                result.Add(CompareResult.GetSameTypeResult(source, target, options.ItemsFetcher));
                 result.AddRange(CompareSameTypeObjects(source, target));
             }
 
@@ -168,26 +159,11 @@ namespace JLio.Commands.Advanced
             var sourceToken = source[propertyName];
             var targetToken = target[propertyName];
             if (sourceToken == null || targetToken == null)
-                result.Add(GetStructureDifferenceResult(source, target, propertyName));
+                result.Add(CompareResult.GetStructureDifferenceResult(source, target, propertyName,
+                    options.ItemsFetcher));
             else
                 result.AddRange(CompareTokens(sourceToken, targetToken));
             return result;
-        }
-
-        private CompareResult GetStructureDifferenceResult(JObject source, JObject target, string propertyName)
-        {
-            var sourcePath = GetPath(source, options.ItemsFetcher);
-            var targetPath = GetPath(target, options.ItemsFetcher);
-            return new CompareResult
-            {
-                FirstPath = sourcePath,
-                SecondPath = targetPath,
-                DifferenceType = DifferenceType.StructureDifference,
-                DifferenceSubType = eDifferenceSubType.NotEquals,
-                Description =
-                    $"The structure is different. Source: ({sourcePath}{options.ItemsFetcher.PathDelimiter}{propertyName}) -->  {source.ContainsKey(propertyName)} - Target:({targetPath}{options.ItemsFetcher.PathDelimiter}{propertyName}) -->  {target.ContainsKey(propertyName)}",
-                FoundDifference = true
-            };
         }
 
         private static IEnumerable<string> GetPropertyNames(JObject source)
@@ -200,8 +176,8 @@ namespace JLio.Commands.Advanced
             var result = new CompareResults
             {
                 source.Count == target.Count
-                    ? GetSameCountOfArrayItemsResult(source, target)
-                    : GetDifferentCountOfArrayItemsResult(source, target)
+                    ? CompareResult.GetSameCountOfArrayItemsResult(source, target, options.ItemsFetcher)
+                    : CompareResult.GetDifferentCountOfArrayItemsResult(source, target, options.ItemsFetcher)
             };
             result.AddRange(CompareArrayItems(source, target));
             return result;
@@ -217,7 +193,8 @@ namespace JLio.Commands.Advanced
             for (var i = 0; i < target.Count; i++)
             {
                 if (foundTargetItems.Contains(i)) continue;
-                result.Add(GetIsInOneOfArraysResult(source, false, target, true, target[i].ToString(Formatting.None)));
+                result.Add(CompareResult.GetIsInOneOfArraysResult(source, false, target, true,
+                    target[i].ToString(Formatting.None), options.ItemsFetcher));
             }
 
             return result;
@@ -231,13 +208,16 @@ namespace JLio.Commands.Advanced
 
             var IsInTarget = ArrayHelpers.FindInArray(target, sourceItemToCompare, foundTargetIndexes, settings);
 
-            if (IsInTarget.Found) foundTargetIndexes.Add(IsInTarget.Index);
-
             if (IsInTarget.Found)
+            {
+                foundTargetIndexes.Add(IsInTarget.Index);
                 HandleFoundInBothArrays(source, target, sourceItemToCompare, result, IsInTarget, settings);
+            }
             else
-                result.Add(GetIsInOneOfArraysResult(source, true, target, false,
-                    sourceItemToCompare.ToString(Formatting.None)));
+            {
+                result.Add(CompareResult.GetIsInOneOfArraysResult(source, true, target, false,
+                    sourceItemToCompare.ToString(Formatting.None), options.ItemsFetcher));
+            }
 
             return result;
         }
@@ -248,93 +228,13 @@ namespace JLio.Commands.Advanced
         {
             if (sourceItemToCompare.Type == JTokenType.Object)
                 result.AddRange(CompareTokens(sourceItemToCompare, IsInTarget.Item));
-            result.Add(GetInBothArraysResult(source, target, sourceItemToCompare.ToString(Formatting.None)));
+            result.Add(CompareResult.GetInBothArraysResult(source, target,
+                sourceItemToCompare.ToString(Formatting.None), options.ItemsFetcher));
             var sourceIndex = source.IndexOf(sourceItemToCompare);
             if (settings != null && settings.UniqueIndexMatching && IsInTarget.Index != sourceIndex)
-                result.Add(GetInBothArraysDifferentIndexResult(source, sourceIndex, target, IsInTarget.Index,
-                    sourceItemToCompare.ToString(Formatting.None)));
-        }
-
-        private CompareResult GetInBothArraysResult(JArray source, JArray target, string value)
-        {
-            var sourcePath = GetPath(source, options.ItemsFetcher);
-            var targetPath = GetPath(target, options.ItemsFetcher);
-            return new CompareResult
-            {
-                FirstPath = sourcePath,
-                SecondPath = targetPath,
-                DifferenceType = DifferenceType.ArrayDifference,
-                DifferenceSubType = eDifferenceSubType.Equals,
-                Description =
-                    $"Both arrays contain Value:{value} . Source: ({sourcePath}) - Target:({targetPath})",
-                FoundDifference = false
-            };
-        }
-
-        private CompareResult GetInBothArraysDifferentIndexResult(JArray source, int sourceIndex, JArray target,
-            int targetIndex, string value)
-        {
-            var sourcePath = GetPath(source, options.ItemsFetcher);
-            var targetPath = GetPath(target, options.ItemsFetcher);
-            return new CompareResult
-            {
-                FirstPath = sourcePath,
-                SecondPath = targetPath,
-                DifferenceType = DifferenceType.ArrayDifference,
-                DifferenceSubType = eDifferenceSubType.IndexDifference,
-                Description =
-                    $"Index of items are Different . Source: ({sourcePath}[sourceIndex]) - Target:({targetPath}[targetIndex])",
-                FoundDifference = true
-            };
-        }
-
-        private CompareResult GetIsInOneOfArraysResult(JArray source, bool inSource, JArray target, bool inTarget,
-            string value)
-        {
-            var sourcePath = GetPath(source, options.ItemsFetcher);
-            var targetPath = GetPath(target, options.ItemsFetcher);
-            return new CompareResult
-            {
-                FirstPath = sourcePath,
-                SecondPath = targetPath,
-                DifferenceType = DifferenceType.ValueDifference,
-                DifferenceSubType = eDifferenceSubType.NotEquals,
-                Description =
-                    $"The content of the array is different. Source: ({sourcePath}) --> {inSource} - Target:({targetPath}) --> {inTarget}. Value:{value}",
-                FoundDifference = true
-            };
-        }
-
-        private CompareResult GetDifferentCountOfArrayItemsResult(JArray source, JArray target)
-        {
-            var sourcePath = GetPath(source, options.ItemsFetcher);
-            var targetPath = GetPath(target, options.ItemsFetcher);
-            return new CompareResult
-            {
-                FirstPath = sourcePath,
-                SecondPath = targetPath,
-                DifferenceType = DifferenceType.ValueDifference,
-                DifferenceSubType = eDifferenceSubType.Equals,
-                Description =
-                    $"The array's have different number of items. Source: ({sourcePath}): {source.Count}  - Target:({targetPath}): {target.Count} ",
-                FoundDifference = false
-            };
-        }
-
-        private CompareResult GetSameCountOfArrayItemsResult(JArray source, JArray target)
-        {
-            var sourcePath = GetPath(source, options.ItemsFetcher);
-            var targetPath = GetPath(target, options.ItemsFetcher);
-            return new CompareResult
-            {
-                FirstPath = sourcePath,
-                SecondPath = targetPath,
-                DifferenceType = DifferenceType.ArrayDifference,
-                DifferenceSubType = eDifferenceSubType.Equals,
-                Description =
-                    $"Both array's have {source.Count} items. Source: ({sourcePath}) - Target:({targetPath})",
-                FoundDifference = false
-            };
+                result.Add(CompareResult.GetInBothArraysDifferentIndexResult(source, sourceIndex, target,
+                    IsInTarget.Index,
+                    sourceItemToCompare.ToString(Formatting.None), options.ItemsFetcher));
         }
 
         private CompareResults CompareIntegerNumbers(JToken source, JToken target)
@@ -342,16 +242,18 @@ namespace JLio.Commands.Advanced
             var sourceValue = (long) source;
             var targetValue = (long) target;
             if (sourceValue == targetValue)
-                return new CompareResults(GetSameValueResult(source, target,
-                    sourceValue.ToString(CultureInfo.InvariantCulture)));
+                return new CompareResults(CompareResult.GetSameValueResult(source, target,
+                    sourceValue.ToString(CultureInfo.InvariantCulture), options.ItemsFetcher));
 
             if (sourceValue < targetValue)
-                return new CompareResults(GetNumberValueDifferenceResult(source,
+                return new CompareResults(CompareResult.GetNumberValueDifferenceResult(source,
                     sourceValue.ToString(CultureInfo.InvariantCulture), target,
-                    targetValue.ToString(CultureInfo.InvariantCulture), eDifferenceSubType.LessThan));
-            return new CompareResults(GetNumberValueDifferenceResult(source,
+                    targetValue.ToString(CultureInfo.InvariantCulture), eDifferenceSubType.LessThan,
+                    options.ItemsFetcher));
+            return new CompareResults(CompareResult.GetNumberValueDifferenceResult(source,
                 sourceValue.ToString(CultureInfo.InvariantCulture), target,
-                targetValue.ToString(CultureInfo.InvariantCulture), eDifferenceSubType.greaterThan));
+                targetValue.ToString(CultureInfo.InvariantCulture), eDifferenceSubType.GreaterThan,
+                options.ItemsFetcher));
         }
 
         private CompareResults CompareFloatNumbers(JToken source, JToken target)
@@ -359,43 +261,29 @@ namespace JLio.Commands.Advanced
             var sourceValue = (double) source;
             var targetValue = (double) target;
             if (Math.Abs(sourceValue - targetValue) < 0.0000000001)
-                return new CompareResults(GetSameValueResult(source, target,
-                    sourceValue.ToString(CultureInfo.InvariantCulture)));
+                return new CompareResults(CompareResult.GetSameValueResult(source, target,
+                    sourceValue.ToString(CultureInfo.InvariantCulture), options.ItemsFetcher));
 
             if (sourceValue < targetValue)
-                return new CompareResults(GetNumberValueDifferenceResult(source,
+                return new CompareResults(CompareResult.GetNumberValueDifferenceResult(source,
                     sourceValue.ToString(CultureInfo.InvariantCulture), target,
-                    targetValue.ToString(CultureInfo.InvariantCulture), eDifferenceSubType.LessThan));
-            return new CompareResults(GetNumberValueDifferenceResult(source,
+                    targetValue.ToString(CultureInfo.InvariantCulture), eDifferenceSubType.LessThan,
+                    options.ItemsFetcher));
+            return new CompareResults(CompareResult.GetNumberValueDifferenceResult(source,
                 sourceValue.ToString(CultureInfo.InvariantCulture), target,
-                targetValue.ToString(CultureInfo.InvariantCulture), eDifferenceSubType.greaterThan));
-        }
-
-        private CompareResult GetNumberValueDifferenceResult(JToken source, string sourceValue, JToken target,
-            string targetValue, eDifferenceSubType subType)
-        {
-            var sourcePath = GetPath(source, options.ItemsFetcher);
-            var targetPath = GetPath(target, options.ItemsFetcher);
-            return new CompareResult
-            {
-                FirstPath = sourcePath,
-                SecondPath = targetPath,
-                DifferenceType = DifferenceType.ValueDifference,
-                DifferenceSubType = subType,
-                Description =
-                    $"The values are different {subType}. Source: ({sourcePath}) --> {sourceValue} - Target:({targetPath}) --> {targetValue}",
-                FoundDifference = true
-            };
+                targetValue.ToString(CultureInfo.InvariantCulture), eDifferenceSubType.GreaterThan,
+                options.ItemsFetcher));
         }
 
         private CompareResults CompareDeepEquals(JToken source, JToken target)
         {
             if (JToken.DeepEquals(source, target))
-                return new CompareResults(GetSameValueResult(source, target,
-                    source.ToString(Formatting.None)));
+                return new CompareResults(CompareResult.GetSameValueResult(source, target,
+                    source.ToString(Formatting.None), options.ItemsFetcher));
 
-            return new CompareResults(GetDifferentValueResult(source, source.ToString(Formatting.None), target,
-                target.ToString(Formatting.None)));
+            return new CompareResults(CompareResult.GetDifferentValueResult(source, source.ToString(Formatting.None),
+                target,
+                target.ToString(Formatting.None), options.ItemsFetcher));
         }
 
         private CompareResults CompareBoolean(JToken source, JToken target)
@@ -404,79 +292,11 @@ namespace JLio.Commands.Advanced
             var targetValue = (bool) target;
 
             if (sourceValue == targetValue)
-                return new CompareResults(GetSameValueResult(source, target, source.ToString(Formatting.None)));
+                return new CompareResults(CompareResult.GetSameValueResult(source, target,
+                    source.ToString(Formatting.None), options.ItemsFetcher));
 
-            return new CompareResults(GetDifferentValueResult(source, sourceValue.ToString(), target,
-                targetValue.ToString()));
-        }
-
-        private CompareResult GetSameValueResult(JToken source, JToken target, string value)
-        {
-            var sourcePath = GetPath(source, options.ItemsFetcher);
-            var targetPath = GetPath(target, options.ItemsFetcher);
-            return new CompareResult
-            {
-                FirstPath = sourcePath,
-                SecondPath = targetPath,
-                DifferenceType = DifferenceType.NoDifference,
-                DifferenceSubType = eDifferenceSubType.Equals,
-                Description =
-                    $"The values are the same. Source: ({sourcePath}) - Target:({targetPath}) --> {value}",
-                FoundDifference = false
-            };
-        }
-
-        private static string GetPath(JToken token, IItemsFetcher fetcher)
-        {
-            return $"{fetcher.RootPathIndicator}{fetcher.PathDelimiter}{token.Path}";
-        }
-
-        private CompareResult GetDifferentValueResult(JToken source, string sourceValue, JToken target,
-            string targetValue)
-        {
-            var sourcePath = GetPath(source, options.ItemsFetcher);
-            var targetPath = GetPath(target, options.ItemsFetcher);
-            return new CompareResult
-            {
-                FirstPath = sourcePath,
-                SecondPath = targetPath,
-                DifferenceType = DifferenceType.ValueDifference,
-                DifferenceSubType = eDifferenceSubType.NotEquals,
-                Description =
-                    $"The values are different. Source: ({sourcePath}) --> {sourceValue} - Target:({targetPath}) --> {targetValue}",
-                FoundDifference = true
-            };
-        }
-
-        private CompareResult GetDifferentTypeResult(JToken source, JToken target)
-        {
-            var sourcePath = GetPath(source, options.ItemsFetcher);
-            var targetPath = GetPath(target, options.ItemsFetcher);
-            return new CompareResult
-            {
-                FirstPath = sourcePath,
-                SecondPath = targetPath,
-
-                DifferenceType = DifferenceType.TypeDifference,
-                Description =
-                    $"The types are different. Source: ({sourcePath}) --> {source.Type} - Target:({targetPath}) --> {target.Type}",
-                FoundDifference = true
-            };
-        }
-
-        private CompareResult GetSameTypeResult(JToken source, JToken target)
-        {
-            var sourcePath = GetPath(source, options.ItemsFetcher);
-            var targetPath = GetPath(target, options.ItemsFetcher);
-            return new CompareResult
-            {
-                FirstPath = sourcePath,
-                SecondPath = targetPath,
-                DifferenceType = DifferenceType.TypeDifference,
-                Description =
-                    $"The types are the same. Source: ({sourcePath}) --> {source.Type} - Target:({targetPath}) --> {target.Type}",
-                FoundDifference = false
-            };
+            return new CompareResults(CompareResult.GetDifferentValueResult(source, sourceValue.ToString(), target,
+                targetValue.ToString(), options.ItemsFetcher));
         }
     }
 }

@@ -19,7 +19,7 @@ namespace JLio.Core
 
         public JLioExecutionResult Execute(JToken data, IExecutionOptions options)
         {
-            options.Logger?.Log(LogLevel.Error, Constants.CommandExecution,
+            options.Logger?.Log(LogLevel.Error, CoreConstants.CommandExecution,
                 $"script contains a unknown command : {CommandName}");
             return new JLioExecutionResult(false, data);
         }
@@ -28,7 +28,6 @@ namespace JLio.Core
         {
             return new ValidationResult
             {
-                IsValid = false,
                 ValidationMessages = new List<string> {$"script contains a unknown command : {CommandName}"}
             };
         }

@@ -16,7 +16,7 @@ namespace JLio.Core.Models
         {
             var result = Function.Execute(currentToken, dataContext, options);
             if (result.Data.Type == JTokenType.String)
-                return result.Data.ToString().Trim(Constants.StringIndicator);
+                return result.Data.ToString().Trim(CoreConstants.StringIndicator);
             return result.Data;
         }
 
