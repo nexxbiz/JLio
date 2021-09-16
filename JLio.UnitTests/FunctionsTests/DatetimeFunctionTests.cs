@@ -10,23 +10,26 @@ namespace JLio.UnitTests.FunctionsTests
 {
     public class DatetimeFunctionTests
     {
-        private JLioExecutionOptions executeOptions;
-        private JLioParseOptions parseOptions;
+        private ExecutionOptions executeOptions;
+        private ParseOptions parseOptions;
 
         [SetUp]
         public void Setup()
         {
-            parseOptions = JLioParseOptions.CreateDefault();
-            executeOptions = JLioExecutionOptions.CreateDefault();
+            parseOptions = ParseOptions.CreateDefault();
+            executeOptions = ExecutionOptions.CreateDefault();
         }
 
+        [TestCase("=datetime(now)", "{}")]
         [TestCase("=datetime(UTC)", "{}")]
+        [TestCase("=datetime(startOfDay)", "{}")]
+        [TestCase("=datetime(startOfDayUTC)", "{}")]
         [TestCase("=datetime()", "{}")]
         [TestCase("=datetime('dd-MM-yyyy HH:mm')", "{}")]
         [TestCase("=datetime(UTC, 'dd-MM-yy HH:mm')", "{}")]
         [TestCase("=datetime($.dateSelection, $.format)",
             "{\"dateSelection\":\"UTC\",\"format\":\"HH:mm on dd-MM-yy\"}")]
-        public void scriptTest(string function, string data)
+        public void ScriptTest(string function, string data)
         {
             var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"add\"}}]";
             var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeOptions);
@@ -40,9 +43,9 @@ namespace JLio.UnitTests.FunctionsTests
         public void CanbeUsedInFluentApi()
         {
             var script = new JLioScript()
-                    .Add(new DatetimeFunction("UTC", "'dd-MM-yyyy HH:mm:ss'"))
+                    .Add(new Datetime("UTC", "'dd-MM-yyyy HH:mm:ss'"))
                     .OnPath("$.date")
-                    .Add(new DatetimeFunction("'HH:mm:ss'"))
+                    .Add(new Datetime("'HH:mm:ss'"))
                     .OnPath("$.now")
                 ;
             var result = script.Execute(new JObject());

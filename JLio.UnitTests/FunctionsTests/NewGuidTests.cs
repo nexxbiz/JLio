@@ -11,14 +11,14 @@ namespace JLio.UnitTests.FunctionsTests
 {
     public class NewGuidTests
     {
-        private JLioExecutionOptions executeOptions;
-        private JLioParseOptions parseOptions;
+        private ExecutionOptions executeOptions;
+        private ParseOptions parseOptions;
 
         [SetUp]
         public void Setup()
         {
-            parseOptions = JLioParseOptions.CreateDefault();
-            executeOptions = JLioExecutionOptions.CreateDefault();
+            parseOptions = ParseOptions.CreateDefault();
+            executeOptions = ExecutionOptions.CreateDefault();
         }
 
         [TestCase("=newGuid()", "{}")]

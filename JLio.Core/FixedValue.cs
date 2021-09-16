@@ -36,12 +36,13 @@ namespace JLio.Core
         {
             var stringValue = Value.ToString();
 
-            if (stringValue.StartsWith(JLioConstants.CurrentItemPathIndicator, StringComparison.InvariantCulture))
+            if (stringValue.StartsWith(options.ItemsFetcher.CurrentItemPathIndicator,
+                StringComparison.InvariantCulture))
                 return new JLioExecutionResult(true,
                     options.ItemsFetcher.SelectToken(
-                        stringValue.Replace(JLioConstants.CurrentItemPathIndicator,
-                            JLioConstants.RootPathIndicator), currentToken));
-            if (stringValue.StartsWith(JLioConstants.RootPathIndicator, StringComparison.InvariantCulture))
+                        stringValue.Replace(options.ItemsFetcher.CurrentItemPathIndicator,
+                            options.ItemsFetcher.RootPathIndicator), currentToken));
+            if (stringValue.StartsWith(options.ItemsFetcher.RootPathIndicator, StringComparison.InvariantCulture))
                 return new JLioExecutionResult(true, options.ItemsFetcher.SelectToken(stringValue, dataContext));
             return new JLioExecutionResult(true, Value);
         }

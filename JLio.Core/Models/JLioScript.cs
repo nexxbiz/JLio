@@ -1,14 +1,15 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using JLio.Core.Contracts;
 using Newtonsoft.Json.Linq;
 
 namespace JLio.Core.Models
 {
-    public class JLioScript : List<IJLioCommand>
+    public class JLioScript : List<ICommand>
     {
         public JLioExecutionResult Execute(JToken data)
         {
-            return Execute(data, JLioExecutionOptions.CreateDefault());
+            return Execute(data, ExecutionOptions.CreateDefault());
         }
 
         public JLioExecutionResult Execute(JToken data, IExecutionOptions options)
@@ -20,9 +21,21 @@ namespace JLio.Core.Models
             return executionResult;
         }
 
-        public void AddLine(IJLioCommand command)
+        public void AddLine(ICommand command)
         {
             Add(command);
+        }
+
+        public bool Validate()
+        {
+            return this.All(l => l.ValidateCommandInstance().IsValid);
+        }
+
+        public List<ValidationResult> GetValidationResults()
+        {
+            var result = new List<ValidationResult>();
+            ForEach(l => result.Add(l.ValidateCommandInstance()));
+            return result;
         }
     }
 }

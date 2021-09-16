@@ -16,11 +16,6 @@ namespace JLio.Core.Models
             get { return this.Select(t => t.Type).Distinct().Count() < 2; }
         }
 
-        public IEnumerable<T> GetTokensBySystemType<T>()
-        {
-            return this.OfType<T>();
-        }
-
         public IEnumerable<JToken> GetTokens(JTokenType type)
         {
             return this.Where(i => i.Type == type).Select(i => i);

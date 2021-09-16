@@ -5,7 +5,9 @@ namespace JLio.Core.Contracts
 {
     public interface IItemsFetcher
     {
-        string CurrentObjectIndicator { get; }
+        string CurrentItemPathIndicator { get; }
+        string PathDelimiter { get; }
+        string RootPathIndicator { get; }
         SelectedTokens SelectTokens(string path, JToken data);
         JToken SelectToken(string path, JToken data);
     }

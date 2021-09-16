@@ -10,12 +10,12 @@ namespace JLio.UnitTests.CommandsTests
     public class RemoveTests
     {
         private JToken data;
-        private JLioExecutionOptions executeOptions;
+        private ExecutionOptions executeOptions;
 
         [SetUp]
         public void Setup()
         {
-            executeOptions = JLioExecutionOptions.CreateDefault();
+            executeOptions = ExecutionOptions.CreateDefault();
             data = JToken.Parse(
                 "{\r\n  \"myString\": \"demo2\",\r\n  \"myNumber\": 2.2,\r\n  \"myInteger\": 20,\r\n  \"myObject\": {\r\n    \"myObject\": {\"myArray\": [\r\n      2,\r\n      20,\r\n      200,\r\n      2000\r\n    ]},\r\n    \"myArray\": [\r\n      2,\r\n      20,\r\n      200,\r\n      2000\r\n    ]\r\n  },\r\n  \"myArray\": [\r\n    2,\r\n    20,\r\n    200,\r\n    2000\r\n  ],\r\n  \"myBoolean\": true,\r\n  \"myNull\": null\r\n}");
         }

@@ -36,7 +36,7 @@ namespace JLio.Core.Extensions
         }
 
         public static void CheckOrCreateParentPath(JToken data, JsonSplittedPath path, IItemsFetcher dataFetcher,
-            IJLioExecutionLogger logger)
+            IExecutionLogger logger)
         {
             var items = dataFetcher.SelectTokens(path.SelectionPath.ToPathString(), data);
             items.ForEach(i => CheckOrCreateConstructionPath(i, path.ConstructionPath.ToList(), logger));
@@ -49,7 +49,7 @@ namespace JLio.Core.Extensions
 
         private static void CheckOrCreateConstructionPath(JToken item,
             IReadOnlyCollection<PathElement> constructionPath,
-            IJLioExecutionLogger logger)
+            IExecutionLogger logger)
         {
             var currentObject = item is JObject curObject ? curObject : null;
             if (currentObject == null) return;
@@ -63,7 +63,7 @@ namespace JLio.Core.Extensions
                 else
                 {
                     currentObject?.Add(pathElement.ElementName, new JObject());
-                    logger?.Log(LogLevel.Information, JLioConstants.CommandExecution,
+                    logger?.Log(LogLevel.Information, CoreConstants.CommandExecution,
                         $"Property {pathElement.ElementName} added to {currentObject?.Path} as an object");
                 }
 

@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 
 namespace JLio.Commands
 {
-    public class Remove : IJLioCommand
+    public class Remove : CommandBase
     {
         private IExecutionOptions executionOptions;
 
@@ -23,36 +23,30 @@ namespace JLio.Commands
         [JsonProperty("path")]
         public string Path { get; set; }
 
-        [JsonProperty("command")]
-        public string CommandName => "remove";
-
-        public JLioExecutionResult Execute(JToken dataContext, IExecutionOptions options)
+        public override JLioExecutionResult Execute(JToken dataContext, IExecutionOptions options)
         {
             executionOptions = options;
             var validationResult = ValidateCommandInstance();
             if (!validationResult.IsValid)
             {
                 validationResult.ValidationMessages.ForEach(i =>
-                    options.Logger?.Log(LogLevel.Warning, JLioConstants.CommandExecution, i));
+                    options.Logger?.Log(LogLevel.Warning, CoreConstants.CommandExecution, i));
                 return new JLioExecutionResult(false, dataContext);
             }
 
             RemoveItems(dataContext);
 
-            options.Logger?.Log(LogLevel.Information, JLioConstants.CommandExecution,
+            options.Logger?.Log(LogLevel.Information, CoreConstants.CommandExecution,
                 $"{CommandName}: completed for {Path}");
 
             return new JLioExecutionResult(true, dataContext);
         }
 
-        public ValidationResult ValidateCommandInstance()
+        public override ValidationResult ValidateCommandInstance()
         {
-            var result = new ValidationResult {IsValid = true};
+            var result = new ValidationResult();
             if (string.IsNullOrWhiteSpace(Path))
-            {
                 result.ValidationMessages.Add($"Path property for {CommandName} command is missing");
-                result.IsValid = false;
-            }
 
             return result;
         }
@@ -62,7 +56,7 @@ namespace JLio.Commands
             var targetItems =
                 executionOptions.ItemsFetcher.SelectTokens(Path, data);
             if (targetItems.Count == 0)
-                executionOptions.Logger?.Log(LogLevel.Warning, JLioConstants.CommandExecution,
+                executionOptions.Logger?.Log(LogLevel.Warning, CoreConstants.CommandExecution,
                     $"{Path} did not retrieve any items");
             targetItems.ForEach(RemoveItemFromTarget);
         }
@@ -79,7 +73,7 @@ namespace JLio.Commands
                     RemoveValuesFromArray((JArray) parent, selectedValue);
                     break;
                 default:
-                    executionOptions.Logger?.Log(LogLevel.Warning, JLioConstants.CommandExecution,
+                    executionOptions.Logger?.Log(LogLevel.Warning, CoreConstants.CommandExecution,
                         $"{CommandName} only works on properties or items in array's");
                     break;
             }

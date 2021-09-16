@@ -1,6 +1,11 @@
-﻿using JLio.Client;
+﻿using System;
+using System.Linq;
+using JLio.Client;
+using JLio.Commands.Advanced.Builders;
 using JLio.Commands.Builders;
+using JLio.Core.Extensions;
 using JLio.Core.Models;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 
@@ -8,17 +13,14 @@ namespace JLio.UnitTests.ScriptTextHandling
 {
     public class TextHandling
     {
-        private JLioParseOptions options;
-
         [SetUp]
         public void Setup()
         {
-            options = JLioParseOptions.CreateDefault();
         }
 
         [TestCase("[{\"path\":\"$.myObject.newProperty\",\"value\":\"new value\",\"command\":\"add\"}]")]
-        [TestCase("[{\"path\":\"$.myObject.newProperty\",\"value\":\"=datetime(UTC)\",\"command\":\"add\"}]")]
         [TestCase("[{\"path\":\"$.myObject.newProperty\",\"value\":\"=datetime(datetime(UTC))\",\"command\":\"add\"}]")]
+        [TestCase("[{\"path\":\"$.myObject.newProperty\",\"value\":\"=newGuid()\",\"command\":\"add\"}]")]
         [TestCase(
             "[{\"path\":\"$.myObject.newProperty\",\"value\":\"=concat('fixed',@.localPath,$.rootPath,datetime(UTC))\",\"command\":\"add\"}]")]
         [TestCase(
@@ -29,6 +31,7 @@ namespace JLio.UnitTests.ScriptTextHandling
             Assert.IsTrue(JToken.DeepEquals(JToken.Parse(script), JToken.Parse(scriptText2)));
         }
 
+        [TestCase("[{\"path\":\"$.myObject.newProperty\",\"value\":\"new value\",\"command\":\"unknown\"}]")]
         [TestCase("[{\"path\":\"$.myObject.newProperty\",\"value\":\"new value\",\"command\":\"add\"}]")]
         [TestCase("[{\"path\": \"$.myObject.newProperty\",\"value\": 1,\"command\": \"add\"}]")]
         [TestCase(
@@ -51,6 +54,37 @@ namespace JLio.UnitTests.ScriptTextHandling
             Assert.IsNotNull(result.Data);
         }
 
+        [TestCase("[{\"path\":\"$.myObject.newProperty\",\"value\":\"new value\",\"command\":\"unknown\"}]", "{}")]
+        public void CanParseAndExecuteWithUnknownCommand(string scriptText, string data)
+        {
+            var script = JLioConvert.Parse(scriptText);
+            var result = script.Execute(JToken.Parse(data));
+
+            Assert.IsFalse(result.Success);
+            Assert.IsFalse(script.Validate());
+            Assert.IsTrue(script.GetValidationResults().Any());
+            Assert.IsNotNull(result.Data);
+        }
+
+        [TestCase("[{\"path\":\"$.myObject.newProperty\",\"value\":\"new value\",\"command\":\"unknown\"}]", "{}")]
+        public void CanParseAndExecuteWithLogging(string scriptText, string data)
+        {
+            var options = ExecutionOptions.CreateDefault();
+            var script = JLioConvert.Parse(scriptText);
+            var result = script.Execute(JToken.Parse(data), options);
+
+            Assert.IsFalse(result.Success);
+            Assert.IsFalse(string.IsNullOrEmpty(options.Logger.LogText));
+            Assert.IsTrue(
+                options.Logger.LogEntries.All(i => i.DateTime < DateTime.Now && i.DateTime != new DateTime()));
+            Assert.IsTrue(options.Logger.LogEntries.All(i => i.Level != LogLevel.None));
+            Assert.IsFalse(options.Logger.LogEntries.Any(i => string.IsNullOrEmpty(i.Group)));
+            Assert.IsTrue(options.Logger.LogEntries.Start < DateTime.Now);
+            Assert.IsTrue(options.Logger.LogEntries.End < DateTime.Now);
+            Assert.IsTrue(options.Logger.LogEntries.ExecutionTimeMilliseconds >= 0);
+            Assert.IsNotNull(result.Data);
+        }
+
         [Test]
         public void CanSerializeAndDeserializeScriptForCommands()
         {
@@ -59,12 +93,22 @@ namespace JLio.UnitTests.ScriptTextHandling
                 .Set(new JValue(1)).OnPath("$.demo")
                 .Move("$.demo").To("$.otherDemo")
                 .Copy("$.otherDemo").To(" $.demo")
+                .Compare("$.first").With("$.second").SetResultOn("$.result")
+                .Merge("$.first").With("$.second").UsingDefaultSettings()
                 .Remove("$.demo");
             var scriptText = string.Empty;
             Assert.DoesNotThrow(() => { scriptText = JLioConvert.Serialize(script); });
             Assert.IsFalse(string.IsNullOrEmpty(scriptText));
             var scriptText2 = JLioConvert.Serialize(JLioConvert.Parse(scriptText));
             Assert.IsTrue(JToken.DeepEquals(JToken.Parse(scriptText), JToken.Parse(scriptText2)));
+        }
+
+        [TestCase("$.ite", 4)]
+        public void GetIntellisense(string text, int numberOfItems)
+        {
+            var dataObject = JToken.Parse("{\"item1\":1,\"item11\":11,\"item111\":111,\"item1111\":1111}");
+            var intellisense = JsonPathMethods.GetIntellisense(text, dataObject, new JsonPathItemsFetcher());
+            Assert.AreEqual(numberOfItems, intellisense.Count);
         }
     }
 }

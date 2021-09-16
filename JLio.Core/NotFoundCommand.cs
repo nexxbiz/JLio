@@ -6,20 +6,20 @@ using Newtonsoft.Json.Linq;
 
 namespace JLio.Core
 {
-    public class NotFoundCommand : IJLioCommand
+    public class NotFoundCommand : ICommand
     {
         protected internal NotFoundCommand(string fullCommandText)
         {
             CommandName = fullCommandText;
         }
 
-        public JLioCommandRegistration CommandRegistration { get; set; }
+        public CommandRegistration CommandRegistration { get; set; }
 
-        public string CommandName { get; }
+        public string CommandName { get; } = "";
 
         public JLioExecutionResult Execute(JToken data, IExecutionOptions options)
         {
-            options.Logger?.Log(LogLevel.Error, JLioConstants.CommandExecution,
+            options.Logger?.Log(LogLevel.Error, CoreConstants.CommandExecution,
                 $"script contains a unknown command : {CommandName}");
             return new JLioExecutionResult(false, data);
         }
@@ -28,7 +28,6 @@ namespace JLio.Core
         {
             return new ValidationResult
             {
-                IsValid = false,
                 ValidationMessages = new List<string> {$"script contains a unknown command : {CommandName}"}
             };
         }

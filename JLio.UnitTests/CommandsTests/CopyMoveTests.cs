@@ -1,4 +1,5 @@
-﻿using JLio.Commands;
+﻿using System.Linq;
+using JLio.Commands;
 using JLio.Commands.Builders;
 using JLio.Core.Models;
 using Newtonsoft.Json.Linq;
@@ -9,12 +10,12 @@ namespace JLio.UnitTests.CommandsTests
     public class CopyMoveTests
     {
         private JToken data;
-        private JLioExecutionOptions executeOptions;
+        private ExecutionOptions executeOptions;
 
         [SetUp]
         public void Setup()
         {
-            executeOptions = JLioExecutionOptions.CreateDefault();
+            executeOptions = ExecutionOptions.CreateDefault();
             data = JToken.Parse(
                 "{ \"myString\": \"demo2\", \"myNumber\": 2.2, \"myInteger\": 20, \"myObject\": { \"myObject\": {\"myArray\": [ 2, 20, 200, 2000 ]}, \"myArray\": [ 2, 20, 200, 2000 ] }, \"myArray\": [ 2, 20, 200, 2000 ], \"myBoolean\": true, \"myNull\": null}");
         }
@@ -126,6 +127,26 @@ namespace JLio.UnitTests.CommandsTests
             Assert.IsTrue(result.Success);
             Assert.IsTrue(JToken.DeepEquals(result.Data.SelectToken("$.demo"), result.Data.SelectToken("$.result")));
             Assert.IsNull(result.Data.SelectToken("$.copiedDemo"));
+        }
+
+        [Test]
+        public void CanExecuteCopyWithoutParametersSet()
+        {
+            var command = new Copy();
+            var result = command.Execute(JToken.Parse("{\"first\":true,\"second\":true}"), executeOptions);
+            Assert.IsNotNull(result);
+            Assert.IsFalse(result.Success);
+            Assert.IsTrue(executeOptions.Logger.LogEntries.Any());
+        }
+
+        [Test]
+        public void CanExecuteMoveWithoutParametersSet()
+        {
+            var command = new Move();
+            var result = command.Execute(JToken.Parse("{\"first\":true,\"second\":true}"), executeOptions);
+            Assert.IsNotNull(result);
+            Assert.IsFalse(result.Success);
+            Assert.IsTrue(executeOptions.Logger.LogEntries.Any());
         }
     }
 }

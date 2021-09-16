@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 
 namespace JLio.Commands
 {
-    public class Set : IJLioCommand
+    public class Set : CommandBase
     {
         private IExecutionOptions executionOptions;
 
@@ -20,7 +20,7 @@ namespace JLio.Commands
         public Set(string path, JToken value)
         {
             Path = path;
-            Value = new JLioFunctionSupportedValue(new FixedValue(value));
+            Value = new FunctionSupportedValue(new FixedValue(value));
         }
 
         public Set(string path, IFunctionSupportedValue value)
@@ -35,35 +35,29 @@ namespace JLio.Commands
         [JsonProperty("value")]
         public IFunctionSupportedValue Value { get; set; }
 
-        [JsonProperty("command")]
-        public string CommandName { get; } = "set";
-
-        public JLioExecutionResult Execute(JToken dataContext, IExecutionOptions options)
+        public override JLioExecutionResult Execute(JToken dataContext, IExecutionOptions options)
         {
             executionOptions = options;
             var validationResult = ValidateCommandInstance();
             if (!validationResult.IsValid)
             {
                 validationResult.ValidationMessages.ForEach(i =>
-                    options.Logger?.Log(LogLevel.Warning, JLioConstants.CommandExecution, i));
+                    options.Logger?.Log(LogLevel.Warning, CoreConstants.CommandExecution, i));
                 return new JLioExecutionResult(false, dataContext);
             }
 
             var targetPath = JsonPathMethods.SplitPath(Path);
             SetValueToObjectItems(dataContext, targetPath);
-            executionOptions.Logger?.Log(LogLevel.Information, JLioConstants.CommandExecution,
+            executionOptions.Logger?.Log(LogLevel.Information, CoreConstants.CommandExecution,
                 $"{CommandName}: completed for {targetPath.Elements.ToPathString()}");
             return new JLioExecutionResult(true, dataContext);
         }
 
-        public ValidationResult ValidateCommandInstance()
+        public override ValidationResult ValidateCommandInstance()
         {
-            var result = new ValidationResult {IsValid = true};
+            var result = new ValidationResult();
             if (string.IsNullOrWhiteSpace(Path))
-            {
                 result.ValidationMessages.Add($"Path property for {CommandName} command is missing");
-                result.IsValid = false;
-            }
 
             return result;
         }
@@ -85,9 +79,12 @@ namespace JLio.Commands
             switch (jToken)
             {
                 case JObject o:
+                    if (!o.ContainsKey(propertyName) && o.SelectToken(propertyName) != null)
+                        ReplaceTargetTokenWithNewValue(o.SelectToken(propertyName), dataContext);
+
                     if (!o.ContainsKey(propertyName))
                     {
-                        executionOptions.Logger?.Log(LogLevel.Information, JLioConstants.CommandExecution,
+                        executionOptions.Logger?.Log(LogLevel.Information, CoreConstants.CommandExecution,
                             $"Property {propertyName} does not exists on {o.Path}. {CommandName} function not applied.");
                         return;
                     }
@@ -95,17 +92,24 @@ namespace JLio.Commands
                     ReplaceCurrentValueWithNew(propertyName, o, dataContext);
                     break;
                 case JArray a:
-                    executionOptions.Logger?.Log(LogLevel.Information, JLioConstants.CommandExecution,
+                    executionOptions.Logger?.Log(LogLevel.Information, CoreConstants.CommandExecution,
                         $"can't set value on a array on {a.Path}. {CommandName} functionality not applied.");
                     break;
             }
+        }
+
+        private void ReplaceTargetTokenWithNewValue(JToken currentJObject, JToken dataContext)
+        {
+            currentJObject.Replace(Value.GetValue(currentJObject, dataContext, executionOptions));
+            executionOptions.Logger?.Log(LogLevel.Information, CoreConstants.CommandExecution,
+                $"Value has been set on object at path {currentJObject.Path}.");
         }
 
         private void ReplaceCurrentValueWithNew(string propertyName, JObject o, JToken dataContext)
         {
             o[propertyName] = Value.GetValue(o[propertyName], dataContext, executionOptions);
 
-            executionOptions.Logger?.Log(LogLevel.Information, JLioConstants.CommandExecution,
+            executionOptions.Logger?.Log(LogLevel.Information, CoreConstants.CommandExecution,
                 $"Property {propertyName} on {o.Path} value has been set.");
         }
     }
