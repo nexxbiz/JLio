@@ -29,6 +29,7 @@ namespace JLio.Client
                 .Register<Datetime>()
                 .Register<NewGuid>()
                 .Register<Concat>()
+                .Register<Parse>()
                 ;
 
             return new ParseOptions
