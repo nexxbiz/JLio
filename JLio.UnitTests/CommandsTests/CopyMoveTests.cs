@@ -136,7 +136,7 @@ namespace JLio.UnitTests.CommandsTests
             var result = command.Execute(JToken.Parse("{\"first\":true,\"second\":true}"), executeOptions);
             Assert.IsNotNull(result);
             Assert.IsFalse(result.Success);
-            Assert.IsTrue(executeOptions.Logger.LogEntries.Any());
+            Assert.IsTrue(executeOptions.GetLogEntries().Any());
         }
 
         [Test]
@@ -146,7 +146,7 @@ namespace JLio.UnitTests.CommandsTests
             var result = command.Execute(JToken.Parse("{\"first\":true,\"second\":true}"), executeOptions);
             Assert.IsNotNull(result);
             Assert.IsFalse(result.Success);
-            Assert.IsTrue(executeOptions.Logger.LogEntries.Any());
+            Assert.IsTrue(executeOptions.GetLogEntries().Any());
         }
     }
 }

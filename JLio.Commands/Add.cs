@@ -3,7 +3,6 @@ using JLio.Core;
 using JLio.Core.Contracts;
 using JLio.Core.Extensions;
 using JLio.Core.Models;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -42,14 +41,14 @@ namespace JLio.Commands
             if (!validationResult.IsValid)
             {
                 validationResult.ValidationMessages.ForEach(i =>
-                    options.Logger?.Log(LogLevel.Warning, CoreConstants.CommandExecution, i));
+                    options.LogWarning(CoreConstants.CommandExecution, i));
                 return new JLioExecutionResult(false, dataContext);
             }
 
             var targetPath = JsonPathMethods.SplitPath(Path);
             JsonMethods.CheckOrCreateParentPath(dataContext, targetPath, options.ItemsFetcher, options.Logger);
             AddToObjectItems(dataContext, options.ItemsFetcher, targetPath);
-            options.Logger?.Log(LogLevel.Information, CoreConstants.CommandExecution,
+            options.LogInfo(CoreConstants.CommandExecution,
                 $"{CommandName}: completed for {targetPath.Elements.ToPathString()}");
             return new JLioExecutionResult(true, dataContext);
         }
@@ -87,7 +86,7 @@ namespace JLio.Commands
                     }
                     else if (o.ContainsKey(propertyName))
                     {
-                        executionOptions.Logger?.Log(LogLevel.Warning, CoreConstants.CommandExecution,
+                        executionOptions.LogWarning(CoreConstants.CommandExecution,
                             $"Property {propertyName} already exists on {o.Path}. {CommandName} function not applied");
                         return;
                     }
@@ -103,14 +102,14 @@ namespace JLio.Commands
         private void AddProperty(string propertyName, JObject o, JToken dataContext)
         {
             o.Add(propertyName, Value.GetValue(o, dataContext, executionOptions));
-            executionOptions.Logger?.Log(LogLevel.Information, CoreConstants.CommandExecution,
+            executionOptions.LogInfo(CoreConstants.CommandExecution,
                 $"Property {propertyName} added to object: {o.Path}");
         }
 
         private void AddToArray(JArray jArray, JToken dataContext)
         {
             jArray.Add(Value.GetValue(jArray, dataContext, executionOptions));
-            executionOptions.Logger?.Log(LogLevel.Information, CoreConstants.CommandExecution,
+            executionOptions.LogInfo(CoreConstants.CommandExecution,
                 $"Value added to array: {jArray.Path}");
         }
     }

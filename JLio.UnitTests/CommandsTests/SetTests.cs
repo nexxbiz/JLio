@@ -60,7 +60,7 @@ namespace JLio.UnitTests.CommandsTests
 
             Assert.IsNotNull(result);
             Assert.IsFalse(result.Success);
-            Assert.IsTrue(executeOptions.Logger.LogEntries.Any(l => l.Message == message));
+            Assert.IsTrue(executeOptions.GetLogEntries().Any(l => l.Message == message));
         }
 
         [Test]

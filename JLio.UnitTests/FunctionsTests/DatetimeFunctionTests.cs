@@ -35,7 +35,7 @@ namespace JLio.UnitTests.FunctionsTests
             var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeOptions);
 
             Assert.IsTrue(result.Success);
-            Assert.IsTrue(executeOptions.Logger.LogEntries.TrueForAll(i => i.Level != LogLevel.Error));
+            Assert.IsTrue(executeOptions.GetLogEntries().TrueForAll(i => i.Level != LogLevel.Error));
             Assert.IsNotNull(result.Data.SelectToken("$.result"));
         }
 

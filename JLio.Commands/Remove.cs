@@ -1,7 +1,6 @@
 ﻿using JLio.Core;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -30,13 +29,13 @@ namespace JLio.Commands
             if (!validationResult.IsValid)
             {
                 validationResult.ValidationMessages.ForEach(i =>
-                    options.Logger?.Log(LogLevel.Warning, CoreConstants.CommandExecution, i));
+                    options.LogWarning(CoreConstants.CommandExecution, i));
                 return new JLioExecutionResult(false, dataContext);
             }
 
             RemoveItems(dataContext);
 
-            options.Logger?.Log(LogLevel.Information, CoreConstants.CommandExecution,
+            options.LogInfo(CoreConstants.CommandExecution,
                 $"{CommandName}: completed for {Path}");
 
             return new JLioExecutionResult(true, dataContext);
@@ -56,7 +55,7 @@ namespace JLio.Commands
             var targetItems =
                 executionOptions.ItemsFetcher.SelectTokens(Path, data);
             if (targetItems.Count == 0)
-                executionOptions.Logger?.Log(LogLevel.Warning, CoreConstants.CommandExecution,
+                executionOptions.LogWarning(CoreConstants.CommandExecution,
                     $"{Path} did not retrieve any items");
             targetItems.ForEach(RemoveItemFromTarget);
         }
@@ -73,7 +72,7 @@ namespace JLio.Commands
                     RemoveValuesFromArray((JArray) parent, selectedValue);
                     break;
                 default:
-                    executionOptions.Logger?.Log(LogLevel.Warning, CoreConstants.CommandExecution,
+                    executionOptions.LogWarning(CoreConstants.CommandExecution,
                         $"{CommandName} only works on properties or items in array's");
                     break;
             }

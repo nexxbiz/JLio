@@ -74,14 +74,14 @@ namespace JLio.UnitTests.ScriptTextHandling
             var result = script.Execute(JToken.Parse(data), options);
 
             Assert.IsFalse(result.Success);
-            Assert.IsFalse(string.IsNullOrEmpty(options.Logger.LogText));
+            Assert.IsFalse(string.IsNullOrEmpty(options.GetLogText()));
             Assert.IsTrue(
-                options.Logger.LogEntries.All(i => i.DateTime < DateTime.Now && i.DateTime != new DateTime()));
-            Assert.IsTrue(options.Logger.LogEntries.All(i => i.Level != LogLevel.None));
-            Assert.IsFalse(options.Logger.LogEntries.Any(i => string.IsNullOrEmpty(i.Group)));
-            Assert.IsTrue(options.Logger.LogEntries.Start < DateTime.Now);
-            Assert.IsTrue(options.Logger.LogEntries.End < DateTime.Now);
-            Assert.IsTrue(options.Logger.LogEntries.ExecutionTimeMilliseconds >= 0);
+                options.GetLogEntries().All(i => i.DateTime < DateTime.Now && i.DateTime != new DateTime()));
+            Assert.IsTrue(options.GetLogEntries().All(i => i.Level != LogLevel.None));
+            Assert.IsFalse(options.GetLogEntries().Any(i => string.IsNullOrEmpty(i.Group)));
+            Assert.IsTrue(options.GetLogEntries().Start < DateTime.Now);
+            Assert.IsTrue(options.GetLogEntries().End < DateTime.Now);
+            Assert.IsTrue(options.GetLogEntries().ExecutionTimeMilliseconds >= 0);
             Assert.IsNotNull(result.Data);
         }
 

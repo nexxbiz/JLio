@@ -31,8 +31,8 @@ namespace JLio.UnitTests.FunctionsTests
             var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeOptions);
 
             Assert.IsTrue(result.Success);
-            Assert.IsTrue(executeOptions.Logger.LogEntries.TrueForAll(i => i.Level != LogLevel.Error));
-            Assert.IsFalse(string.IsNullOrEmpty(executeOptions.Logger.LogText));
+            Assert.IsTrue(executeOptions.GetLogEntries().TrueForAll(i => i.Level != LogLevel.Error));
+            Assert.IsFalse(string.IsNullOrEmpty(executeOptions.GetLogText()));
             Assert.IsNotNull(result.Data.SelectToken("$.result"));
             Assert.AreEqual(resultValue, result.Data.SelectToken("$.result")?.ToString());
         }

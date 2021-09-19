@@ -2,7 +2,6 @@
 using JLio.Core.Contracts;
 using JLio.Core.Extensions;
 using JLio.Core.Models;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -58,7 +57,7 @@ namespace JLio.Commands.Logic
                     RemoveValuesFromArray(a, selectedValue);
                     break;
                 default:
-                    executionOptions.Logger?.Log(LogLevel.Warning, CoreConstants.CommandExecution,
+                    executionOptions.LogWarning(CoreConstants.CommandExecution,
                         "remove only works on properties or items in array's");
                     break;
             }
@@ -105,14 +104,14 @@ namespace JLio.Commands.Logic
         private void AddProperty(string propertyName, JObject o, JToken value)
         {
             o.Add(propertyName, value);
-            executionOptions.Logger?.Log(LogLevel.Information, CoreConstants.CommandExecution,
+            executionOptions.LogInfo(CoreConstants.CommandExecution,
                 $"Property {propertyName} added to object: {o.Path}");
         }
 
         private void AddToArray(JArray jArray, JToken value)
         {
             jArray.Add(value);
-            executionOptions.Logger?.Log(LogLevel.Information, CoreConstants.CommandExecution,
+            executionOptions.LogInfo(CoreConstants.CommandExecution,
                 $"Value added to array: {jArray.Path}");
         }
     }
