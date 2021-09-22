@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using JLio.Commands;
 using JLio.Commands.Builders;
+using JLio.Core.Contracts;
 using JLio.Core.Models;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -10,12 +11,12 @@ namespace JLio.UnitTests.CommandsTests
     public class RemoveTests
     {
         private JToken data;
-        private ExecutionOptions executeOptions;
+        private IExecutionContext executeOptions;
 
         [SetUp]
         public void Setup()
         {
-            executeOptions = ExecutionOptions.CreateDefault();
+            executeOptions = ExecutionContext.CreateDefault();
             data = JToken.Parse(
                 "{\r\n  \"myString\": \"demo2\",\r\n  \"myNumber\": 2.2,\r\n  \"myInteger\": 20,\r\n  \"myObject\": {\r\n    \"myObject\": {\"myArray\": [\r\n      2,\r\n      20,\r\n      200,\r\n      2000\r\n    ]},\r\n    \"myArray\": [\r\n      2,\r\n      20,\r\n      200,\r\n      2000\r\n    ]\r\n  },\r\n  \"myArray\": [\r\n    2,\r\n    20,\r\n    200,\r\n    2000\r\n  ],\r\n  \"myBoolean\": true,\r\n  \"myNull\": null\r\n}");
         }

@@ -9,7 +9,7 @@ namespace JLio.Core.Contracts
 
         IFunction SetArguments(Arguments arguments);
 
-        JLioExecutionResult Execute(JToken currentToken, JToken dataContext, IExecutionOptions options);
+        JLioExecutionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context);
 
         string ToScript();
     }

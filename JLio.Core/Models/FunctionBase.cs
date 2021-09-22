@@ -24,13 +24,13 @@ namespace JLio.Core.Models
                 $"{FunctionName}({string.Join(CoreConstants.ArgumentsDelimiter.ToString(), arguments.Select(a => a.Function.ToScript()))})";
         }
 
-        public abstract JLioExecutionResult Execute(JToken currentToken, JToken dataContext, IExecutionOptions options);
+        public abstract JLioExecutionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context);
 
         public static List<string> GetArgumentStrings(Arguments arguments, JToken currentToken, JToken dataContext,
-            IExecutionOptions options)
+            IExecutionContext context)
         {
             var argumentValues = new List<string>();
-            arguments.ForEach(a => argumentValues.Add(a.GetValue(currentToken, dataContext, options).ToString()));
+            arguments.ForEach(a => argumentValues.Add(a.GetValue(currentToken, dataContext, context).ToString()));
             return argumentValues;
         }
     }

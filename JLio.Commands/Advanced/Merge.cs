@@ -11,7 +11,7 @@ namespace JLio.Commands.Advanced
 {
     public class Merge : CommandBase
     {
-        private IExecutionOptions executionOptions;
+        private IExecutionContext executionContext;
 
         public Merge()
         {
@@ -40,19 +40,19 @@ namespace JLio.Commands.Advanced
         [JsonProperty("targetPath")]
         public string TargetPath { get; set; }
 
-        public override JLioExecutionResult Execute(JToken dataContext, IExecutionOptions options)
+        public override JLioExecutionResult Execute(JToken dataContext, IExecutionContext context)
         {
-            executionOptions = options;
+            executionContext = context;
             var validationResult = ValidateCommandInstance();
             if (!validationResult.IsValid)
             {
                 validationResult.ValidationMessages.ForEach(i =>
-                    options.LogWarning(CoreConstants.CommandExecution, i));
+                    context.LogWarning(CoreConstants.CommandExecution, i));
                 return new JLioExecutionResult(false, dataContext);
             }
 
-            var sourceTokens = options.ItemsFetcher.SelectTokens(Path, dataContext);
-            var targetTokens = options.ItemsFetcher.SelectTokens(TargetPath, dataContext);
+            var sourceTokens = context.ItemsFetcher.SelectTokens(Path, dataContext);
+            var targetTokens = context.ItemsFetcher.SelectTokens(TargetPath, dataContext);
 
             sourceTokens.ForEach(s =>
                 targetTokens.ForEach(t => MergeElements(s, t)));
@@ -114,7 +114,7 @@ namespace JLio.Commands.Advanced
         private string GetPathFor(JToken jtoken)
         {
             if (jtoken == null)
-                return executionOptions.ItemsFetcher.RootPathIndicator;
+                return executionContext.ItemsFetcher.RootPathIndicator;
             if (jtoken.Type == JTokenType.Array || jtoken.Type == JTokenType.Object)
                 return GetPathFor(jtoken.Parent);
             if (jtoken.Type == JTokenType.Property)

@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace JLio.Core.Models
 {
-    public class ExecutionOptions : IExecutionOptions
+    public class ExecutionContext : IExecutionContext
     {
         public IExecutionLogger Logger { get; set; }
 
@@ -31,14 +31,9 @@ namespace JLio.Core.Models
             return Logger == null ? new LogEntries() : Logger.LogEntries;
         }
 
-        public string GetLogText()
+        public static IExecutionContext CreateDefault()
         {
-            return Logger == null ? string.Empty : Logger.LogText;
-        }
-
-        public static ExecutionOptions CreateDefault()
-        {
-            return new ExecutionOptions
+            return new ExecutionContext
                 {ItemsFetcher = new JsonPathItemsFetcher(), Logger = new ExecutionLogger()};
         }
     }

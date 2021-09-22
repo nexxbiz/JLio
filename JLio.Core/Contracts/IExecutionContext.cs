@@ -2,7 +2,7 @@
 
 namespace JLio.Core.Contracts
 {
-    public interface IExecutionOptions
+    public interface IExecutionContext
     {
         IItemsFetcher ItemsFetcher { get; set; }
         IExecutionLogger Logger { get; set; }

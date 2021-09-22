@@ -16,9 +16,9 @@ namespace JLio.Core
 
         public string CommandName { get; }
 
-        public JLioExecutionResult Execute(JToken data, IExecutionOptions options)
+        public JLioExecutionResult Execute(JToken data, IExecutionContext context)
         {
-            options.LogError(CoreConstants.CommandExecution,
+            context.LogError(CoreConstants.CommandExecution,
                 $"script contains a unknown command : {CommandName}");
             return new JLioExecutionResult(false, data);
         }

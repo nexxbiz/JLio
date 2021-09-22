@@ -10,7 +10,7 @@ namespace JLio.Commands
 {
     public class Set : CommandBase
     {
-        private IExecutionOptions executionOptions;
+        private IExecutionContext executionContext;
 
         public Set()
         {
@@ -34,20 +34,20 @@ namespace JLio.Commands
         [JsonProperty("value")]
         public IFunctionSupportedValue Value { get; set; }
 
-        public override JLioExecutionResult Execute(JToken dataContext, IExecutionOptions options)
+        public override JLioExecutionResult Execute(JToken dataContext, IExecutionContext context)
         {
-            executionOptions = options;
+            executionContext = context;
             var validationResult = ValidateCommandInstance();
             if (!validationResult.IsValid)
             {
                 validationResult.ValidationMessages.ForEach(i =>
-                    options.LogWarning(CoreConstants.CommandExecution, i));
+                    context.LogWarning(CoreConstants.CommandExecution, i));
                 return new JLioExecutionResult(false, dataContext);
             }
 
             var targetPath = JsonPathMethods.SplitPath(Path);
             SetValueToObjectItems(dataContext, targetPath);
-            executionOptions.LogInfo(CoreConstants.CommandExecution,
+            executionContext.LogInfo(CoreConstants.CommandExecution,
                 $"{CommandName}: completed for {targetPath.Elements.ToPathString()}");
             return new JLioExecutionResult(true, dataContext);
         }
@@ -69,7 +69,7 @@ namespace JLio.Commands
             if (targetPath.IsSearchingForObjectsByName)
                 path = targetPath.Elements.ToPathString();
             var targetItems =
-                executionOptions.ItemsFetcher.SelectTokens(path, dataContext);
+                executionContext.ItemsFetcher.SelectTokens(path, dataContext);
             targetItems.ForEach(i => SetValueToTarget(targetPath.LastName, i, dataContext));
         }
 
@@ -83,7 +83,7 @@ namespace JLio.Commands
 
                     if (!o.ContainsKey(propertyName))
                     {
-                        executionOptions.LogInfo(CoreConstants.CommandExecution,
+                        executionContext.LogInfo(CoreConstants.CommandExecution,
                             $"Property {propertyName} does not exists on {o.Path}. {CommandName} function not applied.");
                         return;
                     }
@@ -91,7 +91,7 @@ namespace JLio.Commands
                     ReplaceCurrentValueWithNew(propertyName, o, dataContext);
                     break;
                 case JArray a:
-                    executionOptions.LogInfo(CoreConstants.CommandExecution,
+                    executionContext.LogInfo(CoreConstants.CommandExecution,
                         $"can't set value on a array on {a.Path}. {CommandName} functionality not applied.");
                     break;
             }
@@ -99,16 +99,16 @@ namespace JLio.Commands
 
         private void ReplaceTargetTokenWithNewValue(JToken currentJObject, JToken dataContext)
         {
-            currentJObject.Replace(Value.GetValue(currentJObject, dataContext, executionOptions));
-            executionOptions.LogInfo(CoreConstants.CommandExecution,
+            currentJObject.Replace(Value.GetValue(currentJObject, dataContext, executionContext));
+            executionContext.LogInfo(CoreConstants.CommandExecution,
                 $"Value has been set on object at path {currentJObject.Path}.");
         }
 
         private void ReplaceCurrentValueWithNew(string propertyName, JObject o, JToken dataContext)
         {
-            o[propertyName] = Value.GetValue(o[propertyName], dataContext, executionOptions);
+            o[propertyName] = Value.GetValue(o[propertyName], dataContext, executionContext);
 
-            executionOptions.LogInfo(CoreConstants.CommandExecution,
+            executionContext.LogInfo(CoreConstants.CommandExecution,
                 $"Property {propertyName} on {o.Path} value has been set.");
         }
     }

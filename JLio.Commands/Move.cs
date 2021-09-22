@@ -18,17 +18,17 @@ namespace JLio.Commands
             ToPath = to;
         }
 
-        public override JLioExecutionResult Execute(JToken dataContext, IExecutionOptions options)
+        public override JLioExecutionResult Execute(JToken dataContext, IExecutionContext context)
         {
             var validationResult = ValidateCommandInstance();
             if (!validationResult.IsValid)
             {
                 validationResult.ValidationMessages.ForEach(i =>
-                    options.LogWarning(CoreConstants.CommandExecution, i));
+                    context.LogWarning(CoreConstants.CommandExecution, i));
                 return new JLioExecutionResult(false, dataContext);
             }
 
-            return Execute(dataContext, options, EAction.Move);
+            return Execute(dataContext, context, EAction.Move);
         }
 
         public override ValidationResult ValidateCommandInstance()

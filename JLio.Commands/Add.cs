@@ -10,7 +10,7 @@ namespace JLio.Commands
 {
     public class Add : CommandBase
     {
-        private IExecutionOptions executionOptions;
+        private IExecutionContext executionContext;
 
         public Add()
         {
@@ -34,21 +34,21 @@ namespace JLio.Commands
         [JsonProperty("value")]
         public IFunctionSupportedValue Value { get; set; }
 
-        public override JLioExecutionResult Execute(JToken dataContext, IExecutionOptions options)
+        public override JLioExecutionResult Execute(JToken dataContext, IExecutionContext context)
         {
-            executionOptions = options;
+            executionContext = context;
             var validationResult = ValidateCommandInstance();
             if (!validationResult.IsValid)
             {
                 validationResult.ValidationMessages.ForEach(i =>
-                    options.LogWarning(CoreConstants.CommandExecution, i));
+                    context.LogWarning(CoreConstants.CommandExecution, i));
                 return new JLioExecutionResult(false, dataContext);
             }
 
             var targetPath = JsonPathMethods.SplitPath(Path);
-            JsonMethods.CheckOrCreateParentPath(dataContext, targetPath, options.ItemsFetcher, options.Logger);
-            AddToObjectItems(dataContext, options.ItemsFetcher, targetPath);
-            options.LogInfo(CoreConstants.CommandExecution,
+            JsonMethods.CheckOrCreateParentPath(dataContext, targetPath, context.ItemsFetcher, context.Logger);
+            AddToObjectItems(dataContext, context.ItemsFetcher, targetPath);
+            context.LogInfo(CoreConstants.CommandExecution,
                 $"{CommandName}: completed for {targetPath.Elements.ToPathString()}");
             return new JLioExecutionResult(true, dataContext);
         }
@@ -86,7 +86,7 @@ namespace JLio.Commands
                     }
                     else if (o.ContainsKey(propertyName))
                     {
-                        executionOptions.LogWarning(CoreConstants.CommandExecution,
+                        executionContext.LogWarning(CoreConstants.CommandExecution,
                             $"Property {propertyName} already exists on {o.Path}. {CommandName} function not applied");
                         return;
                     }
@@ -101,15 +101,15 @@ namespace JLio.Commands
 
         private void AddProperty(string propertyName, JObject o, JToken dataContext)
         {
-            o.Add(propertyName, Value.GetValue(o, dataContext, executionOptions));
-            executionOptions.LogInfo(CoreConstants.CommandExecution,
+            o.Add(propertyName, Value.GetValue(o, dataContext, executionContext));
+            executionContext.LogInfo(CoreConstants.CommandExecution,
                 $"Property {propertyName} added to object: {o.Path}");
         }
 
         private void AddToArray(JArray jArray, JToken dataContext)
         {
-            jArray.Add(Value.GetValue(jArray, dataContext, executionOptions));
-            executionOptions.LogInfo(CoreConstants.CommandExecution,
+            jArray.Add(Value.GetValue(jArray, dataContext, executionContext));
+            executionContext.LogInfo(CoreConstants.CommandExecution,
                 $"Value added to array: {jArray.Path}");
         }
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using JLio.Client;
 using JLio.Commands.Builders;
+using JLio.Core.Contracts;
 using JLio.Core.Models;
 using JLio.Functions;
 using Microsoft.Extensions.Logging;
@@ -11,14 +12,14 @@ namespace JLio.UnitTests.FunctionsTests
 {
     public class NewGuidTests
     {
-        private ExecutionOptions executeOptions;
+        private IExecutionContext executeOptions;
         private ParseOptions parseOptions;
 
         [SetUp]
         public void Setup()
         {
             parseOptions = ParseOptions.CreateDefault();
-            executeOptions = ExecutionOptions.CreateDefault();
+            executeOptions = ExecutionContext.CreateDefault();
         }
 
         [TestCase("=newGuid()", "{}")]

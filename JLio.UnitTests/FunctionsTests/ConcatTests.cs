@@ -1,5 +1,6 @@
 ﻿using JLio.Client;
 using JLio.Commands.Builders;
+using JLio.Core.Contracts;
 using JLio.Core.Models;
 using JLio.Functions;
 using Microsoft.Extensions.Logging;
@@ -10,14 +11,14 @@ namespace JLio.UnitTests.FunctionsTests
 {
     public class ConcatTests
     {
-        private ExecutionOptions executeOptions;
+        private IExecutionContext executeOptions;
         private ParseOptions parseOptions;
 
         [SetUp]
         public void Setup()
         {
             parseOptions = ParseOptions.CreateDefault();
-            executeOptions = ExecutionOptions.CreateDefault();
+            executeOptions = ExecutionContext.CreateDefault();
         }
 
         [TestCase("=concat()", "{}", "")]
@@ -32,7 +33,6 @@ namespace JLio.UnitTests.FunctionsTests
 
             Assert.IsTrue(result.Success);
             Assert.IsTrue(executeOptions.GetLogEntries().TrueForAll(i => i.Level != LogLevel.Error));
-            Assert.IsFalse(string.IsNullOrEmpty(executeOptions.GetLogText()));
             Assert.IsNotNull(result.Data.SelectToken("$.result"));
             Assert.AreEqual(resultValue, result.Data.SelectToken("$.result")?.ToString());
         }

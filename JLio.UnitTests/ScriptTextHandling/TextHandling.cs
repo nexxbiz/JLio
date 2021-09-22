@@ -69,19 +69,19 @@ namespace JLio.UnitTests.ScriptTextHandling
         [TestCase("[{\"path\":\"$.myObject.newProperty\",\"value\":\"new value\",\"command\":\"unknown\"}]", "{}")]
         public void CanParseAndExecuteWithLogging(string scriptText, string data)
         {
-            var options = ExecutionOptions.CreateDefault();
+            var context = ExecutionContext.CreateDefault();
             var script = JLioConvert.Parse(scriptText);
-            var result = script.Execute(JToken.Parse(data), options);
+            var result = script.Execute(JToken.Parse(data), context);
 
             Assert.IsFalse(result.Success);
-            Assert.IsFalse(string.IsNullOrEmpty(options.GetLogText()));
+            Assert.IsTrue(context.GetLogEntries().Count(i => i.Level == LogLevel.Error) == 1);
             Assert.IsTrue(
-                options.GetLogEntries().All(i => i.DateTime < DateTime.Now && i.DateTime != new DateTime()));
-            Assert.IsTrue(options.GetLogEntries().All(i => i.Level != LogLevel.None));
-            Assert.IsFalse(options.GetLogEntries().Any(i => string.IsNullOrEmpty(i.Group)));
-            Assert.IsTrue(options.GetLogEntries().Start < DateTime.Now);
-            Assert.IsTrue(options.GetLogEntries().End < DateTime.Now);
-            Assert.IsTrue(options.GetLogEntries().ExecutionTimeMilliseconds >= 0);
+                context.GetLogEntries().All(i => i.DateTime < DateTime.Now && i.DateTime != new DateTime()));
+            Assert.IsTrue(context.GetLogEntries().All(i => i.Level != LogLevel.None));
+            Assert.IsFalse(context.GetLogEntries().Any(i => string.IsNullOrEmpty(i.Group)));
+            Assert.IsTrue(context.GetLogEntries().Start < DateTime.Now);
+            Assert.IsTrue(context.GetLogEntries().End < DateTime.Now);
+            Assert.IsTrue(context.GetLogEntries().ExecutionTimeMilliseconds >= 0);
             Assert.IsNotNull(result.Data);
         }
 
