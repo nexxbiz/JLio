@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using JLio.Commands;
 using JLio.Commands.Builders;
+using JLio.Core.Contracts;
 using JLio.Core.Models;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -10,12 +11,12 @@ namespace JLio.UnitTests.CommandsTests
     public class CopyMoveTests
     {
         private JToken data;
-        private ExecutionOptions executeOptions;
+        private IExecutionContext executeOptions;
 
         [SetUp]
         public void Setup()
         {
-            executeOptions = ExecutionOptions.CreateDefault();
+            executeOptions = ExecutionContext.CreateDefault();
             data = JToken.Parse(
                 "{ \"myString\": \"demo2\", \"myNumber\": 2.2, \"myInteger\": 20, \"myObject\": { \"myObject\": {\"myArray\": [ 2, 20, 200, 2000 ]}, \"myArray\": [ 2, 20, 200, 2000 ] }, \"myArray\": [ 2, 20, 200, 2000 ], \"myBoolean\": true, \"myNull\": null}");
         }
@@ -136,7 +137,7 @@ namespace JLio.UnitTests.CommandsTests
             var result = command.Execute(JToken.Parse("{\"first\":true,\"second\":true}"), executeOptions);
             Assert.IsNotNull(result);
             Assert.IsFalse(result.Success);
-            Assert.IsTrue(executeOptions.Logger.LogEntries.Any());
+            Assert.IsTrue(executeOptions.GetLogEntries().Any());
         }
 
         [Test]
@@ -146,7 +147,7 @@ namespace JLio.UnitTests.CommandsTests
             var result = command.Execute(JToken.Parse("{\"first\":true,\"second\":true}"), executeOptions);
             Assert.IsNotNull(result);
             Assert.IsFalse(result.Success);
-            Assert.IsTrue(executeOptions.Logger.LogEntries.Any());
+            Assert.IsTrue(executeOptions.GetLogEntries().Any());
         }
     }
 }

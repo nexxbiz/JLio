@@ -2,6 +2,7 @@
 using JLio.Commands;
 using JLio.Commands.Builders;
 using JLio.Core;
+using JLio.Core.Contracts;
 using JLio.Core.Models;
 using JLio.Functions;
 using Newtonsoft.Json.Linq;
@@ -13,12 +14,12 @@ namespace JLio.UnitTests.CommandsTests
     {
         private JToken data;
 
-        private ExecutionOptions executeOptions;
+        private IExecutionContext executeOptions;
 
         [SetUp]
         public void Setup()
         {
-            executeOptions = ExecutionOptions.CreateDefault();
+            executeOptions = ExecutionContext.CreateDefault();
             data = JToken.Parse(
                 "{\r\n  \"myString\": \"demo2\",\r\n  \"myNumber\": 2.2,\r\n  \"myInteger\": 20,\r\n  \"myObject\": {\r\n    \"myObject\": {\"myArray\": [\r\n      2,\r\n      20,\r\n      200,\r\n      2000\r\n    ]},\r\n    \"myArray\": [\r\n      2,\r\n      20,\r\n      200,\r\n      2000\r\n    ]\r\n  },\r\n  \"myArray\": [\r\n    2,\r\n    20,\r\n    200,\r\n    2000\r\n  ],\r\n  \"myBoolean\": true,\r\n  \"myNull\": null\r\n}");
         }
@@ -106,7 +107,7 @@ namespace JLio.UnitTests.CommandsTests
 
             Assert.IsNotNull(result);
             Assert.IsFalse(result.Success);
-            Assert.IsTrue(executeOptions.Logger.LogEntries.Any(l => l.Message == message));
+            Assert.IsTrue(executeOptions.GetLogEntries().Any(l => l.Message == message));
         }
 
         [Test]

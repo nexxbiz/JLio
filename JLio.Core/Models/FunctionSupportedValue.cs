@@ -12,7 +12,7 @@ namespace JLio.Core.Models
 
         public IFunction Function { get; }
 
-        public JToken GetValue(JToken currentToken, JToken dataContext, IExecutionOptions options)
+        public JToken GetValue(JToken currentToken, JToken dataContext, IExecutionContext context)
         {
             var result = Function.Execute(currentToken, dataContext, options);
             if (result.Data == null) return JValue.CreateNull();
