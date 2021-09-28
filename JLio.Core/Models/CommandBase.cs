@@ -10,7 +10,7 @@ namespace JLio.Core.Models
         [JsonProperty("command")]
         public string CommandName => GetType().Name.CamelCasing();
 
-        public abstract JLioExecutionResult Execute(JToken dataContext, IExecutionOptions options);
+        public abstract JLioExecutionResult Execute(JToken dataContext, IExecutionContext context);
 
         public abstract ValidationResult ValidateCommandInstance();
     }

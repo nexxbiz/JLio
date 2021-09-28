@@ -4,6 +4,7 @@ using JLio.Commands.Advanced;
 using JLio.Commands.Advanced.Builders;
 using JLio.Commands.Advanced.Models;
 using JLio.Commands.Advanced.Settings;
+using JLio.Core.Contracts;
 using JLio.Core.Models;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -12,12 +13,12 @@ namespace JLio.UnitTests.CommandsTests
 {
     public class CompareTests
     {
-        private ExecutionOptions executeOptions;
+        private IExecutionContext executeOptions;
 
         [SetUp]
         public void Setup()
         {
-            executeOptions = ExecutionOptions.CreateDefault();
+            executeOptions = ExecutionContext.CreateDefault();
         }
 
         [TestCase("{\"first\":1,\"second\":true}", true)]
