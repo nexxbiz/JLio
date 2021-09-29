@@ -12,11 +12,13 @@ namespace JLio.Core.Models
 
         public IFunction Function { get; }
 
-        public JToken GetValue(JToken currentToken, JToken dataContext, IExecutionOptions options)
+        public SelectedTokens GetValue(JToken currentToken, JToken dataContext, IExecutionOptions options)
         {
             var result = Function.Execute(currentToken, dataContext, options);
-            //if (result.Data.Type == JTokenType.String)
-            //    return result.Data.ToString().Trim(CoreConstants.StringIndicator);
+            if (result.Success == false)
+            {
+            }
+
             return result.Data;
         }
 

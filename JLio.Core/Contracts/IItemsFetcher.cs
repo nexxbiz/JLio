@@ -5,6 +5,7 @@ namespace JLio.Core.Contracts
 {
     public interface IItemsFetcher
     {
+        string ArrayCloseChar { get; }
         string CurrentItemPathIndicator { get; }
         string PathDelimiter { get; }
         string RootPathIndicator { get; }

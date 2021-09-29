@@ -102,7 +102,7 @@ namespace JLio.Commands
 
         private void AddProperty(string propertyName, JObject o, JToken dataContext)
         {
-            o.Add(propertyName, Value.GetValue(o, dataContext, executionOptions));
+            o.Add(propertyName, Value.GetValue(o, dataContext, executionOptions).GetJTokenValue());
             executionOptions.Logger?.Log(LogLevel.Information, CoreConstants.CommandExecution,
                 $"Property {propertyName} added to object: {o.Path}");
         }

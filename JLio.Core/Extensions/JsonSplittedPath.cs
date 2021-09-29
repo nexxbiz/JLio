@@ -7,9 +7,9 @@ namespace JLio.Core.Extensions
     public class JsonSplittedPath
     {
         private const char pathDelimiter = '.';
-        public List<PathElement> Elements = new List<PathElement>();
+        public readonly List<PathElement> Elements = new List<PathElement>();
 
-        internal JsonSplittedPath(string path)
+        public JsonSplittedPath(string path)
         {
             var element = string.Empty;
             var arrayNotationLevel = 0;

@@ -44,10 +44,10 @@ namespace JLio.UnitTests.FunctionsTests
             Assert.IsTrue(JToken.DeepEquals(JToken.Parse(expectedResult), result.Data.SelectToken("$.result")));
         }
 
-        [TestCase("=promote($.source[*],'new')", "{\"source\" : [1,2]}", "{\"new\": [1,2] }")]
+        [TestCase("=promote('new')", "{\"result\" : [1,2]}", "[{\"new\": 1 }, {\"new\": 2 }]")]
         public void ScriptTestOnSelf(string function, string data, string expectedResult)
         {
-            var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"add\"}}]";
+            var script = $"[{{\"path\":\"$.result[*]\",\"value\":\"{function}\",\"command\":\"set\"}}]";
             var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeOptions);
 
             Assert.IsTrue(result.Success);
@@ -56,7 +56,7 @@ namespace JLio.UnitTests.FunctionsTests
         }
 
         [Test]
-        public void CanbeUsedInFluentApi()
+        public void CanBeUsedInFluentApi()
         {
             var script = new JLioScript()
                     .Set(new Promote("$.demo", "new"))

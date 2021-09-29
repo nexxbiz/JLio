@@ -9,10 +9,7 @@ namespace JLio.Core.Models.Path
             PathElementFullText = pathElementFullText;
         }
 
-        public string ArrayNotation => !string.IsNullOrEmpty(PathElementFullText)
-            ? PathElementFullText.Contains('[') ? PathElementFullText.Substring(PathElementFullText.IndexOf('[')) :
-            string.Empty
-            : string.Empty;
+        public string ArrayNotation => GetArrayNotation();
 
         public string ArrayNotationInnerText => ArrayNotation.TrimStart('[').TrimEnd(']');
 
@@ -21,8 +18,29 @@ namespace JLio.Core.Models.Path
             PathElementFullText
             : PathElementFullText;
 
-        public bool HasArrayIndicator => PathElementFullText.Contains('[') && PathElementFullText.EndsWith("]");
+        public bool HasArrayIndicator => GetHasArrayIndicator();
+
         public string PathElementFullText { get; }
         public bool RecursiveDescentIndicator => PathElementFullText == string.Empty;
+
+        private string GetArrayNotation()
+        {
+            if (!HasArrayIndicator) return string.Empty;
+            var cleanedElement = GetCleanedElement();
+            var start = cleanedElement.Substring(cleanedElement.IndexOf('['));
+            return start.Substring(0, start.IndexOf(']') + 1);
+        }
+
+        private bool GetHasArrayIndicator()
+        {
+            var cleanedElement = GetCleanedElement();
+
+            return cleanedElement.Contains('[') && cleanedElement.EndsWith("]");
+        }
+
+        private string GetCleanedElement()
+        {
+            return PathElementFullText.Replace("['", "").Replace("']", "");
+        }
     }
 }

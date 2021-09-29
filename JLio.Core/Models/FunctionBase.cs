@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using JLio.Core.Contracts;
 using JLio.Core.Extensions;
@@ -25,24 +24,14 @@ namespace JLio.Core.Models
                 $"{FunctionName}({string.Join(CoreConstants.ArgumentsDelimiter.ToString(), arguments.Select(a => a.Function.ToScript()))})";
         }
 
-        public abstract JLioExecutionResult Execute(JToken currentToken, JToken dataContext, IExecutionOptions options);
-
-        [Obsolete("GetArgumentStrings is deprecated, please use GetArguments instead.")]
-        public static List<string> GetArgumentStrings(Arguments arguments, JToken currentToken, JToken dataContext,
-            IExecutionOptions options)
-        {
-            var argumentValues = new List<string>();
-            arguments.ForEach(a => argumentValues.Add(
-                a.GetValue(currentToken, dataContext, options).ToString()));
-            return argumentValues;
-        }
+        public abstract JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionOptions options);
 
         public static List<JToken> GetArguments(Arguments arguments, JToken currentToken, JToken dataContext,
             IExecutionOptions options)
         {
             var argumentValues = new List<JToken>();
             arguments.ForEach(a => argumentValues.Add(
-                a.GetValue(currentToken, dataContext, options)));
+                a.GetValue(currentToken, dataContext, options).GetJTokenValue()));
             return argumentValues;
         }
     }

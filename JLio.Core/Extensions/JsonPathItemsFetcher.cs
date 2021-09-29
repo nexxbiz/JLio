@@ -7,6 +7,7 @@ namespace JLio.Core.Extensions
     public class JsonPathItemsFetcher : IItemsFetcher
 
     {
+        public string ArrayCloseChar { get; } = "]";
         public string CurrentItemPathIndicator { get; } = "@";
 
         public string PathDelimiter { get; } = ".";

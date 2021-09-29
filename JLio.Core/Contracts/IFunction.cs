@@ -9,8 +9,47 @@ namespace JLio.Core.Contracts
 
         IFunction SetArguments(Arguments arguments);
 
-        JLioExecutionResult Execute(JToken currentToken, JToken dataContext, IExecutionOptions options);
+        JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionOptions options);
 
         string ToScript();
+    }
+
+    public class JLioFunctionResult
+    {
+        public JLioFunctionResult(bool success, SelectedTokens data)
+        {
+            Success = success;
+            Data = data;
+        }
+
+        public JLioFunctionResult(bool success, JToken data)
+        {
+            Success = success;
+            Data = new SelectedTokens(data);
+        }
+
+        public SelectedTokens Data { get; }
+
+        public bool Success { get; }
+
+        public static JLioFunctionResult Failed(SelectedTokens data)
+        {
+            return new JLioFunctionResult(false, data);
+        }
+
+        public static JLioFunctionResult SuccessFull(SelectedTokens data)
+        {
+            return new JLioFunctionResult(true, data);
+        }
+
+        public static JLioFunctionResult Failed(JToken data)
+        {
+            return new JLioFunctionResult(false, new SelectedTokens(data));
+        }
+
+        public static JLioFunctionResult SuccessFull(JToken data)
+        {
+            return new JLioFunctionResult(true, new SelectedTokens(data));
+        }
     }
 }

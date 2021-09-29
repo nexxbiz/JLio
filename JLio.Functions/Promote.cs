@@ -24,13 +24,13 @@ namespace JLio.Functions
             arguments.Add(new FunctionSupportedValue(new FixedValue(JToken.Parse($"\"{newPropertyName}\""))));
         }
 
-        public override JLioExecutionResult Execute(JToken currentToken, JToken dataContext, IExecutionOptions options)
+        public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionOptions options)
         {
             if (arguments.Count == 0 || arguments.Count > 2)
             {
                 options.Logger.Log(LogLevel.Error, CoreConstants.FunctionExecution,
                     $"failed: {FunctionName} requires 2 arguments (path, newPropertyName)");
-                return JLioExecutionResult.Failed(currentToken);
+                return JLioFunctionResult.Failed(currentToken);
             }
 
             var values = GetArguments(arguments, currentToken, dataContext, options);
@@ -44,14 +44,14 @@ namespace JLio.Functions
             catch (Exception ex)
             {
                 options.Logger.Log(LogLevel.Error, CoreConstants.FunctionExecution, $"failed: {ex.Message}");
-                return JLioExecutionResult.Failed(currentToken);
+                return JLioFunctionResult.Failed(currentToken);
             }
         }
 
-        private static JLioExecutionResult DoPromote(string propertyName, JToken value)
+        private static JLioFunctionResult DoPromote(string propertyName, JToken value)
         {
             var newToken = new JObject {{propertyName, value}};
-            return JLioExecutionResult.SuccessFull(newToken);
+            return JLioFunctionResult.SuccessFull(newToken);
         }
     }
 }

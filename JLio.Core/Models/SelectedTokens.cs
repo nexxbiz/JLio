@@ -11,6 +11,11 @@ namespace JLio.Core.Models
             AddRange(tokens);
         }
 
+        public SelectedTokens(JToken token)
+        {
+            Add(token);
+        }
+
         public bool AreSameTokenTypes
         {
             get { return this.Select(t => t.Type).Distinct().Count() < 2; }

@@ -71,17 +71,24 @@ namespace JLio.Commands
                 path = targetPath.Elements.ToPathString();
             var targetItems =
                 executionOptions.ItemsFetcher.SelectTokens(path, dataContext);
-            targetItems.ForEach(i => SetValueToTarget(targetPath.LastName, i, dataContext));
+            if (targetPath.LastElement.HasArrayIndicator)
+                executionOptions.ItemsFetcher.SelectTokens(targetPath.LastName, dataContext)
+                    .ForEach(i => SetValueToTarget(i.Path, i, dataContext));
+            else
+                targetItems.ForEach(i => SetValueToTarget(targetPath.LastName, i, dataContext));
         }
 
         private void SetValueToTarget(string propertyName, JToken jToken, JToken dataContext)
         {
+            //if (propertyName.EndsWith(executionOptions.ItemsFetcher.ArrayCloseChar))
+            //    executionOptions.ItemsFetcher.SelectTokens(propertyName, jToken)
+            //        .ForEach(i => SetValueToTarget(i.Path, i, dataContext));
+            //else
             switch (jToken)
             {
                 case JObject o:
-                    //todo: need to validate if the path has array selection
-
-                    if (!o.ContainsKey(propertyName) && o.SelectToken(propertyName) != null)
+                    if (!o.ContainsKey(propertyName) &&
+                        executionOptions.ItemsFetcher.SelectToken(propertyName, o) != null)
                         ReplaceTargetTokenWithNewValue(o.SelectToken(propertyName), dataContext);
 
                     if (!o.ContainsKey(propertyName))
@@ -97,19 +104,21 @@ namespace JLio.Commands
                     executionOptions.Logger?.Log(LogLevel.Information, CoreConstants.CommandExecution,
                         $"can't set value on a array on {a.Path}. {CommandName} functionality not applied.");
                     break;
+                case JValue v:
+
             }
         }
 
         private void ReplaceTargetTokenWithNewValue(JToken currentJObject, JToken dataContext)
         {
-            currentJObject.Replace(Value.GetValue(currentJObject, dataContext, executionOptions));
+            currentJObject.Replace(Value.GetValue(currentJObject, dataContext, executionOptions).GetJTokenValue());
             executionOptions.Logger?.Log(LogLevel.Information, CoreConstants.CommandExecution,
                 $"Value has been set on object at path {currentJObject.Path}.");
         }
 
         private void ReplaceCurrentValueWithNew(string propertyName, JObject o, JToken dataContext)
         {
-            o[propertyName] = Value.GetValue(o[propertyName], dataContext, executionOptions);
+            o[propertyName] = Value.GetValue(o[propertyName], dataContext, executionOptions).GetJTokenValue();
 
             executionOptions.Logger?.Log(LogLevel.Information, CoreConstants.CommandExecution,
                 $"Property {propertyName} on {o.Path} value has been set.");
