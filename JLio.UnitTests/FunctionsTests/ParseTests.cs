@@ -1,4 +1,5 @@
-﻿using JLio.Client;
+﻿using System.Linq;
+using JLio.Client;
 using JLio.Commands.Builders;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
@@ -52,14 +53,23 @@ namespace JLio.UnitTests.FunctionsTests
         }
 
         [TestCase("=parse($.item)", "{\"result\" : \"{\\\"demo :67}\"}")]
-        [TestCase("=parse()", "{\"result\" : 3 }")]
         public void ScriptTestAddFaultyString(string function, string data)
         {
             var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"set\"}}]";
             var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeContext);
 
             Assert.IsTrue(result.Success);
-            Assert.IsTrue(executeContext.Logger.LogEntries.TrueForAll(i => i.Level != LogLevel.Error));
+            Assert.IsTrue(executeContext.Logger.LogEntries.Any(i => i.Level == LogLevel.Error));
+        }
+
+        [TestCase("=parse()", "{\"result\" : {\"demo\" :67}}")]
+        public void ParseOnNonStringTypeString(string function, string data)
+        {
+            var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"set\"}}]";
+            var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeContext);
+
+            Assert.IsTrue(result.Success);
+            Assert.IsTrue(executeContext.Logger.LogEntries.Any(i => i.Level == LogLevel.Error));
         }
 
         [Test]

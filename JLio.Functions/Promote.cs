@@ -1,5 +1,4 @@
-﻿using System;
-using JLio.Core;
+﻿using JLio.Core;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
 using Newtonsoft.Json.Linq;
@@ -33,18 +32,10 @@ namespace JLio.Functions
             }
 
             var values = GetArguments(arguments, currentToken, dataContext, context);
-            try
-            {
-                if (values.Count == 1)
-                    return DoPromote(values[0].ToString().Trim(CoreConstants.StringIndicator), currentToken);
+            if (values.Count == 1)
+                return DoPromote(values[0].ToString().Trim(CoreConstants.StringIndicator), currentToken);
 
-                return DoPromote(values[1].ToString().Trim(CoreConstants.StringIndicator), values[0]);
-            }
-            catch (Exception ex)
-            {
-                context.LogError(CoreConstants.FunctionExecution, $"failed: {ex.Message}");
-                return JLioFunctionResult.Failed(currentToken);
-            }
+            return DoPromote(values[1].ToString().Trim(CoreConstants.StringIndicator), values[0]);
         }
 
         private static JLioFunctionResult DoPromote(string propertyName, JToken value)

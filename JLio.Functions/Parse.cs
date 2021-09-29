@@ -42,7 +42,7 @@ namespace JLio.Functions
 
             context.LogWarning(CoreConstants.FunctionExecution,
                 $"Function {FunctionName} only works on type string. Current type = {currentToken.Type}!");
-            return new JLioFunctionResult(true, currentToken);
+            return new JLioFunctionResult(false, currentToken);
         }
 
         private JLioFunctionResult TryParse(string value, IExecutionContext context)

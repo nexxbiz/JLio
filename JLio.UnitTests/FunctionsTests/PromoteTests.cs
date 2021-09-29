@@ -1,4 +1,5 @@
-﻿using JLio.Client;
+﻿using System.Linq;
+using JLio.Client;
 using JLio.Commands.Builders;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
@@ -24,6 +25,7 @@ namespace JLio.UnitTests.FunctionsTests
         [TestCase("=promote($.source,'new')", "{\"source\" : 1}", "{\"new\": 1 }")]
         [TestCase("=promote($.source,'new')", "{\"source\" : [1,2]}", "{\"new\": [1,2] }")]
         [TestCase("=promote($.source,'new')", "{\"source\" : \"1\"}", "{\"new\": \"1\" }")]
+        [TestCase("=promote($.source[*],'new')", "{\"source\" : [1,2]}", "{\"new\": [1,2] }")]
         public void ScriptTestWithPath(string function, string data, string expectedResult)
         {
             var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"add\"}}]";
@@ -56,12 +58,23 @@ namespace JLio.UnitTests.FunctionsTests
             Assert.IsTrue(JToken.DeepEquals(JToken.Parse(expectedResult), result.Data.SelectToken("$.result")));
         }
 
+        [TestCase("=promote()", "{\"result\" : [1,2]}", "[{\"new\": 1 }, {\"new\": 2 }]")]
+        public void WillReturnFalse(string function, string data, string expectedResult)
+        {
+            var script = $"[{{\"path\":\"$.result[*]\",\"value\":\"{function}\",\"command\":\"set\"}}]";
+            var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeContext);
+
+            Assert.IsTrue(executeContext.Logger.LogEntries.Any(i => i.Level == LogLevel.Error));
+        }
+
         [Test]
         public void CanBeUsedInFluentApi()
         {
             var script = new JLioScript()
                     .Set(new Promote("$.demo", "new"))
                     .OnPath("$.id")
+                    .Set(new Promote("newer"))
+                    .OnPath("$.demo")
                 ;
             var result = script.Execute(JToken.Parse("{\"demo\" : 1}"));
 

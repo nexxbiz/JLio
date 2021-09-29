@@ -16,8 +16,7 @@ namespace JLio.Core.Models
         {
             var result = Function.Execute(currentToken, dataContext, context);
             if (result.Success == false)
-            {
-            }
+                context.LogError(CoreConstants.FunctionExecution, "Execute of function failed");
 
             return result.Data;
         }

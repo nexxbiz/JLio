@@ -56,6 +56,8 @@ namespace JLio.UnitTests.FunctionsTests
             var script = new JLioScript()
                     .Set(new ToString())
                     .OnPath("$.id")
+                    .Set(new ToString("$.result"))
+                    .OnPath("$.resultDemo")
                 ;
             var result = script.Execute(JObject.Parse("{\"result\" : 3 }"));
 
