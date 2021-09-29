@@ -45,10 +45,17 @@ namespace JLio.Commands
                 return new JLioExecutionResult(false, dataContext);
             }
 
-            var targetPath = JsonPathMethods.SplitPath(Path);
-            SetValueToObjectItems(dataContext, targetPath);
-            executionContext.LogInfo(CoreConstants.CommandExecution,
-                $"{CommandName}: completed for {targetPath.Elements.ToPathString()}");
+            //var targetPath = JsonPathMethods.SplitPath(Path);
+            var targets = executionContext.ItemsFetcher.SelectTokens(Path, dataContext);
+
+            targets.ForEach(i =>
+            {
+                SetValueToObjectItems(dataContext, new JsonSplittedPath(i.Path));
+                executionContext.LogInfo(CoreConstants.CommandExecution,
+                    $"{CommandName}: completed for {i.Path}");
+            });
+
+
             return new JLioExecutionResult(true, dataContext);
         }
 
@@ -70,19 +77,12 @@ namespace JLio.Commands
                 path = targetPath.Elements.ToPathString();
             var targetItems =
                 executionContext.ItemsFetcher.SelectTokens(path, dataContext);
-            if (targetPath.LastElement.HasArrayIndicator)
-                executionContext.ItemsFetcher.SelectTokens(targetPath.LastName, dataContext)
-                    .ForEach(i => SetValueToTarget(i.Path, i, dataContext));
-            else
-                targetItems.ForEach(i => SetValueToTarget(targetPath.LastName, i, dataContext));
+
+            targetItems.ForEach(i => SetValueToTarget(targetPath.LastName, i, dataContext));
         }
 
         private void SetValueToTarget(string propertyName, JToken jToken, JToken dataContext)
         {
-            //if (propertyName.EndsWith(executionOptions.ItemsFetcher.ArrayCloseChar))
-            //    executionOptions.ItemsFetcher.SelectTokens(propertyName, jToken)
-            //        .ForEach(i => SetValueToTarget(i.Path, i, dataContext));
-            //else
             switch (jToken)
             {
                 case JObject o:
