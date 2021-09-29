@@ -1,5 +1,6 @@
 ﻿using JLio.Client;
 using JLio.Commands.Builders;
+using JLio.Core.Contracts;
 using JLio.Core.Models;
 using JLio.Functions;
 using Microsoft.Extensions.Logging;
@@ -10,14 +11,14 @@ namespace JLio.UnitTests.FunctionsTests
 {
     public class PromoteTests
     {
-        private ExecutionOptions executeOptions;
+        private IExecutionContext executeContext;
         private ParseOptions parseOptions;
 
         [SetUp]
         public void Setup()
         {
             parseOptions = ParseOptions.CreateDefault();
-            executeOptions = ExecutionOptions.CreateDefault();
+            executeContext = ExecutionContext.CreateDefault();
         }
 
         [TestCase("=promote($.source,'new')", "{\"source\" : 1}", "{\"new\": 1 }")]
@@ -26,10 +27,10 @@ namespace JLio.UnitTests.FunctionsTests
         public void ScriptTestWithPath(string function, string data, string expectedResult)
         {
             var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"add\"}}]";
-            var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeOptions);
+            var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeContext);
 
             Assert.IsTrue(result.Success);
-            Assert.IsTrue(executeOptions.Logger.LogEntries.TrueForAll(i => i.Level != LogLevel.Error));
+            Assert.IsTrue(executeContext.Logger.LogEntries.TrueForAll(i => i.Level != LogLevel.Error));
             Assert.IsTrue(JToken.DeepEquals(JToken.Parse(expectedResult), result.Data.SelectToken("$.result")));
         }
 
@@ -37,10 +38,10 @@ namespace JLio.UnitTests.FunctionsTests
         public void ScriptTestOnSelfArray(string function, string data, string expectedResult)
         {
             var script = $"[{{\"path\":\"$.result[*]\",\"value\":\"{function}\",\"command\":\"set\"}}]";
-            var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeOptions);
+            var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeContext);
 
             Assert.IsTrue(result.Success);
-            Assert.IsTrue(executeOptions.Logger.LogEntries.TrueForAll(i => i.Level != LogLevel.Error));
+            Assert.IsTrue(executeContext.Logger.LogEntries.TrueForAll(i => i.Level != LogLevel.Error));
             Assert.IsTrue(JToken.DeepEquals(JToken.Parse(expectedResult), result.Data.SelectToken("$.result")));
         }
 
@@ -48,10 +49,10 @@ namespace JLio.UnitTests.FunctionsTests
         public void ScriptTestOnSelf(string function, string data, string expectedResult)
         {
             var script = $"[{{\"path\":\"$.result[*]\",\"value\":\"{function}\",\"command\":\"set\"}}]";
-            var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeOptions);
+            var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeContext);
 
             Assert.IsTrue(result.Success);
-            Assert.IsTrue(executeOptions.Logger.LogEntries.TrueForAll(i => i.Level != LogLevel.Error));
+            Assert.IsTrue(executeContext.Logger.LogEntries.TrueForAll(i => i.Level != LogLevel.Error));
             Assert.IsTrue(JToken.DeepEquals(JToken.Parse(expectedResult), result.Data.SelectToken("$.result")));
         }
 

@@ -20,9 +20,9 @@ namespace JLio.Functions
                 this.arguments.Add(new FunctionSupportedValue(new FixedValue(JToken.Parse($"\"{a}\"")))));
         }
 
-        public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionOptions options)
+        public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)
         {
-            var argumentValues = GetArguments(arguments, currentToken, dataContext, options)
+            var argumentValues = GetArguments(arguments, currentToken, dataContext, context)
                 .Select(i => i.ToString().Trim(CoreConstants.StringIndicator));
             var concatenatedString = string.Concat(argumentValues);
             return new JLioFunctionResult(true, new JValue(concatenatedString));

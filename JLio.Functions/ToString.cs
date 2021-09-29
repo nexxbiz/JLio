@@ -18,25 +18,25 @@ namespace JLio.Functions
             arguments.Add(new FunctionSupportedValue(new FixedValue(JToken.Parse($"\"{path}\""))));
         }
 
-        public override JLioExecutionResult Execute(JToken currentToken, JToken dataContext, IExecutionOptions options)
+        public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)
         {
-            if (arguments.Any()) return ExecuteWithArguments(currentToken, dataContext, options);
+            if (arguments.Any()) return ExecuteWithArguments(currentToken, dataContext, context);
 
             return ExecuteWithoutArguments(currentToken);
         }
 
-        private JLioExecutionResult ExecuteWithArguments(JToken currentToken, JToken dataContext,
-            IExecutionOptions options)
+        private JLioFunctionResult ExecuteWithArguments(JToken currentToken, JToken dataContext,
+            IExecutionContext context)
         {
-            var value = GetArgumentStrings(arguments, currentToken, dataContext, options);
-            return new JLioExecutionResult(true, new JValue(value.FirstOrDefault()));
+            var value = GetArguments(arguments, currentToken, dataContext, context).Select(i => i.ToString()).ToList();
+            return new JLioFunctionResult(true, new JValue(value.FirstOrDefault()));
         }
 
-        private JLioExecutionResult ExecuteWithoutArguments(JToken currentToken)
+        private JLioFunctionResult ExecuteWithoutArguments(JToken currentToken)
         {
-            if (currentToken.Type == JTokenType.String) return new JLioExecutionResult(true, currentToken);
+            if (currentToken.Type == JTokenType.String) return new JLioFunctionResult(true, currentToken);
 
-            return new JLioExecutionResult(true, new JValue(currentToken.ToString(Formatting.None)));
+            return new JLioFunctionResult(true, new JValue(currentToken.ToString(Formatting.None)));
         }
     }
 }

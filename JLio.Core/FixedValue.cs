@@ -21,9 +21,9 @@ namespace JLio.Core
             return this;
         }
 
-        public JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionOptions options)
+        public JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)
         {
-            if (Value.Type == JTokenType.String) return HandleString(currentToken, dataContext, options);
+            if (Value.Type == JTokenType.String) return HandleString(currentToken, dataContext, context);
             return new JLioFunctionResult(true, Value);
         }
 
@@ -32,19 +32,19 @@ namespace JLio.Core
             return Value.ToString();
         }
 
-        private JLioExecutionResult HandleString(JToken currentToken, JToken dataContext, IExecutionOptions options)
+        private JLioFunctionResult HandleString(JToken currentToken, JToken dataContext, IExecutionContext context)
         {
             var stringValue = Value.ToString();
 
             if (stringValue.StartsWith(context.ItemsFetcher.CurrentItemPathIndicator,
                 StringComparison.InvariantCulture))
-                return new JLioExecutionResult(true,
-                    options.ItemsFetcher.SelectToken(
-                        stringValue.Replace(options.ItemsFetcher.CurrentItemPathIndicator,
-                            options.ItemsFetcher.RootPathIndicator), currentToken));
-            if (stringValue.StartsWith(options.ItemsFetcher.RootPathIndicator, StringComparison.InvariantCulture))
-                return new JLioExecutionResult(true, options.ItemsFetcher.SelectToken(stringValue, dataContext));
-            return new JLioExecutionResult(true, Value);
+                return new JLioFunctionResult(true,
+                    context.ItemsFetcher.SelectToken(
+                        stringValue.Replace(context.ItemsFetcher.CurrentItemPathIndicator,
+                            context.ItemsFetcher.RootPathIndicator), currentToken));
+            if (stringValue.StartsWith(context.ItemsFetcher.RootPathIndicator, StringComparison.InvariantCulture))
+                return new JLioFunctionResult(true, context.ItemsFetcher.SelectToken(stringValue, dataContext));
+            return new JLioFunctionResult(true, Value);
         }
     }
 }

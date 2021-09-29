@@ -2,7 +2,6 @@
 using JLio.Core;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
 namespace JLio.Functions
@@ -24,16 +23,16 @@ namespace JLio.Functions
             arguments.Add(new FunctionSupportedValue(new FixedValue(JToken.Parse($"\"{newPropertyName}\""))));
         }
 
-        public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionOptions options)
+        public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)
         {
             if (arguments.Count == 0 || arguments.Count > 2)
             {
-                options.Logger.Log(LogLevel.Error, CoreConstants.FunctionExecution,
+                context.LogError(CoreConstants.FunctionExecution,
                     $"failed: {FunctionName} requires 2 arguments (path, newPropertyName)");
                 return JLioFunctionResult.Failed(currentToken);
             }
 
-            var values = GetArguments(arguments, currentToken, dataContext, options);
+            var values = GetArguments(arguments, currentToken, dataContext, context);
             try
             {
                 if (values.Count == 1)
@@ -43,7 +42,7 @@ namespace JLio.Functions
             }
             catch (Exception ex)
             {
-                options.Logger.Log(LogLevel.Error, CoreConstants.FunctionExecution, $"failed: {ex.Message}");
+                context.LogError(CoreConstants.FunctionExecution, $"failed: {ex.Message}");
                 return JLioFunctionResult.Failed(currentToken);
             }
         }

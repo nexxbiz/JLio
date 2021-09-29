@@ -6,7 +6,7 @@ namespace JLio.Core.Contracts
     public interface IFunctionSupportedValue
     {
         IFunction Function { get; }
-        SelectedTokens GetValue(JToken currentToken, JToken dataContext, IExecutionOptions options);
+        SelectedTokens GetValue(JToken currentToken, JToken dataContext, IExecutionContext context);
         string GetStringRepresentation();
     }
 }

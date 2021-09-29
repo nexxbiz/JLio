@@ -12,9 +12,9 @@ namespace JLio.Core.Models
 
         public IFunction Function { get; }
 
-        public SelectedTokens GetValue(JToken currentToken, JToken dataContext, IExecutionOptions options)
+        public SelectedTokens GetValue(JToken currentToken, JToken dataContext, IExecutionContext context)
         {
-            var result = Function.Execute(currentToken, dataContext, options);
+            var result = Function.Execute(currentToken, dataContext, context);
             if (result.Success == false)
             {
             }
