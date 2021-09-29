@@ -22,7 +22,8 @@ namespace JLio.Functions
 
         public override JLioExecutionResult Execute(JToken currentToken, JToken dataContext, IExecutionOptions options)
         {
-            var argumentValues = GetArgumentStrings(arguments, currentToken, dataContext, options);
+            var argumentValues = GetArgumentStrings(arguments, currentToken, dataContext, options)
+                .Select(i => i.Trim(CoreConstants.StringIndicator));
             var concatenatedString = string.Concat(argumentValues);
             return new JLioExecutionResult(true, new JValue(concatenatedString));
         }

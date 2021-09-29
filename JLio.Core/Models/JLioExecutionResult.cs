@@ -13,5 +13,15 @@ namespace JLio.Core.Models
         public JToken Data { get; }
 
         public bool Success { get; }
+
+        public static JLioExecutionResult Failed(JToken data)
+        {
+            return new JLioExecutionResult(false, data);
+        }
+
+        public static JLioExecutionResult SuccessFull(JToken data)
+        {
+            return new JLioExecutionResult(true, data);
+        }
     }
 }

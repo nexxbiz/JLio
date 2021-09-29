@@ -79,6 +79,8 @@ namespace JLio.Commands
             switch (jToken)
             {
                 case JObject o:
+                    //todo: need to validate if the path has array selection
+
                     if (!o.ContainsKey(propertyName) && o.SelectToken(propertyName) != null)
                         ReplaceTargetTokenWithNewValue(o.SelectToken(propertyName), dataContext);
 
