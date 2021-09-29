@@ -105,7 +105,6 @@ namespace JLio.Commands
                         $"can't set value on a array on {a.Path}. {CommandName} functionality not applied.");
                     break;
                 case JValue v:
-
             }
         }
 
