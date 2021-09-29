@@ -1,6 +1,7 @@
 ﻿using System;
 using JLio.Client;
 using JLio.Commands.Builders;
+using JLio.Core.Contracts;
 using JLio.Core.Models;
 using JLio.Functions;
 using Microsoft.Extensions.Logging;
@@ -11,14 +12,14 @@ namespace JLio.UnitTests.FunctionsTests
 {
     public class NewGuidTests
     {
-        private ExecutionOptions executeOptions;
+        private IExecutionContext executeOptions;
         private ParseOptions parseOptions;
 
         [SetUp]
         public void Setup()
         {
             parseOptions = ParseOptions.CreateDefault();
-            executeOptions = ExecutionOptions.CreateDefault();
+            executeOptions = ExecutionContext.CreateDefault();
         }
 
         [TestCase("=newGuid()", "{}")]
@@ -29,7 +30,7 @@ namespace JLio.UnitTests.FunctionsTests
             var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeOptions);
 
             Assert.IsTrue(result.Success);
-            Assert.IsTrue(executeOptions.Logger.LogEntries.TrueForAll(i => i.Level != LogLevel.Error));
+            Assert.IsTrue(executeOptions.GetLogEntries().TrueForAll(i => i.Level != LogLevel.Error));
             Assert.IsNotNull(result.Data.SelectToken("$.result"));
             Assert.DoesNotThrow(() => { Guid.Parse(result.Data.SelectToken("$.result").ToString()); });
         }

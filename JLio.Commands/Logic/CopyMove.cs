@@ -2,7 +2,6 @@
 using JLio.Core.Contracts;
 using JLio.Core.Extensions;
 using JLio.Core.Models;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -22,7 +21,7 @@ namespace JLio.Commands.Logic
     {
         //private eAction action;
         private JToken data;
-        private IExecutionOptions executionOptions;
+        private IExecutionContext executionContext;
 
         [JsonProperty("fromPath")]
         public string FromPath { get; set; }
@@ -30,12 +29,12 @@ namespace JLio.Commands.Logic
         [JsonProperty("toPath")]
         public string ToPath { get; set; }
 
-        internal JLioExecutionResult Execute(JToken dataContext, IExecutionOptions options, EAction action)
+        internal JLioExecutionResult Execute(JToken dataContext, IExecutionContext context, EAction action)
         {
             data = dataContext;
-            executionOptions = options;
+            executionContext = context;
 
-            var sourceItems = options.ItemsFetcher.SelectTokens(FromPath, data);
+            var sourceItems = context.ItemsFetcher.SelectTokens(FromPath, data);
             sourceItems.ForEach(i =>
             {
                 AddToTargets(i);
@@ -58,7 +57,7 @@ namespace JLio.Commands.Logic
                     RemoveValuesFromArray(a, selectedValue);
                     break;
                 default:
-                    executionOptions.Logger?.Log(LogLevel.Warning, CoreConstants.CommandExecution,
+                    executionContext.LogWarning(CoreConstants.CommandExecution,
                         "remove only works on properties or items in array's");
                     break;
             }
@@ -73,8 +72,8 @@ namespace JLio.Commands.Logic
         private void AddToTargets(JToken value)
         {
             var toPath = JsonPathMethods.SplitPath(ToPath);
-            JsonMethods.CheckOrCreateParentPath(data, toPath, executionOptions.ItemsFetcher, executionOptions.Logger);
-            var targetItems = executionOptions.ItemsFetcher.SelectTokens(toPath.ParentElements.ToPathString(), data);
+            JsonMethods.CheckOrCreateParentPath(data, toPath, executionContext.ItemsFetcher, executionContext.Logger);
+            var targetItems = executionContext.ItemsFetcher.SelectTokens(toPath.ParentElements.ToPathString(), data);
             targetItems.ForEach(t => AddToTarget(toPath.LastName, t, value));
         }
 
@@ -105,14 +104,14 @@ namespace JLio.Commands.Logic
         private void AddProperty(string propertyName, JObject o, JToken value)
         {
             o.Add(propertyName, value);
-            executionOptions.Logger?.Log(LogLevel.Information, CoreConstants.CommandExecution,
+            executionContext.LogInfo(CoreConstants.CommandExecution,
                 $"Property {propertyName} added to object: {o.Path}");
         }
 
         private void AddToArray(JArray jArray, JToken value)
         {
             jArray.Add(value);
-            executionOptions.Logger?.Log(LogLevel.Information, CoreConstants.CommandExecution,
+            executionContext.LogInfo(CoreConstants.CommandExecution,
                 $"Value added to array: {jArray.Path}");
         }
     }

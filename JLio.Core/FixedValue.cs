@@ -32,19 +32,19 @@ namespace JLio.Core
             return Value.ToString();
         }
 
-        private JLioFunctionResult HandleString(JToken currentToken, JToken dataContext, IExecutionOptions options)
+        private JLioExecutionResult HandleString(JToken currentToken, JToken dataContext, IExecutionOptions options)
         {
             var stringValue = Value.ToString();
 
-            if (stringValue.StartsWith(options.ItemsFetcher.CurrentItemPathIndicator,
+            if (stringValue.StartsWith(context.ItemsFetcher.CurrentItemPathIndicator,
                 StringComparison.InvariantCulture))
-                return new JLioFunctionResult(true,
-                    options.ItemsFetcher.SelectTokens(
+                return new JLioExecutionResult(true,
+                    options.ItemsFetcher.SelectToken(
                         stringValue.Replace(options.ItemsFetcher.CurrentItemPathIndicator,
                             options.ItemsFetcher.RootPathIndicator), currentToken));
             if (stringValue.StartsWith(options.ItemsFetcher.RootPathIndicator, StringComparison.InvariantCulture))
-                return new JLioFunctionResult(true, options.ItemsFetcher.SelectTokens(stringValue, dataContext));
-            return new JLioFunctionResult(true, Value);
+                return new JLioExecutionResult(true, options.ItemsFetcher.SelectToken(stringValue, dataContext));
+            return new JLioExecutionResult(true, Value);
         }
     }
 }
