@@ -12,13 +12,13 @@ namespace JLio.Core.Models
 
         public IFunction Function { get; }
 
-        public SelectedTokens GetValue(JToken currentToken, JToken dataContext, IExecutionContext context)
+        public JLioFunctionResult GetValue(JToken currentToken, JToken dataContext, IExecutionContext context)
         {
             var result = Function.Execute(currentToken, dataContext, context);
             if (result.Success == false)
-                context.LogError(CoreConstants.FunctionExecution, "Execute of function failed");
-
-            return result.Data;
+                context.LogError(CoreConstants.FunctionExecution,
+                    $"Execute of function {Function.FunctionName} failed");
+            return result;
         }
 
         public string GetStringRepresentation()

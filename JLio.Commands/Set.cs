@@ -37,6 +37,7 @@ namespace JLio.Commands
         public override JLioExecutionResult Execute(JToken dataContext, IExecutionContext context)
         {
             executionContext = context;
+            ResetExecutionSucces();
             var validationResult = ValidateCommandInstance();
             if (!validationResult.IsValid)
             {
@@ -55,8 +56,7 @@ namespace JLio.Commands
                     $"{CommandName}: completed for {i.Path}");
             });
 
-
-            return new JLioExecutionResult(true, dataContext);
+            return new JLioExecutionResult(GetExecutionSucces(), dataContext);
         }
 
         public override ValidationResult ValidateCommandInstance()
@@ -108,14 +108,18 @@ namespace JLio.Commands
 
         private void ReplaceTargetTokenWithNewValue(JToken currentJObject, JToken dataContext)
         {
-            currentJObject.Replace(Value.GetValue(currentJObject, dataContext, executionContext).GetJTokenValue());
+            var valueResult = Value.GetValue(currentJObject, dataContext, executionContext);
+            SetExecutionResult(valueResult);
+            currentJObject.Replace(valueResult.Data.GetJTokenValue());
             executionContext.LogInfo(CoreConstants.CommandExecution,
                 $"Value has been set on object at path {currentJObject.Path}.");
         }
 
         private void ReplaceCurrentValueWithNew(string propertyName, JObject o, JToken dataContext)
         {
-            o[propertyName] = Value.GetValue(o[propertyName], dataContext, executionContext).GetJTokenValue();
+            var valueResult = Value.GetValue(o[propertyName], dataContext, executionContext);
+            SetExecutionResult(valueResult);
+            o[propertyName] = valueResult.Data.GetJTokenValue();
 
             executionContext.LogInfo(CoreConstants.CommandExecution,
                 $"Property {propertyName} on {o.Path} value has been set.");
