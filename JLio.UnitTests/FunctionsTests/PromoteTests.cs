@@ -47,7 +47,7 @@ namespace JLio.UnitTests.FunctionsTests
         [TestCase("=promote($.source[*],'new')", "{\"source\" : [1,2]}", "{\"new\": [1,2] }")]
         public void ScriptTestOnSelf(string function, string data, string expectedResult)
         {
-            var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"set\"}}]";
+            var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"add\"}}]";
             var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeOptions);
 
             Assert.IsTrue(result.Success);
