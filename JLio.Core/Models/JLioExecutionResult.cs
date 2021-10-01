@@ -19,7 +19,7 @@ namespace JLio.Core.Models
             return new JLioExecutionResult(false, data);
         }
 
-        public static JLioExecutionResult SuccessFull(JToken data)
+        public static JLioExecutionResult SuccessFul(JToken data)
         {
             return new JLioExecutionResult(true, data);
         }

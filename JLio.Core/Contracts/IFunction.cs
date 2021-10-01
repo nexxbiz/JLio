@@ -37,7 +37,7 @@ namespace JLio.Core.Contracts
             return new JLioFunctionResult(false, data);
         }
 
-        public static JLioFunctionResult SuccessFull(SelectedTokens data)
+        public static JLioFunctionResult SuccessFul(SelectedTokens data)
         {
             return new JLioFunctionResult(true, data);
         }
@@ -47,7 +47,7 @@ namespace JLio.Core.Contracts
             return new JLioFunctionResult(false, new SelectedTokens(data));
         }
 
-        public static JLioFunctionResult SuccessFull(JToken data)
+        public static JLioFunctionResult SuccessFul(JToken data)
         {
             return new JLioFunctionResult(true, new SelectedTokens(data));
         }

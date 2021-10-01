@@ -41,7 +41,7 @@ namespace JLio.Functions
         private static JLioFunctionResult DoPromote(string propertyName, JToken value)
         {
             var newToken = new JObject {{propertyName, value}};
-            return JLioFunctionResult.SuccessFull(newToken);
+            return JLioFunctionResult.SuccessFul(newToken);
         }
     }
 }

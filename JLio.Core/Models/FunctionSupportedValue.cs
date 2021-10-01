@@ -15,8 +15,9 @@ namespace JLio.Core.Models
         public SelectedTokens GetValue(JToken currentToken, JToken dataContext, IExecutionContext context)
         {
             var result = Function.Execute(currentToken, dataContext, context);
-            if (result.Success == false)
-                context.LogError(CoreConstants.FunctionExecution, "Execute of function failed");
+            if (!result.Success)
+                context.LogError(CoreConstants.FunctionExecution,
+                    $"Execute of function {Function.FunctionName} failed");
 
             return result.Data;
         }
