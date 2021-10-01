@@ -30,6 +30,7 @@ namespace JLio.Client
                 .Register<NewGuid>()
                 .Register<Concat>()
                 .Register<Parse>()
+                .Register<Partial>()
                 .Register<ToString>()
                 .Register<Promote>();
 
