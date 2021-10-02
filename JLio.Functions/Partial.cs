@@ -1,8 +1,10 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using JLio.Core;
 using JLio.Core.Contracts;
 using JLio.Core.Extensions;
 using JLio.Core.Models;
+using JLio.Core.Models.Path;
 using Newtonsoft.Json.Linq;
 
 namespace JLio.Functions
@@ -48,19 +50,26 @@ namespace JLio.Functions
         private void AddValue(JObject target, JToken value, string path, IExecutionContext context)
         {
             var targetPath = value.Path.Substring(path.Length + 1);
-            var names = new JsonSplittedPath(
-                $"{context.ItemsFetcher.RootPathIndicator}{context.ItemsFetcher.PathDelimiter}{targetPath}");
-            if (names.Elements.Count() == 1)
+            var pathNames = new JsonSplittedPath(targetPath);
+            var finalTarget = GetTarget(pathNames.Elements, target);
+            if (finalTarget != null) finalTarget[pathNames.LastElement.ElementName] = value;
+        }
+
+        private JObject GetTarget(IReadOnlyCollection<PathElement> pathElements, JObject target)
+        {
+            if (pathElements.Count <= 1) return target;
+            var propertyName = pathElements.First().ElementName;
+            if (target.ContainsKey(propertyName))
             {
-                target.Add(targetPath, value);
+                if (target[propertyName].Type != JTokenType.Object)
+                    return null;
             }
             else
             {
-                JsonMethods.CheckOrCreateParentPath(target, new JsonSplittedPath(targetPath), context.ItemsFetcher,
-                    null);
-                var newTarget = context.ItemsFetcher.SelectToken(names.ParentElements.ToPathString(), target);
-                if (newTarget.Type == JTokenType.Object) ((JObject) newTarget).Add(names.LastElement.ToString(), value);
+                target.Add(propertyName, new JObject());
             }
+
+            return GetTarget(pathElements.Skip(1).ToList(), target[propertyName] as JObject);
         }
     }
 }
