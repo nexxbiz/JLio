@@ -23,13 +23,33 @@ namespace JLio.Functions
         public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)
         {
             if (!Validate(currentToken, context)) return new JLioFunctionResult(false, currentToken);
+            var firstArgument = arguments.First().GetStringRepresentation();
+            if (firstArgument.StartsWith(context.ItemsFetcher.RootPathIndicator))
+            {
+                var source = context.ItemsFetcher.SelectTokens(firstArgument, dataContext);
+                if (source.Count != 1)
+                {
+                    context.LogError(CoreConstants.FunctionExecution,
+                        $"The first argument of function: {FunctionName} should return 1 item when a {context.ItemsFetcher.RootPathIndicator} is used. Now {source.Count} tokens were selected.");
+                    return JLioFunctionResult.Failed(currentToken);
+                }
 
-            var currentPath = currentToken.Path;
-            var values = GetArguments(arguments, currentToken, dataContext, context);
-            // todo: for the add function the first item could be referencing a path with a $ sign. in that case the current item should not be used but the first value of the arguments. this item should be removed from the argument collection
+                arguments.RemoveAt(0);
+                var values = GetArguments(arguments, source.First(), dataContext, context);
+                return ExecutePartial(source.First(), dataContext, context, values);
+            }
+            else
+            {
+                var values = GetArguments(arguments, currentToken, dataContext, context);
+                return ExecutePartial(currentToken, dataContext, context, values);
+            }
+        }
 
-            var pathsToRemove = GetPathsToRemove(currentToken, values, context);
-            var result = currentToken.DeepClone();
+        private JLioFunctionResult ExecutePartial(JToken source, JToken dataContext, IExecutionContext context,
+            List<JToken> values)
+        {
+            var pathsToRemove = GetPathsToRemove(source, values, context);
+            var result = source.DeepClone();
             pathsToRemove.ToList().ForEach(i => Remove(i, result));
             return new JLioFunctionResult(true, result);
         }

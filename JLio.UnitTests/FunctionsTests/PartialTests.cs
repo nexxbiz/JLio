@@ -34,7 +34,56 @@ namespace JLio.UnitTests.FunctionsTests
         [TestCase("=partial(@.a[?(@.b == true)].d.e, @.a[?(@.b == true)].c)",
             "{\"result\":{\"a\":[{\"b\":true,\"c\":\"stay\",\"d\":{\"e\":\"stay\",\"f\":\"gone\"}},{\"b\":false,\"c\":\"gone\",\"d\":{\"e\":\"gone\",\"f\":\"gone\"}}]}}",
             "{\"a\":[{\"d\":{\"e\":\"stay\"},\"c\":\"stay\"}]}")]
-        public void PartialSetWithOnePath(string function, string data, string expectedResult)
+        public void PartialSet(string function, string data, string expectedResult)
+        {
+            var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"set\"}}]";
+            var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeContext);
+
+            Assert.IsTrue(result.Success);
+            Assert.IsTrue(executeContext.Logger.LogEntries.TrueForAll(i => i.Level != LogLevel.Error));
+            Assert.IsTrue(JToken.DeepEquals(JToken.Parse(expectedResult), result.Data.SelectToken("$.result")));
+        }
+
+        [TestCase("=partial($.source,@.a, @.c.d)", "{\"source\":{\"a\":1,\"b\":[1,2,3],\"c\":{\"d\":5,\"e\":[4,5,6]}}}",
+            "{\"a\":1,\"c\":{\"d\":5}}")]
+        [TestCase("=partial($.source,@.a, @.c.d)",
+            "{\"source\":{\"a\":[1,2],\"b\":[1,2,3],\"c\":{\"d\":[4,5],\"e\":[4,5,6]}}}",
+            "{\"a\":[1,2],\"c\":{\"d\":[4,5]}}")]
+        [TestCase("=partial($.source,@.a[0], @.c.d)",
+            "{\"source\":{\"a\":[1,2],\"b\":[1,2,3],\"c\":{\"d\":[4,5],\"e\":[4,5,6]}}}",
+            "{\"a\":[1],\"c\":{\"d\":[4,5]}}")]
+        [TestCase("=partial($.source,@.a[?(@.b == true)].d.e)",
+            "{\"source\":{\"a\":[{\"b\":true,\"c\":\"gone\",\"d\":{\"e\":\"stay\",\"f\":\"gone\"}},{\"b\":false,\"c\":\"gone\",\"d\":{\"e\":\"gone\",\"f\":\"gone\"}}]}}",
+            "{\"a\":[{\"d\":{\"e\":\"stay\"}}]}")]
+        [TestCase("=partial($.source,@.a[?(@.b == true)].d.e, @.a[?(@.b == true)].c)",
+            "{\"source\":{\"a\":[{\"b\":true,\"c\":\"stay\",\"d\":{\"e\":\"stay\",\"f\":\"gone\"}},{\"b\":false,\"c\":\"gone\",\"d\":{\"e\":\"gone\",\"f\":\"gone\"}}]}}",
+            "{\"a\":[{\"d\":{\"e\":\"stay\"},\"c\":\"stay\"}]}")]
+        public void PartialAdd(string function, string data, string expectedResult)
+        {
+            var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"add\"}}]";
+            var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeContext);
+
+            Assert.IsTrue(result.Success);
+            Assert.IsTrue(executeContext.Logger.LogEntries.TrueForAll(i => i.Level != LogLevel.Error));
+            Assert.IsTrue(JToken.DeepEquals(JToken.Parse(expectedResult), result.Data.SelectToken("$.result")));
+        }
+
+        [TestCase("=partial($.source,@.a, @.c.d)",
+            "{\"result\":1,\"source\":{\"a\":1,\"b\":[1,2,3],\"c\":{\"d\":5,\"e\":[4,5,6]}}}",
+            "{\"a\":1,\"c\":{\"d\":5}}")]
+        [TestCase("=partial($.source,@.a, @.c.d)",
+            "{\"result\":1,\"source\":{\"a\":[1,2],\"b\":[1,2,3],\"c\":{\"d\":[4,5],\"e\":[4,5,6]}}}",
+            "{\"a\":[1,2],\"c\":{\"d\":[4,5]}}")]
+        [TestCase("=partial($.source,@.a[0], @.c.d)",
+            "{\"result\":1,\"source\":{\"a\":[1,2],\"b\":[1,2,3],\"c\":{\"d\":[4,5],\"e\":[4,5,6]}}}",
+            "{\"a\":[1],\"c\":{\"d\":[4,5]}}")]
+        [TestCase("=partial($.source,@.a[?(@.b == true)].d.e)",
+            "{\"result\":1,\"source\":{\"a\":[{\"b\":true,\"c\":\"gone\",\"d\":{\"e\":\"stay\",\"f\":\"gone\"}},{\"b\":false,\"c\":\"gone\",\"d\":{\"e\":\"gone\",\"f\":\"gone\"}}]}}",
+            "{\"a\":[{\"d\":{\"e\":\"stay\"}}]}")]
+        [TestCase("=partial($.source,@.a[?(@.b == true)].d.e, @.a[?(@.b == true)].c)",
+            "{\"result\":1,\"source\":{\"a\":[{\"b\":true,\"c\":\"stay\",\"d\":{\"e\":\"stay\",\"f\":\"gone\"}},{\"b\":false,\"c\":\"gone\",\"d\":{\"e\":\"gone\",\"f\":\"gone\"}}]}}",
+            "{\"a\":[{\"d\":{\"e\":\"stay\"},\"c\":\"stay\"}]}")]
+        public void PartialSetWithDifferentSource(string function, string data, string expectedResult)
         {
             var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"set\"}}]";
             var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeContext);
