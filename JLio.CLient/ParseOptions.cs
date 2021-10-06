@@ -30,7 +30,8 @@ namespace JLio.Client
                 .Register<NewGuid>()
                 .Register<Concat>()
                 .Register<Parse>()
-                .Register<ToString>();
+                .Register<ToString>()
+                .Register<Promote>();
 
             return new ParseOptions
             {

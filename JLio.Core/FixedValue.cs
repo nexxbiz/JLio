@@ -21,10 +21,10 @@ namespace JLio.Core
             return this;
         }
 
-        public JLioExecutionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)
+        public JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)
         {
             if (Value.Type == JTokenType.String) return HandleString(currentToken, dataContext, context);
-            return new JLioExecutionResult(true, Value);
+            return new JLioFunctionResult(true, Value);
         }
 
         public string ToScript()
@@ -32,19 +32,19 @@ namespace JLio.Core
             return Value.ToString();
         }
 
-        private JLioExecutionResult HandleString(JToken currentToken, JToken dataContext, IExecutionContext context)
+        private JLioFunctionResult HandleString(JToken currentToken, JToken dataContext, IExecutionContext context)
         {
             var stringValue = Value.ToString();
 
             if (stringValue.StartsWith(context.ItemsFetcher.CurrentItemPathIndicator,
                 StringComparison.InvariantCulture))
-                return new JLioExecutionResult(true,
-                    context.ItemsFetcher.SelectToken(
+                return new JLioFunctionResult(true,
+                    context.ItemsFetcher.SelectTokens(
                         stringValue.Replace(context.ItemsFetcher.CurrentItemPathIndicator,
                             context.ItemsFetcher.RootPathIndicator), currentToken));
             if (stringValue.StartsWith(context.ItemsFetcher.RootPathIndicator, StringComparison.InvariantCulture))
-                return new JLioExecutionResult(true, context.ItemsFetcher.SelectToken(stringValue, dataContext));
-            return new JLioExecutionResult(true, Value);
+                return new JLioFunctionResult(true, context.ItemsFetcher.SelectTokens(stringValue, dataContext));
+            return new JLioFunctionResult(true, Value);
         }
     }
 }

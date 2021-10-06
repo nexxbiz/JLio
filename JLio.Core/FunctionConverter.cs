@@ -26,11 +26,11 @@ namespace JLio.Core
                 tokenToWrite = GetFixedValueToken(f, functionValue);
             else
                 tokenToWrite =
-                    JToken.Parse($"\"={((FunctionSupportedValue) value).GetStringRepresentation()}\"");
+                    JToken.Parse($"\"={((IFunctionSupportedValue) value).GetStringRepresentation()}\"");
             tokenToWrite.WriteTo(writer);
         }
 
-        private JToken GetFixedValueToken(FixedValue fixedValue, FunctionSupportedValue value)
+        private JToken GetFixedValueToken(FixedValue fixedValue, IFunctionSupportedValue value)
         {
             if (fixedValue.Value.Type != JTokenType.String) return fixedValue.Value;
             return value.GetStringRepresentation();

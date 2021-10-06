@@ -19,43 +19,44 @@ namespace JLio.Functions
             arguments.Add(new FunctionSupportedValue(new FixedValue(JToken.Parse($"\"{path}\""))));
         }
 
-        public override JLioExecutionResult Execute(JToken currentToken, JToken dataContext, IExecutionOptions options)
+        public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)
         {
-            if (arguments.Any()) return ExecuteWithArguments(currentToken, dataContext, options);
-            return ExecuteWithoutArguments(currentToken, options);
+            if (arguments.Any()) return ExecuteWithArguments(currentToken, dataContext, context);
+            return ExecuteWithoutArguments(currentToken, context);
         }
 
-        private JLioExecutionResult ExecuteWithArguments(JToken currentToken, JToken dataContext,
-            IExecutionOptions options)
+        private JLioFunctionResult ExecuteWithArguments(JToken currentToken, JToken dataContext,
+            IExecutionContext context)
         {
-            var values = GetArgumentStrings(arguments, currentToken, dataContext, options);
+            var values = GetArguments(arguments, currentToken, dataContext, context).Where(i => i != null)
+                .Select(i => i.ToString()).ToList();
             return !values.Any()
-                ? new JLioExecutionResult(false, JValue.CreateNull())
-                : TryParse(values.First(), options);
+                ? new JLioFunctionResult(false, JValue.CreateNull())
+                : TryParse(values.First(), context);
         }
 
-        private JLioExecutionResult ExecuteWithoutArguments(JToken currentToken, IExecutionOptions options)
+        private JLioFunctionResult ExecuteWithoutArguments(JToken currentToken, IExecutionContext context)
         {
             if (currentToken.Type == JTokenType.String)
-                return TryParse(currentToken.Value<string>() ?? currentToken.ToString(), options);
+                return TryParse(currentToken.Value<string>() ?? currentToken.ToString(), context);
 
-            options.Logger.Log(LogLevel.Warning, CoreConstants.FunctionExecution,
+            context.LogWarning(CoreConstants.FunctionExecution,
                 $"Function {FunctionName} only works on type string. Current type = {currentToken.Type}!");
-            return new JLioExecutionResult(true, currentToken);
+            return new JLioFunctionResult(false, currentToken);
         }
 
-        private JLioExecutionResult TryParse(string value, IExecutionOptions options)
+        private JLioFunctionResult TryParse(string value, IExecutionContext context)
         {
             try
             {
-                return new JLioExecutionResult(true, JToken.Parse(value));
+                return new JLioFunctionResult(true, JToken.Parse(value));
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                options.Logger.Log(LogLevel.Warning, CoreConstants.FunctionExecution,
+                context.Logger.Log(LogLevel.Warning, CoreConstants.FunctionExecution,
                     $"Function {FunctionName} failed: unable to parse {value}");
 
-                return new JLioExecutionResult(false, value);
+                return new JLioFunctionResult(false, value);
             }
         }
     }

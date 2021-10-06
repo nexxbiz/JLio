@@ -34,12 +34,12 @@ namespace JLio.Functions
                 this.arguments.Add(new FunctionSupportedValue(new FixedValue(JToken.Parse($"\"{a}\"")))));
         }
 
-        public override JLioExecutionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)
+        public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)
         {
-            var argumentValues = GetArgumentStrings(arguments, currentToken, dataContext, context);
-            var argumentSettings = GetExecutionSettings(argumentValues);
-            var result = GetToken(argumentSettings.dateSelection, argumentSettings.format, context.Logger);
-            return new JLioExecutionResult(result.Success, result.JToken);
+            var argumentValues = GetArguments(arguments, currentToken, dataContext, context).Select(i => i.ToString());
+            var (dateSelection, format) = GetExecutionSettings(argumentValues.ToList());
+            var result = GetToken(dateSelection, format, context.Logger);
+            return new JLioFunctionResult(result.Success, result.JToken);
         }
 
         private DateTimeConversionResult GetToken(string dateSelection, string format, IExecutionLogger logger)
