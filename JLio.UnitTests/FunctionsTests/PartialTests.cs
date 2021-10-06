@@ -25,7 +25,13 @@ namespace JLio.UnitTests.FunctionsTests
             "{\"a\":[1,2],\"c\":{\"d\":[4,5]}}")]
         [TestCase("=partial(@.a[0], @.c.d)",
             "{\"result\":{\"a\":[1,2],\"b\":[1,2,3],\"c\":{\"d\":[4,5],\"e\":[4,5,6]}}}",
-            "{\"a\":1,\"c\":{\"d\":[4,5]}}")]
+            "{\"a\":[1],\"c\":{\"d\":[4,5]}}")]
+        [TestCase("=partial(@.a[?(@.b == true)].d.e)",
+            "{\"result\":{\"a\":[{\"b\":true,\"c\":\"gone\",\"d\":{\"e\":\"stay\",\"f\":\"gone\"}},{\"b\":false,\"c\":\"gone\",\"d\":{\"e\":\"gone\",\"f\":\"gone\"}}]}}",
+            "{\"a\":[{\"d\":{\"e\":\"stay\"}}]}")]
+        [TestCase("=partial(@.a[?(@.b == true)].d.e, @.a[?(@.b == true)].c)",
+            "{\"result\":{\"a\":[{\"b\":true,\"c\":\"stay\",\"d\":{\"e\":\"stay\",\"f\":\"gone\"}},{\"b\":false,\"c\":\"gone\",\"d\":{\"e\":\"gone\",\"f\":\"gone\"}}]}}",
+            "{\"a\":[{\"d\":{\"e\":\"stay\"},\"c\":\"stay\"}]}")]
         public void PartialSetWithOnePath(string function, string data, string expectedResult)
         {
             var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"set\"}}]";

@@ -40,8 +40,8 @@ namespace JLio.Core
                 StringComparison.InvariantCulture))
                 return new JLioFunctionResult(true,
                     context.ItemsFetcher.SelectTokens(
-                        stringValue.Replace(context.ItemsFetcher.CurrentItemPathIndicator,
-                            context.ItemsFetcher.RootPathIndicator), currentToken));
+                        $"{context.ItemsFetcher.RootPathIndicator}{stringValue.Substring(context.ItemsFetcher.CurrentItemPathIndicator.Length)}"
+                        , currentToken));
             if (stringValue.StartsWith(context.ItemsFetcher.RootPathIndicator, StringComparison.InvariantCulture))
                 return new JLioFunctionResult(true, context.ItemsFetcher.SelectTokens(stringValue, dataContext));
             return new JLioFunctionResult(true, Value);
