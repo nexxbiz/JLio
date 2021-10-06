@@ -15,10 +15,14 @@ namespace JLio.Core.Models
         public JLioFunctionResult GetValue(JToken currentToken, JToken dataContext, IExecutionContext context)
         {
             var result = Function.Execute(currentToken, dataContext, context);
-            if (result.Success == false)
+            if (!result.Success)
+            {
                 context.LogError(CoreConstants.FunctionExecution,
                     $"Execute of function {Function.FunctionName} failed");
-            return result;
+                return JLioFunctionResult.Failed(result.Data);
+            }
+
+            return JLioFunctionResult.SuccessFul(result.Data);
         }
 
         public string GetStringRepresentation()

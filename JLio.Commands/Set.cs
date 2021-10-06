@@ -46,7 +46,6 @@ namespace JLio.Commands
                 return new JLioExecutionResult(false, dataContext);
             }
 
-            //var targetPath = JsonPathMethods.SplitPath(Path);
             var targets = executionContext.ItemsFetcher.SelectTokens(Path, dataContext);
 
             targets.ForEach(i =>
