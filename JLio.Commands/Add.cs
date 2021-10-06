@@ -37,6 +37,7 @@ namespace JLio.Commands
         public override JLioExecutionResult Execute(JToken dataContext, IExecutionContext context)
         {
             executionContext = context;
+            ResetExecutionSucces();
             var validationResult = ValidateCommandInstance();
             if (!validationResult.IsValid)
             {
@@ -50,7 +51,7 @@ namespace JLio.Commands
             AddToObjectItems(dataContext, context.ItemsFetcher, targetPath);
             context.LogInfo(CoreConstants.CommandExecution,
                 $"{CommandName}: completed for {targetPath.Elements.ToPathString()}");
-            return new JLioExecutionResult(true, dataContext);
+            return new JLioExecutionResult(GetExecutionSucces(), dataContext);
         }
 
         public override ValidationResult ValidateCommandInstance()
@@ -101,14 +102,18 @@ namespace JLio.Commands
 
         private void AddProperty(string propertyName, JObject o, JToken dataContext)
         {
-            o.Add(propertyName, Value.GetValue(o, dataContext, executionContext).GetJTokenValue());
+            var valueResult = Value.GetValue(o, dataContext, executionContext);
+            SetExecutionResult(valueResult);
+            o.Add(propertyName, valueResult.Data.GetJTokenValue());
             executionContext.LogInfo(CoreConstants.CommandExecution,
                 $"Property {propertyName} added to object: {o.Path}");
         }
 
         private void AddToArray(JArray jArray, JToken dataContext)
         {
-            jArray.Add(Value.GetValue(jArray, dataContext, executionContext));
+            var valueResult = Value.GetValue(jArray, dataContext, executionContext);
+            SetExecutionResult(valueResult);
+            jArray.Add(valueResult.Data);
             executionContext.LogInfo(CoreConstants.CommandExecution,
                 $"Value added to array: {jArray.Path}");
         }

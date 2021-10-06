@@ -31,7 +31,7 @@ namespace JLio.Core.Models
         {
             var argumentValues = new List<JToken>();
             arguments.ForEach(a => argumentValues.Add(
-                a.GetValue(currentToken, dataContext, context).GetJTokenValue()));
+                a.GetValue(currentToken, dataContext, context).Data.GetJTokenValue()));
             return argumentValues;
         }
     }

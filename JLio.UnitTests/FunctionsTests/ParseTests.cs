@@ -58,7 +58,7 @@ namespace JLio.UnitTests.FunctionsTests
             var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"set\"}}]";
             var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeContext);
 
-            Assert.IsTrue(result.Success);
+            Assert.IsFalse(result.Success);
             Assert.IsTrue(executeContext.Logger.LogEntries.Any(i => i.Level == LogLevel.Error));
         }
 
@@ -68,7 +68,7 @@ namespace JLio.UnitTests.FunctionsTests
             var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"set\"}}]";
             var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeContext);
 
-            Assert.IsTrue(result.Success);
+            Assert.IsFalse(result.Success);
             Assert.IsTrue(executeContext.Logger.LogEntries.Any(i => i.Level == LogLevel.Error));
         }
 
