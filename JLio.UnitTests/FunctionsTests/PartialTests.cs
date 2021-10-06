@@ -1,6 +1,8 @@
 ﻿using JLio.Client;
+using JLio.Commands.Builders;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
+using JLio.Functions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -40,6 +42,19 @@ namespace JLio.UnitTests.FunctionsTests
             Assert.IsTrue(result.Success);
             Assert.IsTrue(executeContext.Logger.LogEntries.TrueForAll(i => i.Level != LogLevel.Error));
             Assert.IsTrue(JToken.DeepEquals(JToken.Parse(expectedResult), result.Data.SelectToken("$.result")));
+        }
+
+        [Test]
+        public void CanBeUsedInFluentApi()
+        {
+            var script = new JLioScript()
+                .Set(new Partial("@.a", "@.c.d"))
+                .OnPath("$.result");
+            var result =
+                script.Execute(JToken.Parse("{\"result\":{\"a\":1,\"b\":[1,2,3],\"c\":{\"d\":5,\"e\":[4,5,6]}}}"));
+
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.Success);
         }
     }
 }

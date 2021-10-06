@@ -26,6 +26,8 @@ namespace JLio.Functions
 
             var currentPath = currentToken.Path;
             var values = GetArguments(arguments, currentToken, dataContext, context);
+            // todo: for the add function the first item could be referencing a path with a $ sign. in that case the current item should not be used but the first value of the arguments. this item should be removed from the argument collection
+
             var pathsToRemove = GetPathsToRemove(currentToken, values, context);
             var result = currentToken.DeepClone();
             pathsToRemove.ToList().ForEach(i => Remove(i, result));
