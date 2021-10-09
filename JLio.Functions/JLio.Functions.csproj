@@ -2,6 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Copyright>Copyright © 2021</Copyright>
+    <PackageProjectUrl>https://jlio.online/</PackageProjectUrl>
+    <Description>A set of base functions that can be used in either a Jlio script (Json) or in a .Net core fluent API implementation to transform json objects. Function will work with the set and add command and provide alternative methods of changing json objects other that the commands provide.</Description>
   </PropertyGroup>
 
   <ItemGroup>
