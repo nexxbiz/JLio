@@ -4,7 +4,9 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>JLio Transformers</Authors>
     <Company>JLio</Company>
-    <Description>JLio (jay-lio) is a structured language definition for transforming JSON objects using a transformation script with a JSON notation.</Description>
+    <Description>JLio (jay-lio) is a structured language definition for transforming JSON objects using a transformation script with a JSON notation. This library will provide the logic to parse a JSON script into an executable transformer.</Description>
+    <Copyright>Copyright © 2021</Copyright>
+    <PackageProjectUrl>https://jlio.online/</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,11 +14,5 @@
     <ProjectReference Include="..\JLio.Core\JLio.Core.csproj" />
     <ProjectReference Include="..\JLio.Functions\JLio.Functions.csproj" />
   </ItemGroup>
-
-  <Target Name="PrepareReleaseNotes" BeforeTargets="GenerateNuspec">
-    <PropertyGroup>
-      <PackageDescription>$([System.IO.File]::ReadAllText("$(MSBuildProjectDirectory)/../RELEASE-NOTES"))</PackageDescription>
-    </PropertyGroup>
-  </Target>
   
 </Project>

@@ -2,16 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Copyright>Copyright © 2021</Copyright>
+    <Description>It contains a set of base functions to transform JSON objects. The usage is either in a Jlio script (JSON) or a .Net core fluent API implementation. Functions will work with the set and add command and provide alternative methods of changing JSON objects focussed on the values of the properties instead of the structure of the whole JSON</Description>
+    <PackageProjectUrl>https://jlio.online/</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\JLio.Core\JLio.Core.csproj" />
   </ItemGroup>
    
-   <Target Name="PrepareReleaseNotes" BeforeTargets="GenerateNuspec">
-    <PropertyGroup>
-      <PackageDescription>$([System.IO.File]::ReadAllText("$(MSBuildProjectDirectory)/../RELEASE-NOTES"))</PackageDescription>
-    </PropertyGroup>
-  </Target>
-
 </Project>
