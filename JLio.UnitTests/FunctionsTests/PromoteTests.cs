@@ -58,8 +58,8 @@ namespace JLio.UnitTests.FunctionsTests
             Assert.IsTrue(JToken.DeepEquals(JToken.Parse(expectedResult), result.Data.SelectToken("$.result")));
         }
 
-        [TestCase("=promote()", "{\"result\" : [1,2]}", "[{\"new\": 1 }, {\"new\": 2 }]")]
-        public void WillReturnFalse(string function, string data, string expectedResult)
+        [TestCase("=promote()", "{\"result\" : [1,2]}")]
+        public void WillReturnErrorFalse(string function, string data)
         {
             var script = $"[{{\"path\":\"$.result[*]\",\"value\":\"{function}\",\"command\":\"set\"}}]";
             var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeContext);

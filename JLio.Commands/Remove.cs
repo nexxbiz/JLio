@@ -1,5 +1,6 @@
 ﻿using JLio.Core;
 using JLio.Core.Contracts;
+using JLio.Core.Extensions;
 using JLio.Core.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -57,31 +58,13 @@ namespace JLio.Commands
             if (targetItems.Count == 0)
                 executionContext.LogWarning(CoreConstants.CommandExecution,
                     $"{Path} did not retrieve any items");
-            targetItems.ForEach(RemoveItemFromTarget);
-        }
-
-        private void RemoveItemFromTarget(JToken selectedValue)
-        {
-            var parent = selectedValue.Parent;
-            switch (parent?.Type)
+            targetItems.ForEach(i =>
             {
-                case JTokenType.Property:
-                    parent.Remove();
-                    break;
-                case JTokenType.Array:
-                    RemoveValuesFromArray((JArray) parent, selectedValue);
-                    break;
-                default:
-                    executionContext.LogWarning(CoreConstants.CommandExecution,
-                        $"{CommandName} only works on properties or items in array's");
-                    break;
-            }
-        }
-
-        private void RemoveValuesFromArray(JArray array, JToken selectedValue)
-        {
-            var index = array.IndexOf(selectedValue);
-            array.RemoveAt(index);
+                var success = JsonMethods.RemoveItemFromTarget(i);
+                if (!success)
+                    executionContext.LogError(CoreConstants.CommandExecution,
+                        $"{CommandName} only possible on properties or array items");
+            });
         }
     }
 }

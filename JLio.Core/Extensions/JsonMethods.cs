@@ -70,5 +70,36 @@ namespace JLio.Core.Extensions
                 currentObject = (JObject) currentObject?[pathElement.ElementName];
             }
         }
+
+        public static bool RemoveItemFromTarget(JToken selectedValue)
+        {
+            var parent = selectedValue.Parent;
+            switch (parent?.Type)
+            {
+                case JTokenType.Property:
+                    parent.Remove();
+                    break;
+                case JTokenType.Array:
+                    RemoveValuesFromArray((JArray) parent, selectedValue);
+                    break;
+                default:
+                    return false;
+            }
+
+            return true;
+        }
+
+        private static void RemoveValuesFromArray(JArray array, JToken selectedValue)
+        {
+            var index = array.IndexOf(selectedValue);
+            array.RemoveAt(index);
+        }
+
+        public static List<JToken> GetAllElements(JToken item)
+        {
+            var result = new List<JToken> {item};
+            item.Children().ToList().ForEach(c => result.AddRange(GetAllElements(c)));
+            return result;
+        }
     }
 }
