@@ -87,7 +87,7 @@ Jsonpath is used to select the items in the data objects. It uses a simple notat
 |* |	wildcard. All objects/elements regardless their names.| 
 |[]	| subscript operator. XPath uses it to iterate over element collections and for predicates. In Javascript and JSON it is the native array operator.|
 |[,] |	Union operator in XPath results in a combination of node sets. JSONPath allows alternate names or array indices as a set.|
-|[start:end:step] |	array slice operator borrowed from ES4.|
+|[start : end : step] |	array slice operator borrowed from ES4.|
 |?()|	applies a filter (script) expression.|
 |()|	script expression, using the underlying script engine.|
 
@@ -108,7 +108,7 @@ The Add command supports the usage of functions.
 
 |Name|Type|Description|
 |---|---|---|
-| path | `<string>` | jsonpath notation of the targeted location including the property name to add. If the path doesn't exists the objets and the propertys will be created automatically|
+| path | `<string>` | jsonpath notation of the targeted location including the property name to add. If the path doesn't exists the objects and the properties will be created|
 | value | `json` | the value that needs to be added to the newly created property | 
 
 **Sample Json value**
@@ -191,7 +191,7 @@ The Set command supports the usage of functions.
 
 |Name|Type|Description|
 |---|---|---|
-| path | `<string>` | jsonpath notation of the targeted location including the property name to add. If the path doesn't exists the objets and the propertys will be created automatically|
+| path | `<string>` | jsonpath notation of the targeted location including the property name to add. If the path doesn't exists the objects and the properties will be created|
 | value | `json` | the value that needs to be added to the newly created property | 
 
 **Sample Json value**
@@ -281,6 +281,7 @@ The data object that the script was executed on
     2
   ]
 }
+```
 
 This will result in
 
@@ -292,18 +293,73 @@ This will result in
 }
 ```
 ### Copy
-Structure, intent, samples, fluent api
+
+**Definition**
+
+Copy takes a source path and copies the selected items to all selected targets. When the target doesn't exist, the command will create the path. 
+When the source path yields multiple items, the items will be copied to all targets elements. When the target is an array, the command will add the value(s) to the array. 
+
+The Copy command doesn't support the usage of functions.
+
+**Parameters**
+
+|Name|Type|Description|
+|---|---|---|
+| fromPath | `<string>` | jsonpath notation of the source locations. |
+| toPath | `<string>` | jsonpath notation of the targeted locations. If the path doesn't exist on the objects the command will create the properties | 
+
 ### Move
-Structure, intent, samples, fluent api
+
+Move takes a source path and copies the selected items to all selected targets. When the target doesn't exist, the command will create the path. 
+When the source path yields multiple items, the items will be copied to all targets elements. When the target is an array, the command will add the value(s) to the array. 
+After the copy the source elements are removed from the source objects.
+The move command doesn't support the usage of functions.
+
+**Parameters**
+
+|Name|Type|Description|
+|---|---|---|
+| fromPath | `<string>` | jsonpath notation of the source locations. |
+| toPath | `<string>` | jsonpath notation of the targeted locations. If the path doesn't exist on the objects the command will create the properties | 
+
 ### Remove
-Structure, intent, samples, fluent api
+Remove will use the path to remove elements form pbject and arrays. In case of an array the atrgets items in the array will be removed leavin the array itself exists. it the target is the array property on an object the property will be removed entirely.
+
+**Parameters**
+
+|Name|Type|Description|
+|---|---|---|
+| path | `<string>` | jsonpath notation of the targeted elements to remove. |
+
 ### Merge
-Structure, intent, samples, fluent api
+Documentation in progress
 ### Compare
-Structure, intent, samples, fluent api
+Documentation in progress
 
 ## Functions
+
+### concat
+Function combine elements together into a string notation. If the parameter is not a string the object is converted into a string.
+The function has not fixed number of parameters, but atleast 2 have to be provided.
+**Parameters**
+
+|Name|Type|Description|
+|---|---|---|
+| string elements[] | `<string>` | fixed value, a function, or a jsonpath reference |
+
+
+> All parameters support JsonPath references and inner functions. 
 ### datetime
+Function to get the time of execution. the functions support formatting.
+
+**Parameters**
+
+|Name|Type|Description|
+|---|---|---|
+| TimeIndication | `<string>` | [ `<blank>` ,UTC, startOfDay, startofDayUTC ] indicates which time to use |
+| formatting | `<string>` | format string for the notation of the date | 
+
+> All parameters support JsonPath references and inner functions. 
 
 #### Samples
 - datetime()
@@ -319,17 +375,181 @@ Default: datetime()
 timeselection , local time now
 format : 2012-04-23T18:25:43.511Z
 
-Sample 
+**Sample** 
 
-Script
 ```json
-
-
-
+{
+  "path": "$.myNewObject.newProperty",
+  "value": "=datetime()",
+  "command": "add"
+}
+```
+When an empty object is provided it will result in: 
+```json
+{
+  "myNewObject": {
+    "newProperty": "2021-10-20T17:04:42.38Z"
+  }
+}
 ```
 
-Object
+### newGuid
+Way to get a Guid value.
+
+**Parameters**
+
+|Name|Type|Description|
+|---|---|---|
+
+**Sample** 
+
 ```json
-
-
+{
+  "path": "$.myNewObject.newProperty",
+  "value": "=newGuid()",
+  "command": "add"
+}
 ```
+When an empty object is provided it will result in: 
+```json
+{
+  "myNewObject": {
+    "newProperty": "4d2c4ec7-30ca-4eea-aeb3-2154fb02eb1d"
+  }
+}
+```
+
+### parse
+Will get the current json value or from a jsonpath location and transform it into a json value.
+the source needs to be a string.
+
+**Parameters**
+
+|Name|Type|Description|
+|---|---|---|
+| jsonpath | `<string>` | [optional] a reference to the location that needs to be converted to a string|
+
+
+**Sample without parameter** 
+
+```json
+{
+  "path": "$.demo",
+  "value": "=parse()",
+  "command": "set"
+}
+```
+on data:
+
+```json
+{
+  "demo": "{\"myObject\":7}"
+}
+```
+results in:
+
+```json
+{
+  "demo": {
+    "myObject": 7
+  }
+}
+```
+
+**Sample with parameter** 
+
+```json
+{
+  "path": "$.newItem",
+  "value": "=parse($.demo)",
+  "command": "add"
+}
+```
+on data:
+
+```json
+{
+  "demo": "{\"myObject\":7}"
+}
+```
+results in:
+
+```json
+{
+  "demo": "{\"myObject\":7}",
+  "newItem": {
+    "myObject": 7
+  }
+}
+```
+
+
+
+### partial
+
+### promote
+
+### toString
+Will get the current json value and transform it into a string.
+
+**Parameters**
+
+|Name|Type|Description|
+|---|---|---|
+| jsonpath | `<string>` | a reference to the location that needs to be converted to a string|
+
+
+**Sample without parameter** 
+
+```json
+{
+  "path": "$.demo",
+  "value": "=toString()",
+  "command": "set"
+}
+```
+on data:
+
+```json
+{
+  "demo": {
+    "myObject": 7
+  }
+}
+```
+results in:
+
+```json
+{
+  "demo": "{\"myObject\":7}"
+}
+```
+
+**Sample with parameter** 
+
+```json
+{
+  "path": "$.newItem",
+  "value": "=toString($.demo)",
+  "command": "add"
+}
+```
+on data:
+
+```json
+{ 
+ "demo" : { "myObject" : 7}
+ }
+```
+results in:
+
+```json
+{
+  "demo": {
+    "myObject": 7
+  },
+  "newItem": "{\n  \"myObject\": 7\n}"
+}
+```
+
+
