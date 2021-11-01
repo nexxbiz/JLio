@@ -17,6 +17,7 @@ namespace JLio.Client
             var commandProvider = new CommandsProvider();
             commandProvider
                 .Register<Add>()
+                .Register<Put>()
                 .Register<Set>()
                 .Register<Remove>()
                 .Register<Copy>()

@@ -6,19 +6,19 @@ using Newtonsoft.Json.Linq;
 
 namespace JLio.Commands
 {
-    public class Add : AddPut
+    public class Put : AddPut
     {
-        public Add()
+        public Put()
         {
         }
 
-        public Add(string path, JToken value)
+        public Put(string path, JToken value)
         {
             Path = path;
             Value = new FunctionSupportedValue(new FixedValue(value));
         }
 
-        public Add(string path, IFunctionSupportedValue value)
+        public Put(string path, IFunctionSupportedValue value)
         {
             Path = path;
             Value = value;
