@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 
 namespace JLio.Commands.Logic
 {
-    public abstract class AddPut : CommandBase
+    public abstract class PropertyChangeLogic : CommandBase
     {
         internal IExecutionContext executionContext;
 
@@ -56,46 +56,12 @@ namespace JLio.Commands.Logic
                 path = targetPath.Elements.ToPathString();
             var targetItems =
                 dataFetcher.SelectTokens(path, dataContext);
-            targetItems.ForEach(i => AddValueToTarget(targetPath.LastName, i, dataContext));
+            targetItems.ForEach(i => ApplyValueToTarget(targetPath.LastName, i, dataContext));
         }
 
-        private void AddValueToTarget(string propertyName, JToken jToken, JToken dataContext)
-        {
-            switch (jToken)
-            {
-                case JObject o:
-                    if (JsonMethods.IsPropertyOfTypeArray(propertyName, o))
-                    {
-                        if (this is Add)
-                            AddToArray((JArray) o[propertyName], dataContext);
-                        else
-                            SetProperty(propertyName, o, dataContext);
-                        return;
-                    }
-                    else if (o.ContainsKey(propertyName))
-                    {
-                        if (this is Add)
-                            executionContext.LogWarning(CoreConstants.CommandExecution,
-                                $"Property {propertyName} already exists on {o.Path}. {CommandName} function not applied");
+        internal abstract void ApplyValueToTarget(string propertyName, JToken jToken, JToken dataContext);
 
-                        else
-                            SetProperty(propertyName, o, dataContext);
-
-                        return;
-                    }
-
-                    AddProperty(propertyName, o, dataContext);
-                    break;
-                case JArray a:
-                    if (this is Add)
-                        AddToArray(a, dataContext);
-                    else
-                        SetProperty(propertyName, (JObject) a.Parent?.Parent, dataContext);
-                    break;
-            }
-        }
-
-        private void SetProperty(string propertyName, JObject o, JToken dataContext)
+        internal void SetProperty(string propertyName, JObject o, JToken dataContext)
         {
             var valueResult = Value.GetValue(o, dataContext, executionContext);
             SetExecutionResult(valueResult);
@@ -104,7 +70,7 @@ namespace JLio.Commands.Logic
                 $"Property {propertyName} set to object: {o.Path}");
         }
 
-        private void AddProperty(string propertyName, JObject o, JToken dataContext)
+        internal void AddProperty(string propertyName, JObject o, JToken dataContext)
         {
             var valueResult = Value.GetValue(o, dataContext, executionContext);
             SetExecutionResult(valueResult);
@@ -113,7 +79,7 @@ namespace JLio.Commands.Logic
                 $"Property {propertyName} added to object: {o.Path}");
         }
 
-        private void AddToArray(JArray jArray, JToken dataContext)
+        internal void AddToArray(JArray jArray, JToken dataContext)
         {
             var valueResult = Value.GetValue(jArray, dataContext, executionContext);
             SetExecutionResult(valueResult);
