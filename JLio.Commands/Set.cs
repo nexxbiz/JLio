@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using JLio.Commands.Logic;
 using JLio.Core;
 using JLio.Core.Contracts;
 using JLio.Core.Extensions;
@@ -8,9 +9,9 @@ using Newtonsoft.Json.Linq;
 
 namespace JLio.Commands
 {
-    public class Set : CommandBase
+    public class Set : PropertyChangeCommand
     {
-        private IExecutionContext executionContext;
+     
 
         public Set()
         {
@@ -27,12 +28,6 @@ namespace JLio.Commands
             Path = path;
             Value = value;
         }
-
-        [JsonProperty("path")]
-        public string Path { get; set; }
-
-        [JsonProperty("value")]
-        public IFunctionSupportedValue Value { get; set; }
 
         public override JLioExecutionResult Execute(JToken dataContext, IExecutionContext context)
         {
@@ -77,10 +72,10 @@ namespace JLio.Commands
             var targetItems =
                 executionContext.ItemsFetcher.SelectTokens(path, dataContext);
 
-            targetItems.ForEach(i => SetValueToTarget(targetPath.LastName, i, dataContext));
+            targetItems.ForEach(i => ApplyValueToTarget(targetPath.LastName, i, dataContext));
         }
 
-        private void SetValueToTarget(string propertyName, JToken jToken, JToken dataContext)
+        internal override void ApplyValueToTarget(string propertyName, JToken jToken, JToken dataContext)
         {
             switch (jToken)
             {
@@ -105,23 +100,6 @@ namespace JLio.Commands
             }
         }
 
-        private void ReplaceTargetTokenWithNewValue(JToken currentJObject, JToken dataContext)
-        {
-            var valueResult = Value.GetValue(currentJObject, dataContext, executionContext);
-            SetExecutionResult(valueResult);
-            currentJObject.Replace(valueResult.Data.GetJTokenValue());
-            executionContext.LogInfo(CoreConstants.CommandExecution,
-                $"Value has been set on object at path {currentJObject.Path}.");
-        }
-
-        private void ReplaceCurrentValueWithNew(string propertyName, JObject o, JToken dataContext)
-        {
-            var valueResult = Value.GetValue(o[propertyName], dataContext, executionContext);
-            SetExecutionResult(valueResult);
-            o[propertyName] = valueResult.Data.GetJTokenValue();
-
-            executionContext.LogInfo(CoreConstants.CommandExecution,
-                $"Property {propertyName} on {o.Path} value has been set.");
-        }
+    
     }
 }

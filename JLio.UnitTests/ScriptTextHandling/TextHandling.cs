@@ -91,6 +91,7 @@ namespace JLio.UnitTests.ScriptTextHandling
             var script = new JLioScript()
                 .Add(new JValue(0)).OnPath("$.demo")
                 .Set(new JValue(1)).OnPath("$.demo")
+                .Put(new JValue(1)).OnPath("$.demo")
                 .Move("$.demo").To("$.otherDemo")
                 .Copy("$.otherDemo").To(" $.demo")
                 .Compare("$.first").With("$.second").SetResultOn("$.result")
