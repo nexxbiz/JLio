@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 
 namespace JLio.Commands
 {
-    public class Put : PropertyChangeLogic
+    public class Put : PropertyChangeCommand
     {
         public Put()
         {
@@ -32,13 +32,13 @@ namespace JLio.Commands
                 case JObject o:
                     if (JsonMethods.IsPropertyOfTypeArray(propertyName, o) || o.ContainsKey(propertyName))
                     {
-                        SetProperty(propertyName, o, dataContext);
+                        ReplaceCurrentValueWithNew (propertyName, o, dataContext);
                         return;
                     }
                     AddProperty(propertyName, o, dataContext);
                     break;
                 case JArray a:
-                    SetProperty(propertyName, (JObject)a.Parent?.Parent, dataContext);
+                    ReplaceCurrentValueWithNew(propertyName, (JObject)a.Parent?.Parent, dataContext);
                     break;
             }
         }

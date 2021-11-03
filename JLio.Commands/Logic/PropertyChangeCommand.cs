@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 
 namespace JLio.Commands.Logic
 {
-    public abstract class PropertyChangeLogic : CommandBase
+    public abstract class PropertyChangeCommand : CommandBase
     {
         internal IExecutionContext executionContext;
 
@@ -61,14 +61,14 @@ namespace JLio.Commands.Logic
 
         internal abstract void ApplyValueToTarget(string propertyName, JToken jToken, JToken dataContext);
 
-        internal void SetProperty(string propertyName, JObject o, JToken dataContext)
-        {
-            var valueResult = Value.GetValue(o, dataContext, executionContext);
-            SetExecutionResult(valueResult);
-            o[propertyName] = valueResult.Data.GetJTokenValue();
-            executionContext.LogInfo(CoreConstants.CommandExecution,
-                $"Property {propertyName} set to object: {o.Path}");
-        }
+        //internal void SetProperty(string propertyName, JObject o, JToken dataContext)
+        //{
+        //    var valueResult = Value.GetValue(o, dataContext, executionContext);
+        //    SetExecutionResult(valueResult);
+        //    o[propertyName] = valueResult.Data.GetJTokenValue();
+        //    executionContext.LogInfo(CoreConstants.CommandExecution,
+        //        $"Property {propertyName} set to object: {o.Path}");
+        //}
 
         internal void AddProperty(string propertyName, JObject o, JToken dataContext)
         {
@@ -86,6 +86,25 @@ namespace JLio.Commands.Logic
             jArray.Add(valueResult.Data);
             executionContext.LogInfo(CoreConstants.CommandExecution,
                 $"Value added to array: {jArray.Path}");
+        }
+
+        internal void ReplaceTargetTokenWithNewValue(JToken currentJObject, JToken dataContext)
+        {
+            var valueResult = Value.GetValue(currentJObject, dataContext, executionContext);
+            SetExecutionResult(valueResult);
+            currentJObject.Replace(valueResult.Data.GetJTokenValue());
+            executionContext.LogInfo(CoreConstants.CommandExecution,
+                $"Value has been set on object at path {currentJObject.Path}.");
+        }
+
+        internal void ReplaceCurrentValueWithNew(string propertyName, JObject o, JToken dataContext)
+        {
+            var valueResult = Value.GetValue(o[propertyName], dataContext, executionContext);
+            SetExecutionResult(valueResult);
+            o[propertyName] = valueResult.Data.GetJTokenValue();
+
+            executionContext.LogInfo(CoreConstants.CommandExecution,
+                $"Property {propertyName} on {o.Path} value has been set.");
         }
     }
 }

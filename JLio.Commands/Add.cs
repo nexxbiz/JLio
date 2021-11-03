@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 
 namespace JLio.Commands
 {
-    public class Add : PropertyChangeLogic
+    public class Add : PropertyChangeCommand
     {
         public Add()
         {
