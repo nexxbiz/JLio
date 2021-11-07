@@ -33,7 +33,8 @@ namespace JLio.Client
                 .Register<Parse>()
                 .Register<Partial>()
                 .Register<ToString>()
-                .Register<Promote>();
+                .Register<Promote>()
+                .Register<FilterBySchema>();
 
             return new ParseOptions
             {

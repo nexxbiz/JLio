@@ -17,13 +17,13 @@ namespace JLio.Functions
         public Partial(params string[] arguments)
         {
             arguments.ToList().ForEach(a =>
-                this.arguments.Add(new FunctionSupportedValue(new FixedValue(JToken.Parse($"\"{a}\"")))));
+                Arguments.Add(new FunctionSupportedValue(new FixedValue(JToken.Parse($"\"{a}\"")))));
         }
 
         public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)
         {
             if (!Validate(currentToken, context)) return new JLioFunctionResult(false, currentToken);
-            var firstArgument = arguments.First().GetStringRepresentation();
+            var firstArgument = Arguments.First().GetStringRepresentation();
             if (firstArgument.StartsWith(context.ItemsFetcher.RootPathIndicator))
             {
                 var source = context.ItemsFetcher.SelectTokens(firstArgument, dataContext);
@@ -34,13 +34,13 @@ namespace JLio.Functions
                     return JLioFunctionResult.Failed(currentToken);
                 }
 
-                arguments.RemoveAt(0);
-                var values = GetArguments(arguments, source.First(), dataContext, context);
+                Arguments.RemoveAt(0);
+                var values = GetArguments(Arguments, source.First(), dataContext, context);
                 return ExecutePartial(source.First(), dataContext, context, values);
             }
             else
             {
-                var values = GetArguments(arguments, currentToken, dataContext, context);
+                var values = GetArguments(Arguments, currentToken, dataContext, context);
                 return ExecutePartial(currentToken, dataContext, context, values);
             }
         }
@@ -103,7 +103,7 @@ namespace JLio.Functions
 
         private bool Validate(JToken currentToken, IExecutionContext context)
         {
-            if (arguments.Count < 1)
+            if (Arguments.Count < 1)
             {
                 context.LogError(CoreConstants.FunctionExecution,
                     $"failed: {FunctionName} requires at least 1 argument");
