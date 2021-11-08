@@ -7,19 +7,19 @@ using Newtonsoft.Json.Linq;
 
 namespace JLio.Commands
 {
-    public class Add : PropertyChangeCommand
+    public class Put : PropertyChangeCommand
     {
-        public Add()
+        public Put()
         {
         }
 
-        public Add(string path, JToken value)
+        public Put(string path, JToken value)
         {
             Path = path;
             Value = new FunctionSupportedValue(new FixedValue(value));
         }
 
-        public Add(string path, IFunctionSupportedValue value)
+        public Put(string path, IFunctionSupportedValue value)
         {
             Path = path;
             Value = value;
@@ -30,27 +30,17 @@ namespace JLio.Commands
             switch (jToken)
             {
                 case JObject o:
-                    if (JsonMethods.IsPropertyOfTypeArray(propertyName, o))
+                    if (JsonMethods.IsPropertyOfTypeArray(propertyName, o) || o.ContainsKey(propertyName))
                     {
-                    
-                            AddToArray((JArray)o[propertyName], dataContext);
+                        ReplaceCurrentValueWithNew (propertyName, o, dataContext);
                         return;
                     }
-                    else if (o.ContainsKey(propertyName))
-                    {
-                            executionContext.LogWarning(CoreConstants.CommandExecution,
-                                $"Property {propertyName} already exists on {o.Path}. {CommandName} function not applied");
-                        return;
-                    }
-
                     AddProperty(propertyName, o, dataContext);
                     break;
                 case JArray a:
-                  
-                        AddToArray(a, dataContext);
+                    ReplaceCurrentValueWithNew(propertyName, (JObject)a.Parent?.Parent, dataContext);
                     break;
             }
         }
-
     }
 }
