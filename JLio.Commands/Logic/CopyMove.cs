@@ -1,4 +1,5 @@
-﻿using JLio.Core;
+﻿using System.Linq;
+using JLio.Core;
 using JLio.Core.Contracts;
 using JLio.Core.Extensions;
 using JLio.Core.Models;
@@ -33,14 +34,27 @@ namespace JLio.Commands.Logic
         {
             data = dataContext;
             executionContext = context;
-
             var sourceItems = context.ItemsFetcher.SelectTokens(FromPath, data);
+            if (ToPath == executionContext.ItemsFetcher.RootPathIndicator)
+                return HandleRootObject(dataContext, sourceItems);
+
             sourceItems.ForEach(i =>
             {
                 AddToTargets(i);
                 if (action == EAction.Move)
                     RemoveItemFromSource(i);
             });
+
+            return new JLioExecutionResult(true, dataContext);
+        }
+
+        private JLioExecutionResult HandleRootObject(JToken dataContext, SelectedTokens sourceItems)
+        {
+            dataContext.Children().ToList().ForEach(c => c.Remove());
+            if (dataContext is JObject o) o.Merge(sourceItems.First());
+            else
+                executionContext.LogWarning(CoreConstants.CommandExecution,
+                    "copy/move to root object will only work for an source type: object");
 
             return new JLioExecutionResult(true, dataContext);
         }

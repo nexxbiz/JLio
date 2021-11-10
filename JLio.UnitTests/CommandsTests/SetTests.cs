@@ -50,6 +50,7 @@ namespace JLio.UnitTests.CommandsTests
             Assert.IsTrue(result.Success);
             Assert.IsTrue(data.SelectTokens(path).All(i => i.Type != JTokenType.Null));
             Assert.IsTrue(data.SelectTokens(path).Any());
+            Assert.IsTrue(data.SelectTokens(path).All(t => t.Value<string>() == "newData"));
         }
 
         [TestCase("", "newData", "Path property for set command is missing")]
