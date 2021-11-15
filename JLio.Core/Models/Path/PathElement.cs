@@ -11,8 +11,6 @@ namespace JLio.Core.Models.Path
 
         public string ArrayNotation => GetArrayNotation();
 
-        public string ArrayNotationInnerText => ArrayNotation.TrimStart('[').TrimEnd(']');
-
         public string ElementName => !string.IsNullOrEmpty(PathElementFullText)
             ? PathElementFullText.Contains('[') ? PathElementFullText.Substring(0, PathElementFullText.IndexOf('[')) :
             PathElementFullText

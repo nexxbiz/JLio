@@ -13,20 +13,25 @@ namespace JLio.Core.Extensions
         {
             var element = string.Empty;
             var arrayNotationLevel = 0;
-            foreach (var c in path)
+
+            for (var i = 0; i < path.Length; i++)
             {
-                if ((c == pathDelimiter || StartsWithSquareBracketOpen(c, element)) && arrayNotationLevel == 0)
+                var currentChar = path[i];
+                var nextChar = i < path.Length - 1 ? path[i + 1] : char.MinValue;
+
+                if ((currentChar == pathDelimiter || StartsWithSquareBracketOpen(currentChar, nextChar, element)) &&
+                    arrayNotationLevel == 0)
                 {
                     if (!string.IsNullOrEmpty(element)) Elements.Add(new PathElement(element));
-                    element = c == '[' ? "[" : string.Empty;
+                    element = currentChar == '[' ? "[" : string.Empty;
                 }
                 else
                 {
-                    element = $"{element}{c}";
+                    element = $"{element}{currentChar}";
                 }
 
-                if (c == '[') arrayNotationLevel++;
-                if (c == ']') arrayNotationLevel--;
+                if (currentChar == '[') arrayNotationLevel++;
+                if (currentChar == ']') arrayNotationLevel--;
             }
 
             if (element.Any()) Elements.Add(new PathElement(element));
@@ -47,9 +52,10 @@ namespace JLio.Core.Extensions
 
         public IEnumerable<PathElement> SelectionPath => Elements.Take(GetSelectionPathIndex() + 1);
 
-        private static bool StartsWithSquareBracketOpen(char c, string element)
+        private static bool StartsWithSquareBracketOpen(char c, char nextChar, string element)
         {
-            return c == '[' && (string.IsNullOrEmpty(element) || element == "$" || element.EndsWith("]"));
+            return c == '[' && nextChar == '\'' &&
+                   (string.IsNullOrEmpty(element) || element == "$" || element.EndsWith("]"));
         }
 
         private int GetSelectionPathIndex()
