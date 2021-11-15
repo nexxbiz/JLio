@@ -15,10 +15,10 @@ namespace JLio.Core.Extensions
             var arrayNotationLevel = 0;
             foreach (var c in path)
             {
-                if (c == pathDelimiter && arrayNotationLevel == 0)
+                if ((c == pathDelimiter || StartsWithSquareBracketOpen(c, element)) && arrayNotationLevel == 0)
                 {
-                    Elements.Add(new PathElement(element));
-                    element = string.Empty;
+                    if (!string.IsNullOrEmpty(element)) Elements.Add(new PathElement(element));
+                    element = c == '[' ? "[" : string.Empty;
                 }
                 else
                 {
@@ -46,6 +46,11 @@ namespace JLio.Core.Extensions
                 : new List<PathElement>();
 
         public IEnumerable<PathElement> SelectionPath => Elements.Take(GetSelectionPathIndex() + 1);
+
+        private static bool StartsWithSquareBracketOpen(char c, string element)
+        {
+            return c == '[' && (string.IsNullOrEmpty(element) || element == "$" || element.EndsWith("]"));
+        }
 
         private int GetSelectionPathIndex()
         {

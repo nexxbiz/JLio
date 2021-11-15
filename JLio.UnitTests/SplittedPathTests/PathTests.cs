@@ -17,6 +17,7 @@ namespace JLio.UnitTests.SplittedPathTests
         [TestCase("$.['demo'].['test.test[*]']", "['test.test[*]']")]
         [TestCase("$.['demo.demo[?($.demo =1)]']", "['demo.demo[?($.demo =1)]']")]
         [TestCase("$.['demo'].['test.test[?($.demo =1)]']", "['test.test[?($.demo =1)]']")]
+        [TestCase("$['a']['b']['c']", "['c']")]
         public void CanSplitPath(string path, string lastElementName)
         {
             var sut = new JsonSplittedPath(path).LastName;
