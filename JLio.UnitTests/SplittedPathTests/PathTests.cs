@@ -45,6 +45,14 @@ namespace JLio.UnitTests.SplittedPathTests
         [TestCase("$.['demo'].['test.test[*]']", true)]
         [TestCase("$.['demo.demo[?($.demo =1)]']", true)]
         [TestCase("$.['demo'].['test.test[?($.demo =1)]']", true)]
+        [TestCase("$['a']['b']['c']", false)]
+        [TestCase("$['a']['b']['c'][*]", true)]
+        [TestCase("$['a']['b']['c[*]'][*]", true)]
+        [TestCase("$['a']['b']['c['*']'][*]", true)]
+        [TestCase("$['a'].['b'].['c']", false)]
+        [TestCase("$['a'].['b'].['c'][*]", true)]
+        [TestCase("$['a'].['b'].['c[*]'][*]", true)]
+        [TestCase("$['a'].['b'].['c['*'].'][*]", true)]
         public void CanDetectArray(string path, bool hasArrayNotation)
         {
             var sut = new JsonSplittedPath(path).LastElement.HasArrayIndicator;
