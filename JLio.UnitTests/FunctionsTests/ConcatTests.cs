@@ -23,6 +23,7 @@ namespace JLio.UnitTests.FunctionsTests
 
         [TestCase("=concat()", "{}", "")]
         [TestCase("=concat('a','b','c')", "{}", "abc")]
+        [TestCase("= concat ( 'a' , concat('a','b','c') ,  'concat('a','b','c')' )", "{}", "aabcconcat('a','b','c')")]
         [TestCase("=concat($.a, 'b', $.c)", "{\"a\":\"a\",\"b\":\"b\",\"c\":\"c\"}", "abc")]
         [TestCase("=concat($.a, $.b, $.c)",
             "{\"a\":\"a\",\"b\":\"b\",\"c\":\"c\"}", "abc")]
@@ -38,7 +39,7 @@ namespace JLio.UnitTests.FunctionsTests
         }
 
         [Test]
-        public void CanbeUsedInFluentApi()
+        public void CanBeUsedInFluentApi()
         {
             var script = new JLioScript()
                     .Add(new Concat("'a'", "'b'"))

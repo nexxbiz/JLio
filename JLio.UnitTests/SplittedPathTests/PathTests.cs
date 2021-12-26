@@ -17,14 +17,6 @@ namespace JLio.UnitTests.SplittedPathTests
         [TestCase("$.['demo'].['test.test[*]']", "['test.test[*]']")]
         [TestCase("$.['demo.demo[?($.demo =1)]']", "['demo.demo[?($.demo =1)]']")]
         [TestCase("$.['demo'].['test.test[?($.demo =1)]']", "['test.test[?($.demo =1)]']")]
-        [TestCase("$['a']['b']['c']", "['c']")]
-        [TestCase("$['a']['b']['c'][*]", "['c'][*]")]
-        [TestCase("$['a']['b']['c[*]'][*]", "['c[*]'][*]")]
-        [TestCase("$['a']['b']['c['*']'][*]", "['c['*']'][*]")]
-        [TestCase("$['a'].['b'].['c']", "['c']")]
-        [TestCase("$['a'].['b'].['c'][*]", "['c'][*]")]
-        [TestCase("$['a'].['b'].['c[*]'][*]", "['c[*]'][*]")]
-        [TestCase("$['a'].['b'].['c['*'].'][*]", "['c['*'].'][*]")]
         public void CanSplitPath(string path, string lastElementName)
         {
             var sut = new JsonSplittedPath(path).LastName;
@@ -45,14 +37,6 @@ namespace JLio.UnitTests.SplittedPathTests
         [TestCase("$.['demo'].['test.test[*]']", true)]
         [TestCase("$.['demo.demo[?($.demo =1)]']", true)]
         [TestCase("$.['demo'].['test.test[?($.demo =1)]']", true)]
-        [TestCase("$['a']['b']['c']", false)]
-        [TestCase("$['a']['b']['c'][*]", true)]
-        [TestCase("$['a']['b']['c[*]'][*]", true)]
-        [TestCase("$['a']['b']['c['*']'][*]", true)]
-        [TestCase("$['a'].['b'].['c']", false)]
-        [TestCase("$['a'].['b'].['c'][*]", true)]
-        [TestCase("$['a'].['b'].['c[*]'][*]", true)]
-        [TestCase("$['a'].['b'].['c['*'].'][*]", true)]
         public void CanDetectArray(string path, bool hasArrayNotation)
         {
             var sut = new JsonSplittedPath(path).LastElement.HasArrayIndicator;
