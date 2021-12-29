@@ -23,15 +23,20 @@ namespace JLio.Core.Models.Path
             char[] delimiterCharacters)
         {
             var result = new ChoppedElements();
-            var previousIndex = -1;
+            var previousIndex = new DelimiterInfo {Index = -1, Level = -1};
             foreach (var item in delimiterIndexes.Where(i => i.Level == 0))
             {
-                result.Add(GetChoppedElement(text, previousIndex, item.Index, delimiterCharacters));
-                previousIndex = item.Index;
+                result.Add(GetChoppedElement(text, previousIndex.Index, item.Index, delimiterCharacters));
+                previousIndex = item;
             }
 
-            if (previousIndex < text.Length && text.Length > 0)
-                result.Add(GetChoppedElement(text, previousIndex, text.Length, delimiterCharacters));
+            if (previousIndex.Index < text.Length && text.Length > 0)
+                if (text.StartsWith(CoreConstants.FunctionStartCharacters) &&
+                    delimiterCharacters.All(i => i != text.Last()))
+                    result.Add(GetChoppedElement(text, previousIndex.Index, delimiterIndexes.Last().Index,
+                        delimiterCharacters));
+                else
+                    result.Add(GetChoppedElement(text, previousIndex.Index, text.Length, delimiterCharacters));
             return result;
         }
 
