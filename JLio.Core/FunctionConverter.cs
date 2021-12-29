@@ -66,8 +66,20 @@ namespace JLio.Core
 
             var function = provider[functionName];
             if (mainSplit.Count > 1 && function != null)
-                return DiscoverFunctionsUsedInArguments(function, mainSplit[1].Text);
+            {
+                var argumentSection = CleanArguments(mainSplit[1].Text);
+                return DiscoverFunctionsUsedInArguments(function, argumentSection);
+            }
+
             return (new FixedValue(new JValue(text)), new Arguments());
+        }
+
+        private string CleanArguments(string text)
+        {
+            var index = text.IndexOf(CoreConstants.FunctionArgumentsEndCharacters);
+            if (index >= 0)
+                return text.Substring(0, index);
+            return text;
         }
 
         private (IFunction function, Arguments arguments) DiscoverFunctionsUsedInArguments(IFunction function,
