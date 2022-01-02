@@ -1,14 +1,10 @@
-using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using JLio.Client;
-using JLio.Commands;
 using JLio.Commands.Builders;
+using JLio.Core;
 using JLio.Core.Contracts;
-using JLio.Core.Extensions;
 using JLio.Core.Models;
 using JLio.Extensions.JSchema;
-using JLio.Functions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
@@ -26,8 +22,10 @@ namespace JLio.UnitTests.FunctionsTests
         public void Setup()
         {
             parseOptions = new ParseOptions();
-            parseOptions.RegisterFunction<FilterBySchema>();
-            
+            parseOptions.JLioCommandConverter = new CommandConverter(new CommandsProvider());
+            var functionsProvider = new FunctionsProvider();
+            functionsProvider.Register<FilterBySchema>();
+            parseOptions.JLioFunctionConverter = new FunctionConverter(functionsProvider);
             executeContext = ExecutionContext.CreateDefault();
         }
         

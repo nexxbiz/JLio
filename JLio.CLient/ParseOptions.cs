@@ -9,22 +9,7 @@ namespace JLio.Client
 {
     public class ParseOptions : IParseOptions
     {
-        private CommandsProvider commandsProvider = new CommandsProvider();
-        private FunctionsProvider functionsProvider = new FunctionsProvider();
-
         public JsonConverter JLioFunctionConverter { get; set; }
-        public IParseOptions RegisterFunction<T>() where T : IFunction
-        {
-            functionsProvider.Register<T>();
-            return this;
-        }
-
-        public IParseOptions RegisterCommand<T>() where T : ICommand
-        {
-            commandsProvider.Register<T>();
-            return this;
-        }
-
         public JsonConverter JLioCommandConverter { get; set; }
 
         public static ParseOptions CreateDefault()
