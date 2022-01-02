@@ -4,15 +4,16 @@ using JLio.Core;
 using JLio.Core.Contracts;
 using JLio.Core.Extensions;
 using JLio.Core.Models;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NewtonsoftJSchema = Newtonsoft.Json.Schema.JSchema;
 
 namespace JLio.Extensions.JSchema
 {
-     public class FilterBySchema : FunctionBase
-     {
-         private const string ArrayItemsPath = "[*]";
-         private const char PathDelimiter = '.';
+    public class FilterBySchema : FunctionBase
+    {
+        private const string ArrayItemsPath = "[*]";
+        private const char PathDelimiter = '.';
 
         public FilterBySchema()
         {
@@ -20,7 +21,7 @@ namespace JLio.Extensions.JSchema
 
         public FilterBySchema(NewtonsoftJSchema schema)
         {
-            Arguments.Add(new FunctionSupportedValue(new FixedValue(schema)));
+            Arguments.Add(new FunctionSupportedValue(new FixedValue(schema.ToString())));
         }
 
         public FilterBySchema(string path)
@@ -39,7 +40,7 @@ namespace JLio.Extensions.JSchema
 
             var values = GetArguments(Arguments, currentToken, dataContext, context);
 
-            var pathsToFilter = values[0].ToObject<NewtonsoftJSchema>().GetPaths();
+            var pathsToFilter = JsonConvert.DeserializeObject<NewtonsoftJSchema>(values[0].ToString()).GetPaths();
 
             var currentObject = currentToken.DeepClone();
             var inputObjectPaths = GetInputPaths(currentObject);
@@ -49,10 +50,7 @@ namespace JLio.Extensions.JSchema
             foreach (var pathToRemove in GetPathsToRemove(inputObjectPaths, pathsInSchema))
             {
                 var token = currentObject.SelectToken(pathToRemove);
-                if (token != null)
-                {
-                    RemoveItems(currentObject, pathToRemove, context);
-                }
+                if (token != null) RemoveItems(currentObject, pathToRemove, context);
             }
 
             return new JLioFunctionResult(true, currentObject);
@@ -76,21 +74,15 @@ namespace JLio.Extensions.JSchema
             var splittedPath = new JsonSplittedPath(path);
             var pathResult = "$.";
             foreach (var element in splittedPath.Elements)
-            {
                 if (element.HasArrayIndicator)
-                {
                     pathResult += $"{element.ElementName}{ArrayItemsPath}{PathDelimiter.ToString()}";
-                }
                 else
-                {
                     pathResult += $"{element.ElementName}{PathDelimiter.ToString()}";
-                }
-            }
 
             var result = pathResult.TrimEnd(PathDelimiter);
             return result;
         }
-        
+
         private void RemoveItems(JToken data, string path, IExecutionContext executionContext)
         {
             var targetItems =
