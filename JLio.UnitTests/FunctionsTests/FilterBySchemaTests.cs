@@ -1,5 +1,6 @@
 using System.Linq;
 using JLio.Client;
+using JLio.Commands;
 using JLio.Commands.Builders;
 using JLio.Core;
 using JLio.Core.Contracts;
@@ -22,7 +23,9 @@ namespace JLio.UnitTests.FunctionsTests
         public void Setup()
         {
             parseOptions = new ParseOptions();
-            parseOptions.JLioCommandConverter = new CommandConverter(new CommandsProvider());
+            var commandsProvider = new CommandsProvider();
+            commandsProvider.Register<Set>();
+            parseOptions.JLioCommandConverter = new CommandConverter(commandsProvider);
             var functionsProvider = new FunctionsProvider();
             functionsProvider.Register<FilterBySchema>();
             parseOptions.JLioFunctionConverter = new FunctionConverter(functionsProvider);
