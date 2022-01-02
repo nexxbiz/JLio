@@ -1,23 +1,24 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using JLio.Core;
 using JLio.Core.Contracts;
 using JLio.Core.Extensions;
 using JLio.Core.Models;
-using JLio.Core.Models.Path;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Schema;
+using NewtonsoftJSchema = Newtonsoft.Json.Schema.JSchema;
 
-namespace JLio.Functions
+namespace JLio.Extensions.JSchema
 {
-    public class FilterBySchema : FunctionBase
-    {
+     public class FilterBySchema : FunctionBase
+     {
+         private const string ArrayItemsPath = "[*]";
+         private const char PathDelimiter = '.';
+
         public FilterBySchema()
         {
         }
 
-        public FilterBySchema(JSchema schema)
+        public FilterBySchema(NewtonsoftJSchema schema)
         {
             Arguments.Add(new FunctionSupportedValue(new FixedValue(schema)));
         }
@@ -38,7 +39,7 @@ namespace JLio.Functions
 
             var values = GetArguments(Arguments, currentToken, dataContext, context);
 
-            var pathsToFilter = values[0].ToObject<JSchema>().GetPaths();
+            var pathsToFilter = values[0].ToObject<NewtonsoftJSchema>().GetPaths();
 
             var currentObject = currentToken.DeepClone();
             var inputObjectPaths = GetInputPaths(currentObject);
@@ -78,15 +79,15 @@ namespace JLio.Functions
             {
                 if (element.HasArrayIndicator)
                 {
-                    pathResult += $"{element.ElementName}[*].";
+                    pathResult += $"{element.ElementName}{ArrayItemsPath}{PathDelimiter.ToString()}";
                 }
                 else
                 {
-                    pathResult += $"{element.ElementName}.";
+                    pathResult += $"{element.ElementName}{PathDelimiter.ToString()}";
                 }
             }
 
-            var result = pathResult.TrimEnd('.');
+            var result = pathResult.TrimEnd(PathDelimiter);
             return result;
         }
         
