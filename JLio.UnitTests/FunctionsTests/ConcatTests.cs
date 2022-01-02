@@ -51,5 +51,19 @@ namespace JLio.UnitTests.FunctionsTests
             Assert.AreNotEqual(result.Data.SelectToken("$.result").Type, JTokenType.Null);
             Assert.AreEqual("ab", result.Data.SelectToken("$.result").ToString());
         }
+        
+        [Test]
+        public void CanbeUsedInFluentApi_Set()
+        {
+            var script = new JLioScript()
+                .Set(new Concat("'a'", "'b'"))
+                .OnPath("$.demo");
+            var result = script.Execute(JToken.Parse("{\"demo\":{\"pageIndex\":5,\"shouldBeRemoved\":true}}"));
+
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.Success);
+            Assert.AreNotEqual(result.Data.SelectToken("$.demo").Type, JTokenType.Null);
+            Assert.AreEqual("ab", result.Data.SelectToken("$.demo").ToString());
+        }
     }
 }

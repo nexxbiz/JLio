@@ -13,7 +13,7 @@ namespace JLio.Functions
 
         public Promote(string newPropertyName)
         {
-            Arguments.Add(new FunctionSupportedValue(new FixedValue(JToken.Parse($"\"{newPropertyName}\""))));
+            Arguments.Add(new FunctionSupportedValue(new FixedValue(newPropertyName)));
         }
 
         public Promote(string path, string newPropertyName)

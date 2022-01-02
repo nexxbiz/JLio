@@ -17,7 +17,7 @@ namespace JLio.Functions
         public Concat(params string[] arguments)
         {
             arguments.ToList().ForEach(a =>
-                Arguments.Add(new FunctionSupportedValue(new FixedValue(JToken.Parse($"\"{a}\"")))));
+                Arguments.Add(new FunctionSupportedValue(new FixedValue(a))));
         }
 
         public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)

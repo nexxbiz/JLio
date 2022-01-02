@@ -16,7 +16,7 @@ namespace JLio.Functions
 
         public Parse(string path)
         {
-            Arguments.Add(new FunctionSupportedValue(new FixedValue(JToken.Parse($"\"{path}\""))));
+            Arguments.Add(new FunctionSupportedValue(new FixedValue(path)));
         }
 
         public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)

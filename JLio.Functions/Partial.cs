@@ -17,7 +17,7 @@ namespace JLio.Functions
         public Partial(params string[] arguments)
         {
             arguments.ToList().ForEach(a =>
-                Arguments.Add(new FunctionSupportedValue(new FixedValue(JToken.Parse($"\"{a}\"")))));
+                Arguments.Add(new FunctionSupportedValue(new FixedValue(a))));
         }
 
         public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)
@@ -63,9 +63,9 @@ namespace JLio.Functions
         private IEnumerable<string> GetPathsToRemove(JToken currentToken, List<JToken> values,
             IExecutionContext context)
         {
-            var sourcePaths = JsonMethods.GetAllElements(currentToken).Select(i => i.Path).ToList();
+            var sourcePaths = currentToken.GetAllElements().Select(i => i.Path).ToList();
             var selectionPaths = new List<JToken>();
-            values.ForEach(v => selectionPaths.AddRange(JsonMethods.GetAllElements(v)));
+            values.ForEach(v => selectionPaths.AddRange(v.GetAllElements()));
             selectionPaths.Select(s => s.Path).ToList().ForEach(p =>
             {
                 RemoveSelectionItems(p, sourcePaths);

@@ -5,6 +5,7 @@ using JLio.Core;
 using JLio.Core.Contracts;
 using JLio.Core.Extensions;
 using JLio.Core.Models;
+using JLio.Core.Models.Path;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 
@@ -23,9 +24,9 @@ namespace JLio.Functions
 
         public FilterBySchema(string path)
         {
-            Arguments.Add(new FunctionSupportedValue(new FixedValue(JSchema.Parse($"\"{path}\""))));
+            Arguments.Add(new FunctionSupportedValue(new FixedValue(path)));
         }
-        
+
         public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)
         {
             if (Arguments.Count == 0 || Arguments.Count > 1)
@@ -34,55 +35,59 @@ namespace JLio.Functions
                     $"failed: {FunctionName} requires one argument: path of the schema or the schema itself");
                 return JLioFunctionResult.Failed(currentToken);
             }
-            
+
             var values = GetArguments(Arguments, currentToken, dataContext, context);
 
             var pathsToFilter = values[0].ToObject<JSchema>().GetPaths();
-            
-            var inputObjectPaths = GetInputPaths(currentToken);
+
+            var currentObject = currentToken.DeepClone();
+            var inputObjectPaths = GetInputPaths(currentObject);
 
             var pathsInSchema = pathsToFilter.Select(s => s.Path).ToList();
-            
+
             foreach (var pathToRemove in GetPathsToRemove(inputObjectPaths, pathsInSchema))
             {
-                var token = currentToken.SelectToken(pathToRemove);
+                var token = currentObject.SelectToken(pathToRemove);
                 if (token != null)
                 {
-                    RemoveItems(currentToken, pathToRemove, context);
+                    RemoveItems(currentObject, pathToRemove, context);
                 }
             }
-            return new JLioFunctionResult(true, currentToken);
+
+            return new JLioFunctionResult(true, currentObject);
         }
 
         private List<string> GetPathsToRemove(List<string> objectPaths, List<string> pathsToFilter)
         {
-            return  objectPaths.Except(pathsToFilter).ToList();
+            return objectPaths.Except(pathsToFilter).ToList();
         }
 
         private List<string> GetInputPaths(JToken input)
         {
-            var paths = new List<string>();
-            var tokens = JsonMethods.GetAllElements(input);
-            foreach (var jsonToken in tokens)
-            {
-                if (jsonToken.Path == string.Empty)
-                {
-                    continue;
-                }
-                paths.Add(GetPath(jsonToken.Path));
-            }
-
-            return paths;
+            return input.GetAllElements(f => f.Path != string.Empty)
+                .Select(t => GetPath(t.Path)).ToList();
         }
 
         private string GetPath(string path)
         {
-            var result = $"$.{path}";
-            if (result.Contains("["))
+            if (string.IsNullOrWhiteSpace(path))
+                return path;
+            var splittedPath = new JsonSplittedPath(path);
+            var pathResult = "$.";
+            foreach (var element in splittedPath.Elements)
             {
-                result = Regex.Replace(path, "\\[(.*?)\\]", "[*]");
+                if (element.HasArrayIndicator)
+                {
+                    pathResult += $"{element.ElementName}[*].";
+                }
+                else
+                {
+                    pathResult += $"{element.ElementName}.";
+                }
             }
-            return  result;
+
+            var result = pathResult.TrimEnd('.');
+            return result;
         }
         
         private void RemoveItems(JToken data, string path, IExecutionContext executionContext)
