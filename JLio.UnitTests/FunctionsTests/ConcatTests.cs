@@ -23,6 +23,7 @@ namespace JLio.UnitTests.FunctionsTests
 
         [TestCase("=concat()", "{}", "")]
         [TestCase("=concat('a','b','c')", "{}", "abc")]
+        [TestCase("= concat ( 'a' , concat('a','b','c') ,  'concat('a','b','c')' )", "{}", "aabcconcat('a','b','c')")]
         [TestCase("=concat($.a, 'b', $.c)", "{\"a\":\"a\",\"b\":\"b\",\"c\":\"c\"}", "abc")]
         [TestCase("=concat($.a, $.b, $.c)",
             "{\"a\":\"a\",\"b\":\"b\",\"c\":\"c\"}", "abc")]
@@ -37,8 +38,21 @@ namespace JLio.UnitTests.FunctionsTests
             Assert.AreEqual(resultValue, result.Data.SelectToken("$.result")?.ToString());
         }
 
+        [TestCase("=concat($.a, $.b, $.c)555",
+            "{\"a\":\"a\",\"b\":\"b\",\"c\":\"c\"}", "abc")]
+        public void ScriptTestWithWarnings(string function, string data, string resultValue)
+        {
+            var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"add\"}}]";
+            var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeOptions);
+
+            Assert.IsTrue(result.Success);
+            Assert.IsTrue(executeOptions.GetLogEntries().TrueForAll(i => i.Level != LogLevel.Error));
+            Assert.IsNotNull(result.Data.SelectToken("$.result"));
+            Assert.AreEqual(resultValue, result.Data.SelectToken("$.result")?.ToString());
+        }
+
         [Test]
-        public void CanbeUsedInFluentApi()
+        public void CanBeUsedInFluentApi()
         {
             var script = new JLioScript()
                     .Add(new Concat("'a'", "'b'"))
