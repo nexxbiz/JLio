@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json.Schema;
+using NewtonsoftJSchema = Newtonsoft.Json.Schema.JSchema;
 
-namespace JLio.Core.Extensions
+namespace JLio.Extensions.JSchema
 {
     public static class JSchemaExtensions
     {
-        public static List<SchemaPropertyInfo> GetPaths(this JSchema schema, string currentPath = "$",
+        public static List<SchemaPropertyInfo> GetPaths(this NewtonsoftJSchema schema, string currentPath = "$",
             string parentPath = "$", List<SchemaPropertyInfo> paths = default)
         {
             if (paths == null)
@@ -28,7 +29,7 @@ namespace JLio.Core.Extensions
             {
                 parentPath = currentPath;
                 paths.Add(new SchemaPropertyInfo(SchemaPropertyType.Array, parentPath));
-            
+
                 for (int i = 0; i < schema.Items.Count; i++)
                 {
                     if (schema.Items.Count == 1)
@@ -39,6 +40,7 @@ namespace JLio.Core.Extensions
                     {
                         currentPath = $"{parentPath}[{i}]";
                     }
+
                     GetPaths(schema.Items[i], currentPath, parentPath, paths);
                 }
 
@@ -50,16 +52,14 @@ namespace JLio.Core.Extensions
 
             return paths;
         }
-
-        
     }
-    
+
     public class SchemaPropertyInfo
     {
         public SchemaPropertyType Type { get; }
-        
+
         public string Path { get; }
-        
+
         public SchemaPropertyInfo(SchemaPropertyType type, string path)
         {
             Type = type;

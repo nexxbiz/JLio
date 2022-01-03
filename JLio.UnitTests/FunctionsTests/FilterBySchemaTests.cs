@@ -81,7 +81,6 @@ namespace JLio.UnitTests.FunctionsTests
             "{\"result\" : [1,2]}")]
         public void WillReturnErrorFalseExecute(string function, string data)
         {
-            var schema = JSchema.Parse(function);
             var functionValue =
                 JsonConvert.SerializeObject($"=filterBySchema({function})");
             var script = $"[{{\"path\":\"$.result[*]\",\"value\":{functionValue},\"command\":\"set\"}}]";
