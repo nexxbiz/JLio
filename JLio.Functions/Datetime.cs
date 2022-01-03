@@ -31,12 +31,12 @@ namespace JLio.Functions
         public Datetime(params string[] arguments)
         {
             arguments.ToList().ForEach(a =>
-                this.arguments.Add(new FunctionSupportedValue(new FixedValue(JToken.Parse($"\"{a}\"")))));
+                Arguments.Add(new FunctionSupportedValue(new FixedValue(a))));
         }
 
         public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)
         {
-            var argumentValues = GetArguments(arguments, currentToken, dataContext, context).Select(i => i.ToString());
+            var argumentValues = GetArguments(Arguments, currentToken, dataContext, context).Select(i => i.ToString());
             var (dateSelection, format) = GetExecutionSettings(argumentValues.ToList());
             var result = GetToken(dateSelection, format, context.Logger);
             return new JLioFunctionResult(result.Success, result.JToken);

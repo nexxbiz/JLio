@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using JLio.Core.Contracts;
 using JLio.Core.Models.Path;
@@ -95,10 +96,17 @@ namespace JLio.Core.Extensions
             array.RemoveAt(index);
         }
 
-        public static List<JToken> GetAllElements(JToken item)
+        public static List<JToken> GetAllElements(this JToken item, Func<JToken, bool> filter)
         {
             var result = new List<JToken> {item};
-            item.Children().ToList().ForEach(c => result.AddRange(GetAllElements(c)));
+            item.Children().Where(filter).ToList().ForEach(c => result.AddRange(c.GetAllElements(filter)));
+            return result;
+        }
+        
+        public static List<JToken> GetAllElements(this JToken item)
+        {
+            var result = new List<JToken> {item};
+            item.Children().ToList().ForEach(c => result.AddRange(c.GetAllElements()));
             return result;
         }
     }

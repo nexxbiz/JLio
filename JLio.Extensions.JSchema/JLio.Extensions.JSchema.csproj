@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <Copyright>Copyright © 2021</Copyright>
+        <PackageProjectUrl>https://jlio.online/</PackageProjectUrl>
+        <Description>Extension for JLio for JSchema support. Utilities: filter by schema</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\JLio.Core\JLio.Core.csproj" />
+      <PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.14" />
+    </ItemGroup>
+
+</Project>

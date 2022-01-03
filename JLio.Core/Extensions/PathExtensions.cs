@@ -4,7 +4,7 @@ using JLio.Core.Models.Path;
 
 namespace JLio.Core.Extensions
 {
-    public static class PathExtentions
+    public static class PathExtensions
     {
         public static string ToPathString(this IEnumerable<PathElement> source)
         {

@@ -16,19 +16,19 @@ namespace JLio.Functions
 
         public Parse(string path)
         {
-            arguments.Add(new FunctionSupportedValue(new FixedValue(JToken.Parse($"\"{path}\""))));
+            Arguments.Add(new FunctionSupportedValue(new FixedValue(path)));
         }
 
         public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)
         {
-            if (arguments.Any()) return ExecuteWithArguments(currentToken, dataContext, context);
+            if (Arguments.Any()) return ExecuteWithArguments(currentToken, dataContext, context);
             return ExecuteWithoutArguments(currentToken, context);
         }
 
         private JLioFunctionResult ExecuteWithArguments(JToken currentToken, JToken dataContext,
             IExecutionContext context)
         {
-            var values = GetArguments(arguments, currentToken, dataContext, context).Where(i => i != null)
+            var values = GetArguments(Arguments, currentToken, dataContext, context).Where(i => i != null)
                 .Select(i => i.ToString()).ToList();
             return !values.Any()
                 ? new JLioFunctionResult(false, JValue.CreateNull())

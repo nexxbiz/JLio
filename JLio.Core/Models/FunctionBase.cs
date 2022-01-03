@@ -8,20 +8,20 @@ namespace JLio.Core.Models
 {
     public abstract class FunctionBase : IFunction
     {
-        public Arguments arguments = new Arguments();
+        public Arguments Arguments = new Arguments();
 
         public string FunctionName => GetType().Name.CamelCasing();
 
         public IFunction SetArguments(Arguments functionArguments)
         {
-            arguments = functionArguments;
+            Arguments = functionArguments;
             return this;
         }
 
         public string ToScript()
         {
             return
-                $"{FunctionName}({string.Join(CoreConstants.ArgumentsDelimiter.ToString(), arguments.Select(a => a.Function.ToScript()))})";
+                $"{FunctionName}({string.Join(CoreConstants.ArgumentsDelimiter.ToString(), Arguments.Select(a => a.Function.ToScript()))})";
         }
 
         public abstract JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context);

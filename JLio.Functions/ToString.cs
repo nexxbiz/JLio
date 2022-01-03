@@ -15,12 +15,12 @@ namespace JLio.Functions
 
         public ToString(string path)
         {
-            arguments.Add(new FunctionSupportedValue(new FixedValue(JToken.Parse($"\"{path}\""))));
+            Arguments.Add(new FunctionSupportedValue(new FixedValue(path)));
         }
 
         public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)
         {
-            if (arguments.Any()) return ExecuteWithArguments(currentToken, dataContext, context);
+            if (Arguments.Any()) return ExecuteWithArguments(currentToken, dataContext, context);
 
             return ExecuteWithoutArguments(currentToken);
         }
@@ -28,7 +28,7 @@ namespace JLio.Functions
         private JLioFunctionResult ExecuteWithArguments(JToken currentToken, JToken dataContext,
             IExecutionContext context)
         {
-            var value = GetArguments(arguments, currentToken, dataContext, context).Select(i => i.ToString()).ToList();
+            var value = GetArguments(Arguments, currentToken, dataContext, context).Select(i => i.ToString()).ToList();
             return new JLioFunctionResult(true, new JValue(value.FirstOrDefault()));
         }
 

@@ -13,19 +13,19 @@ namespace JLio.Core.Extensions
             return new JsonSplittedPath(path);
         }
 
-        public static List<string> GetIntellisense(string initalpath, JToken dataObject, IItemsFetcher ItemsFetcher)
+        public static List<string> GetIntellisense(string initial, JToken dataObject, IItemsFetcher itemsFetcher)
         {
-            var path = string.IsNullOrWhiteSpace(initalpath.TrimEnd('.')) ? "$" : initalpath.TrimEnd('.');
-            var items = ItemsFetcher.SelectTokens(path, dataObject);
+            var path = string.IsNullOrWhiteSpace(initial.TrimEnd('.')) ? "$" : initial.TrimEnd('.');
+            var items = itemsFetcher.SelectTokens(path, dataObject);
             if (items.Count == 0)
             {
                 var index = path.LastIndexOf('.');
                 path = path.Substring(0, index);
                 if (index >= 0)
-                    items.AddRange(ItemsFetcher.SelectTokens(path, dataObject));
+                    items.AddRange(itemsFetcher.SelectTokens(path, dataObject));
             }
 
-            return FilterStartsWith(initalpath, GetIntellisense(items, path)).Distinct().ToList();
+            return FilterStartsWith(initial, GetIntellisense(items, path)).Distinct().ToList();
         }
 
         private static List<string> FilterStartsWith(string path, List<string> items)
