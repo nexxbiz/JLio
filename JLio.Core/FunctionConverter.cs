@@ -67,6 +67,7 @@ namespace JLio.Core
             var function = provider[functionName];
             if (mainSplit.Count > 1 && function != null)
                 return DiscoverFunctionsUsedInArguments(function, mainSplit[1].Text);
+
             return (new FixedValue(new JValue(text)), new Arguments());
         }
 
@@ -74,13 +75,16 @@ namespace JLio.Core
             string argumentsText)
         {
             var functionsArguments = new Arguments();
+
             SplitText.GetChoppedElements(argumentsText, CoreConstants.ArgumentsDelimiter,
                 CoreConstants.ArgumentLevelPairs).ForEach(i =>
             {
                 var argumentAnalysis = GetFunctionAndArguments(i.Text);
+
                 functionsArguments.Add(
                     new FunctionSupportedValue(argumentAnalysis.function.SetArguments(argumentAnalysis.arguments)));
             });
+
             return (function, functionsArguments);
         }
 
