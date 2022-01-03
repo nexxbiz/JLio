@@ -13,25 +13,20 @@ namespace JLio.Core.Extensions
         {
             var element = string.Empty;
             var arrayNotationLevel = 0;
-
-            for (var i = 0; i < path.Length; i++)
+            foreach (var c in path)
             {
-                var currentChar = path[i];
-                var nextChar = i < path.Length - 1 ? path[i + 1] : char.MinValue;
-
-                if ((currentChar == pathDelimiter || StartsWithSquareBracketOpen(currentChar, nextChar, element)) &&
-                    arrayNotationLevel == 0)
+                if (c == pathDelimiter && arrayNotationLevel == 0)
                 {
-                    if (!string.IsNullOrEmpty(element)) Elements.Add(new PathElement(element));
-                    element = currentChar == '[' ? "[" : string.Empty;
+                    Elements.Add(new PathElement(element));
+                    element = string.Empty;
                 }
                 else
                 {
-                    element = $"{element}{currentChar}";
+                    element = $"{element}{c}";
                 }
 
-                if (currentChar == '[') arrayNotationLevel++;
-                if (currentChar == ']') arrayNotationLevel--;
+                if (c == '[') arrayNotationLevel++;
+                if (c == ']') arrayNotationLevel--;
             }
 
             if (element.Any()) Elements.Add(new PathElement(element));
@@ -51,12 +46,6 @@ namespace JLio.Core.Extensions
                 : new List<PathElement>();
 
         public IEnumerable<PathElement> SelectionPath => Elements.Take(GetSelectionPathIndex() + 1);
-
-        private static bool StartsWithSquareBracketOpen(char c, char nextChar, string element)
-        {
-            return c == '[' && nextChar == '\'' &&
-                   (string.IsNullOrEmpty(element) || element == "$" || element.EndsWith("]"));
-        }
 
         private int GetSelectionPathIndex()
         {

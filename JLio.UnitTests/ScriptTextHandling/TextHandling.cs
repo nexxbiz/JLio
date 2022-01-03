@@ -25,10 +25,15 @@ namespace JLio.UnitTests.ScriptTextHandling
             "[{\"path\":\"$.myObject.newProperty\",\"value\":\"=concat('fixed',@.localPath,$.rootPath,datetime(UTC))\",\"command\":\"add\"}]")]
         [TestCase(
             "[{\"path\": \"$.myObject.newProperty\",\"value\": { \"new object\": \"Added by value\" },\"command\": \"add\"}]")]
+        [TestCase(
+            "[{\"path\":\"$.myObject.newProperty\",\"value\":\"=concat(datetime(UTC,'dd-MM-yyyy'),'-date')\",\"command\":\"add\"},{\"path\":\"$.myObject.myDate\",\"value\":\"=datetime('UTC','dd-MM-yyyy')\",\"command\":\"add\"}]")]
         public void CanParseAndSerializeScript(string script)
         {
-            var scriptText2 = JLioConvert.Serialize(JLioConvert.Parse(script));
+            var jlioScript = JLioConvert.Parse(script);
+            var scriptText2 = JLioConvert.Serialize(jlioScript);
+            var result = jlioScript.Execute(new JObject());
             Assert.IsTrue(JToken.DeepEquals(JToken.Parse(script), JToken.Parse(scriptText2)));
+            Assert.IsTrue(result.Success);
         }
 
         [TestCase("[{\"path\":\"$.myObject.newProperty\",\"value\":\"new value\",\"command\":\"unknown\"}]")]
