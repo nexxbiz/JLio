@@ -85,6 +85,17 @@ namespace JLio.UnitTests.CommandsTests
             Assert.IsTrue(JToken.DeepEquals(JToken.Parse(expectedValueToPath), data.SelectToken(to)));
         }
 
+        [TestCase("$.myObject", "$",
+            "{ \"myObject\": {\"myArray\": [ 2, 20, 200, 2000 ]}, \"myArray\": [ 2, 20, 200, 2000 ] }")]
+        public void PropertyMoveToRootTests(string from, string to, string expectedValueToPath)
+        {
+            var result = new Move(from, to).Execute(data, executeOptions);
+
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.Success);
+            Assert.IsTrue(JToken.DeepEquals(JToken.Parse(expectedValueToPath), data.SelectToken(to)));
+        }
+
         [TestCase("$.myString", "$.myNewObject.newItem", "'demo2'")]
         [TestCase("$.myNumber", "$.myNewObject.newItem", "2.2")]
         [TestCase("$.myInteger", "$.myNewObject.newItem", "20")]
