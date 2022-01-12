@@ -1,4 +1,5 @@
-﻿using JLio.Core;
+﻿using System;
+using JLio.Core;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
 using Newtonsoft.Json.Linq;
@@ -40,8 +41,11 @@ namespace JLio.Functions
 
         private static JLioFunctionResult DoFormat(string formatString, JToken value)
         {
-            // if (value.Type == JTokenType.Date)
-            //   return new JLioFunctionResult(new JValue(value.Value<Datetime>().ToString(formatString)));
+            if (value.Type == JTokenType.Date)
+            {
+                var test = value.Value<DateTime>();
+                return JLioFunctionResult.SuccessFul(new JValue(test.ToString(formatString)));
+            }
 
             return JLioFunctionResult.SuccessFul(value);
         }

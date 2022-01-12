@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using JLio.Client;
+﻿using JLio.Client;
 using JLio.Commands.Builders;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
@@ -22,7 +21,8 @@ namespace JLio.UnitTests.FunctionsTests
             executeContext = ExecutionContext.CreateDefault();
         }
 
-        [TestCase("=format($.source,'dd-MM-YYYY')", "{\"source\" : \"2022-01-10T21:15:15.113Z\"}", "{\"new\": 1 }")]
+        [TestCase("=format($.source,'dd-MM-yyyy')", "{\"source\" : \"2022-01-10T21:15:15.113Z\"}",
+            "\"10-01-2022\"")]
         public void ScriptTestWithPath(string function, string data, string expectedResult)
         {
             var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"add\"}}]";
@@ -33,25 +33,31 @@ namespace JLio.UnitTests.FunctionsTests
             Assert.IsTrue(JToken.DeepEquals(JToken.Parse(expectedResult), result.Data.SelectToken("$.result")));
         }
 
-        [TestCase("=format()", "{\"result\" : [1,2]}")]
-        public void WillReturnErrorFalse(string function, string data)
+        [TestCase("=format('dd-MM-yyyy')", "{\"source\" : \"2022-01-10T21:15:15.113Z\"}",
+            "\"10-01-2022\"")]
+        public void ScriptTestWithoutPath(string function, string data, string expectedResult)
         {
-            var script = $"[{{\"path\":\"$.result[*]\",\"value\":\"{function}\",\"command\":\"set\"}}]";
+            var script = $"[{{\"path\":\"$.source\",\"value\":\"{function}\",\"command\":\"set\"}}]";
             var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeContext);
 
-            Assert.IsTrue(executeContext.Logger.LogEntries.Any(i => i.Level == LogLevel.Error));
+            Assert.IsTrue(result.Success);
+            Assert.IsTrue(executeContext.Logger.LogEntries.TrueForAll(i => i.Level != LogLevel.Error));
+            Assert.IsTrue(JToken.DeepEquals(JToken.Parse(expectedResult), result.Data.SelectToken("$.source")));
         }
 
         [Test]
         public void CanBeUsedInFluentApi()
         {
             var script = new JLioScript()
-                    .Set(new Format("$.demo", "dd-MM-yyyy"))
+                    .Set(new Format("$.demo2", "dd-MM"))
                     .OnPath("$.id")
-                    .Set(new Format("newer"))
+                    .Set(new Format("dd-MM-yyyy"))
                     .OnPath("$.demo")
                 ;
-            var result = script.Execute(JToken.Parse("{\"demo\" : 1}"));
+            var result =
+                script.Execute(
+                    JToken.Parse(
+                        "{\"demo\" : \"2022-01-10T21:15:15.113Z\", \"demo2\" : \"2022-01-10T21:15:15.113Z\", \"id\" : 4 }"));
 
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Success);
