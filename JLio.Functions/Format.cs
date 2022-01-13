@@ -43,8 +43,8 @@ namespace JLio.Functions
         {
             if (value.Type == JTokenType.Date)
             {
-                var test = value.Value<DateTime>();
-                return JLioFunctionResult.SuccessFul(new JValue(test.ToString(formatString)));
+                var datetimeValue = value.Value<DateTime>();
+                return JLioFunctionResult.SuccessFul(new JValue(datetimeValue.ToString(formatString)));
             }
 
             return JLioFunctionResult.SuccessFul(value);
