@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using JLio.Core.Models.Path;
 
@@ -32,7 +33,14 @@ namespace JLio.Core.Extensions
             if (element.Any()) Elements.Add(new PathElement(element));
         }
 
+        public JsonSplittedPath(IEnumerable<PathElement> elements)
+        {
+            Elements.AddRange(elements);
+        }
+
         public IEnumerable<PathElement> ConstructionPath => Elements.Skip(GetSelectionPathIndex() + 1);
+
+        public bool HasArrayIndication => Elements.Any(e => e.HasArrayIndicator);
 
         public bool IsSearchingForObjectsByName =>
             Elements.Count > 1 && Elements[Elements.Count - 2].RecursiveDescentIndicator;
@@ -57,6 +65,21 @@ namespace JLio.Core.Extensions
             }
 
             return 0;
+        }
+
+        public int GetSameElementsIndex(JsonSplittedPath secondPath)
+        {
+            var result = 0;
+            while (result < Elements.Count && result < secondPath.Elements.Count)
+            {
+                if (string.Compare(Elements[result].PathElementFullText,
+                    secondPath.Elements[result].PathElementFullText, StringComparison.InvariantCultureIgnoreCase) != 0)
+                    return result;
+
+                result++;
+            }
+
+            return result;
         }
     }
 }
