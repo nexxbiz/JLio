@@ -37,15 +37,54 @@ namespace JLio.Commands.Logic
             var sourceItems = context.ItemsFetcher.SelectTokens(FromPath, data);
             if (ToPath == executionContext.ItemsFetcher.RootPathIndicator)
                 return HandleRootObject(dataContext, sourceItems);
+            var innerArrayIndex = GetInnerArrayIndex();
+            if (innerArrayIndex != -1)
+                HandleActionPerSource(action, sourceItems, innerArrayIndex);
+            else
+                HandleActionForEachToAll(action, sourceItems);
+            return new JLioExecutionResult(true, dataContext);
+        }
 
+        private int GetInnerArrayIndex()
+        {
+            var fromPath = JsonPathMethods.SplitPath(FromPath);
+            var toPath = JsonPathMethods.SplitPath(ToPath);
+            if (!fromPath.HasArrayIndication || !toPath.HasArrayIndication) return -1;
+            var index = fromPath.GetSameElementsIndex(toPath);
+            if (!HasArrayNotationAfterIndex(fromPath, index) && !HasArrayNotationAfterIndex(toPath, index))
+                return index;
+
+            return -1;
+        }
+
+        private static bool HasArrayNotationAfterIndex(JsonSplittedPath path, int index)
+        {
+            return path.Elements.Skip(index).Any(e => e.HasArrayIndicator);
+        }
+
+        private void HandleActionPerSource(EAction action, SelectedTokens sourceItems, int innerArrayIndex)
+        {
+            var targetPath = JsonPathMethods.SplitPath(ToPath).Elements.Skip(innerArrayIndex);
             sourceItems.ForEach(i =>
             {
-                AddToTargets(i);
+                var selectionTargetPath =
+                    new JsonSplittedPath(JsonPathMethods.SplitPath(i.Path).Elements.Take(innerArrayIndex - 1));
+                selectionTargetPath.Elements.AddRange(targetPath);
+                AddToTargets(i, selectionTargetPath);
                 if (action == EAction.Move)
                     RemoveItemFromSource(i);
             });
+        }
 
-            return new JLioExecutionResult(true, dataContext);
+        private void HandleActionForEachToAll(EAction action, SelectedTokens sourceItems)
+        {
+            var toPath = JsonPathMethods.SplitPath(ToPath);
+            sourceItems.ForEach(i =>
+            {
+                AddToTargets(i, toPath);
+                if (action == EAction.Move)
+                    RemoveItemFromSource(i);
+            });
         }
 
         private JLioExecutionResult HandleRootObject(JToken dataContext, SelectedTokens sourceItems)
@@ -83,10 +122,10 @@ namespace JLio.Commands.Logic
             array.RemoveAt(index);
         }
 
-        private void AddToTargets(JToken value)
+        private void AddToTargets(JToken value, JsonSplittedPath toPath)
         {
-            var toPath = JsonPathMethods.SplitPath(ToPath);
-            JsonMethods.CheckOrCreateParentPath(data, toPath, executionContext.ItemsFetcher, executionContext.Logger);
+            JsonMethods.CheckOrCreateParentPath(data, toPath, executionContext.ItemsFetcher,
+                executionContext.Logger);
             var targetItems = executionContext.ItemsFetcher.SelectTokens(toPath.ParentElements.ToPathString(), data);
             targetItems.ForEach(t => AddToTarget(toPath.LastName, t, value));
         }

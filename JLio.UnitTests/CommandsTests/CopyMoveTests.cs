@@ -123,6 +123,32 @@ namespace JLio.UnitTests.CommandsTests
         }
 
         [Test]
+        public void CanCopyMovePropertiesInAnLayeredArray()
+        {
+            var startObject =
+                "{\"myData\":[{\"demo\":[{\"demo2\":3}]},{\"demo\":[{\"demo2\":4}]},{\"demo\":[{\"demo2\":5}]}]}";
+            var result =
+                new Move("$.myData[*].demo[*].demo2", "$.myData[*].demo[*].new").Execute(
+                    JToken.Parse(startObject), executeOptions);
+            Assert.IsTrue(JToken.DeepEquals(result.Data,
+                JToken.Parse(
+                    "{\"myData\":[{\"demo\":[{\"new\":3}]},{\"demo\":[{\"new\":4}]},{\"demo\":[{\"new\":5}]}]}")));
+        }
+
+        [Test]
+        public void CanCopyMovePropertiesInAnArray()
+        {
+            var startObject =
+                "{\"myData\":[{\"demo\":[{\"old\":3}]},{\"demo\":[{\"old\":4}]},{\"demo\":[{\"old\":5}]}]}";
+            var result =
+                new Move("$.myData[*].demo", "$.myData[*].new").Execute(
+                    JToken.Parse(startObject), executeOptions);
+            Assert.IsTrue(JToken.DeepEquals(result.Data,
+                JToken.Parse(
+                    "{\"myData\":[{\"new\":[{\"old\":3}]},{\"new\":[{\"old\":4}]},{\"new\":[{\"old\":5}]}]}")));
+        }
+
+        [Test]
         public void CanUseFluentApi()
         {
             var data = JObject.Parse("{ \"demo\" : \"item\" }");
