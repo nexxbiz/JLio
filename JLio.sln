@@ -15,6 +15,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JLio.UnitTests", "JLio.Unit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JLio.Extensions.JSchema", "JLio.Extensions.JSchema\JLio.Extensions.JSchema.csproj", "{51E2677D-CF79-4493-B46C-0E7491526709}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JLio2.Core", "JLio2.Core\JLio2.Core.csproj", "{43CC54B9-3BCE-4F47-825E-301A6497A21D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JLio2.UnitTests", "JLio2.UnitTests\JLio2.UnitTests.csproj", "{F7BA3E4C-29E4-4ADE-A49E-A073AFA8E427}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +49,14 @@ Global
 		{51E2677D-CF79-4493-B46C-0E7491526709}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{51E2677D-CF79-4493-B46C-0E7491526709}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{51E2677D-CF79-4493-B46C-0E7491526709}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43CC54B9-3BCE-4F47-825E-301A6497A21D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43CC54B9-3BCE-4F47-825E-301A6497A21D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43CC54B9-3BCE-4F47-825E-301A6497A21D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43CC54B9-3BCE-4F47-825E-301A6497A21D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7BA3E4C-29E4-4ADE-A49E-A073AFA8E427}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7BA3E4C-29E4-4ADE-A49E-A073AFA8E427}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7BA3E4C-29E4-4ADE-A49E-A073AFA8E427}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7BA3E4C-29E4-4ADE-A49E-A073AFA8E427}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
