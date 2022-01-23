@@ -13,11 +13,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JLio.Functions", "JLio.Func
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JLio.UnitTests", "JLio.UnitTests\JLio.UnitTests.csproj", "{EA2B7791-FE0F-4696-9B75-C7E9B78C13F2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JLio.Extensions.JSchema", "JLio.Extensions.JSchema\JLio.Extensions.JSchema.csproj", "{51E2677D-CF79-4493-B46C-0E7491526709}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JLio.Extensions.JSchema", "JLio.Extensions.JSchema\JLio.Extensions.JSchema.csproj", "{51E2677D-CF79-4493-B46C-0E7491526709}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JLio2.Core", "JLio2.Core\JLio2.Core.csproj", "{43CC54B9-3BCE-4F47-825E-301A6497A21D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lio.Core", "JLio2.Core\Lio.Core.csproj", "{43CC54B9-3BCE-4F47-825E-301A6497A21D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JLio2.UnitTests", "JLio2.UnitTests\JLio2.UnitTests.csproj", "{F7BA3E4C-29E4-4ADE-A49E-A073AFA8E427}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JLio2.UnitTests", "JLio2.UnitTests\JLio2.UnitTests.csproj", "{F7BA3E4C-29E4-4ADE-A49E-A073AFA8E427}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lio.Commands", "Lio.Commands\Lio.Commands.csproj", "{C9A4A4A9-9284-4073-9460-3145ED3151C9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +59,10 @@ Global
 		{F7BA3E4C-29E4-4ADE-A49E-A073AFA8E427}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7BA3E4C-29E4-4ADE-A49E-A073AFA8E427}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7BA3E4C-29E4-4ADE-A49E-A073AFA8E427}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9A4A4A9-9284-4073-9460-3145ED3151C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9A4A4A9-9284-4073-9460-3145ED3151C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9A4A4A9-9284-4073-9460-3145ED3151C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9A4A4A9-9284-4073-9460-3145ED3151C9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

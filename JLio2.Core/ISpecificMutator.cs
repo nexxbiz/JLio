@@ -1,8 +1,11 @@
-namespace JLio2.Core;
+using System.Collections.Generic;
 
-public interface ISpecificMutator
+namespace Lio.Core
 {
-    TargetTypes GetTargetType(string path);
-    void AddItemToArray(string path, IFunctionSupportedValue value);
-    List<string> GetPathsForSelectionPath(string selectionPath);
+    public interface ISpecificMutator
+    {
+        TargetTypes GetTargetType(string path);
+        void AddItemToArray(string path, IFunctionSupportedValue value);
+        List<string> GetPathsForSelectionPath(string selectionPath);
+    }
 }

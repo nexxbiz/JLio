@@ -1,6 +1,8 @@
-namespace JLio2.Core.Models;
+using System.Collections.Generic;
 
-public class ScriptDefinition : List<ICommand>
+namespace Lio.Core.Models
 {
-
+    public class ScriptDefinition : List<ICommand>
+    {
+    }
 }

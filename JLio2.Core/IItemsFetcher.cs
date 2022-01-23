@@ -1,5 +1,6 @@
-namespace JLio2.Core;
-
-public interface IItemsFetcher
+namespace Lio.Core
 {
+    public interface IItemsFetcher
+    {
+    }
 }

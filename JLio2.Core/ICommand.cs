@@ -1,10 +1,9 @@
-namespace JLio2.Core;
-
-public interface ICommand
+namespace Lio.Core
 {
-    Type Type { get; }
-    string Name { get; } 
-    IDictionary<string, object?> Data { get; set; }
-    bool CanExecute(ExecutionContext executionContext);
-    IExecutionResult Execute(ExecutionContext executionContext);
+    public interface ICommand
+    {
+        string Name { get; }
+        bool CanExecute(ExecutionContext executionContext);
+        IExecutionResult Execute(ExecutionContext executionContext);
+    }
 }

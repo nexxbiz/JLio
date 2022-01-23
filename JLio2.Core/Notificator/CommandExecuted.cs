@@ -1,15 +1,16 @@
 using MediatR;
 
-namespace JLio2.Core.Notificator;
-
-public class CommandExecuted : INotification
+namespace Lio.Core.Notificator
 {
-    public ExecutionContext ExecutionContext { get; }
-    public ICommand Command { get; }
-
-    public CommandExecuted(ExecutionContext executionContext, ICommand command)
+    public class CommandExecuted : INotification
     {
-        ExecutionContext = executionContext;
-        Command = command;
+        public CommandExecuted(ExecutionContext executionContext, ICommand command)
+        {
+            ExecutionContext = executionContext;
+            Command = command;
+        }
+
+        public ICommand Command { get; }
+        public ExecutionContext ExecutionContext { get; }
     }
 }

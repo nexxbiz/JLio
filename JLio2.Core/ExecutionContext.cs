@@ -1,37 +1,32 @@
+using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace JLio2.Core;
-
-public class ExecutionContext
+namespace Lio.Core
 {
-    public object? Input { get; }
-    public ScriptExecutionLog ScriptExecutionLog { get; }
-    
-    public ISpecificMutator SpecificMutator { get; }
-    
-    public IDictionary<string, object?> JournalData { get; private set; } = new Dictionary<string, object?>();
-
-    public ExecutionContext(IServiceProvider serviceProvider, object input)
+    public class ExecutionContext
     {
-        Input = input;
-        ScriptExecutionLog = ActivatorUtilities.CreateInstance<ScriptExecutionLog>(serviceProvider);
-    }
-    
-    public TType GetInput<TType>()
-    {
-        return (TType) Input;
-    }
+        public ExecutionContext(IServiceProvider serviceProvider, object input)
+        {
+            Input = input;
+            ScriptExecutionLog = ActivatorUtilities.CreateInstance<ScriptExecutionLog>(serviceProvider);
+        }
 
-    public void AddEntry(string commandName, string message)
-    {
-        ScriptExecutionLog.AddEntry(commandName, message);
-    }
-}
+        public object? Input { get; }
 
-public enum TargetTypes
-{
-    Array,
-    Object,
-    String,
-    Integer
+        public IDictionary<string, object?> JournalData { get; } = new Dictionary<string, object?>();
+        public ScriptExecutionLog ScriptExecutionLog { get; }
+
+        public ISpecificMutator SpecificMutator { get; }
+
+        public TType GetInput<TType>()
+        {
+            return (TType)Input;
+        }
+
+        public void AddEntry(string commandName, string message)
+        {
+            ScriptExecutionLog.AddEntry(commandName, message);
+        }
+    }
 }

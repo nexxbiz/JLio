@@ -1,13 +1,7 @@
-using System.Text.Json.Serialization;
-
-namespace JLio2.Core.Models;
-
-public class CommandDefinition
+namespace Lio.Core.Models
 {
-    [JsonIgnore]
-    public Type Type { get; set; } = default!;
-
-    public string? Name { get; set; } = nameof(Type);
+    public class CommandDefinition
+    {
+        public string? Name { get; set; }
+    }
 }
-
-

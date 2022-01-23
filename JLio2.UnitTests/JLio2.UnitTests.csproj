@@ -15,7 +15,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\JLio2.Core\JLio2.Core.csproj" />
+      <ProjectReference Include="..\JLio2.Core\Lio.Core.csproj" />
     </ItemGroup>
 
 </Project>

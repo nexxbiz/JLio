@@ -1,13 +1,13 @@
 using MediatR;
 
-namespace JLio2.Core.Notificator;
-
-public class ScriptExecuting : INotification
+namespace Lio.Core.Notificator
 {
-    public ScriptExecuting(ExecutionContext executionContext) 
+    public class ScriptExecuting : INotification
     {
-    }
-    
-    public ExecutionContext ExecutionContext { get; }
+        public ScriptExecuting(ExecutionContext executionContext)
+        {
+        }
 
+        public ExecutionContext ExecutionContext { get; }
+    }
 }

@@ -1,21 +1,22 @@
 using NodaTime;
 
-namespace JLio2.Core;
-
-public class ExecutionLogRecord
+namespace Lio.Core
 {
-    public ExecutionLogRecord()
+    public class ExecutionLogRecord
     {
-        
-    }
-    public ExecutionLogRecord(string commandName, Instant timestamp, string? message)
-    {
-        CommandName = commandName;
-        Timestamp = timestamp;
-        Message = message;
-    }
+        public ExecutionLogRecord()
+        {
+        }
 
-    public string CommandName { get; set; }
-    public Instant Timestamp { get; set; } = default!;
-    public string? Message { get; set; }
+        public ExecutionLogRecord(string commandName, Instant timestamp, string? message)
+        {
+            CommandName = commandName;
+            Timestamp = timestamp;
+            Message = message;
+        }
+
+        public string CommandName { get; set; }
+        public string? Message { get; set; }
+        public Instant Timestamp { get; set; }
+    }
 }
