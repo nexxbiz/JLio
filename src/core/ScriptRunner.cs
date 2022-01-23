@@ -22,7 +22,8 @@ namespace Lio.Core
             this.cancellationToken = cancellationToken;
         }
 
-        public async Task<ScriptExecutionResult> RunScriptAsync(ScriptDefinition scriptDefinition, ScriptInput input)
+        public async Task<ScriptExecutionResult> RunScriptAsync(ScriptDefinition scriptDefinition, ScriptInput input,
+            ScriptRunnerOptions options)
         {
             var executionScope = serviceScopeFactory.CreateScope();
             var executionContext = new ExecutionContext(executionScope.ServiceProvider, input.Input);
@@ -69,5 +70,13 @@ namespace Lio.Core
     public class ScriptInput
     {
         public object Input { get; set; }
+    }
+
+    public class ScriptRunnerOptions
+    {
+        public static ScriptRunnerOptions SetOptions(IJLioMutater mutator, object pathfetcher)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
