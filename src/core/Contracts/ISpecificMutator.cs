@@ -1,6 +1,6 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace Lio.Core
+namespace Lio.Core.Contracts
 {
     public interface ISpecificMutator
     {

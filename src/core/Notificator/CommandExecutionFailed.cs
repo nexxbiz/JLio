@@ -1,18 +1,19 @@
 using System;
+using Lio.Core.Contexts;
 using MediatR;
 
 namespace Lio.Core.Notificator
 {
     public class CommandExecutionFailed : INotification
     {
-        public CommandExecutionFailed(Exception exception, ExecutionContext executionContext, string commandName)
+        public CommandExecutionFailed(Exception exception, CommandExecutionContext commandExecutionContext)
         {
             Exception = exception;
-            ExecutionContext = executionContext;
+            CommandExecutionContext = commandExecutionContext;
         }
 
         public Exception Exception { get; }
 
-        public ExecutionContext ExecutionContext { get; }
+        public CommandExecutionContext CommandExecutionContext { get; }
     }
 }

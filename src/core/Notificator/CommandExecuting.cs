@@ -1,16 +1,18 @@
+using Lio.Core.Contexts;
+using Lio.Core.Contracts;
 using MediatR;
 
 namespace Lio.Core.Notificator
 {
     public class CommandExecuting : INotification
     {
-        public CommandExecuting(ExecutionContext executionContext, ICommand command)
+        public CommandExecuting(CommandExecutionContext executionContext, ICommand command)
         {
             Command = command;
-            ExecutionContext = executionContext;
+            CommandExecutionContext = executionContext;
         }
 
         public ICommand Command { get; }
-        public ExecutionContext ExecutionContext { get; }
+        public CommandExecutionContext CommandExecutionContext { get; }
     }
 }

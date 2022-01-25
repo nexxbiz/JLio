@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Lio.Core.Contracts;
 
 namespace Lio.Core.Models
 {

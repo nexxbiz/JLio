@@ -1,13 +1,14 @@
+using Lio.Core.Contexts;
 using MediatR;
 
 namespace Lio.Core.Notificator
 {
     public class ScriptExecuting : INotification
     {
-        public ScriptExecuting(ExecutionContext executionContext)
+        public ScriptExecuting(ScriptExecutionContext scriptExecutionContext)
         {
         }
 
-        public ExecutionContext ExecutionContext { get; }
+        public ScriptExecutionContext ScriptExecutionContext { get; }
     }
 }

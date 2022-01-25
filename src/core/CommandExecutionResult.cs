@@ -1,8 +1,7 @@
 ﻿namespace Lio.Core
 {
-    public class CommandExecutionResult : ExecutionResult
+    public class CommandExecutionResult 
     {
-        private ExecutionContext ExecutionContext { get; }
-        public object? Input { get; }
+        public object? Output { get; set; }
     }
 }

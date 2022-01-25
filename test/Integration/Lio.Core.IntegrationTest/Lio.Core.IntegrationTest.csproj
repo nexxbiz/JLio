@@ -20,4 +20,9 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\Core\Lio.Core.csproj" />
+    <ProjectReference Include="..\..\..\src\implementations\JLio\JLio.csproj" />
+  </ItemGroup>
+
 </Project>

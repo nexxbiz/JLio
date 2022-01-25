@@ -1,7 +1,8 @@
 using System;
-using Lio.Core;
+using Lio.Core.Contexts;
+using Lio.Core.ExecutionResult;
 
-namespace Lio.Commands
+namespace Lio.Core.Commands.Implementations
 {
     public class Add : Command
     {
@@ -24,29 +25,28 @@ namespace Lio.Commands
 
         public IFunctionSupportedValue Value { get; set; }
 
-        protected override bool OnCanExecute(ExecutionContext context)
+        protected override bool OnCanExecute(CommandExecutionContext context)
         {
             return Path != null && Value != null;
         }
 
-        protected override IExecutionResult OnExecute(ExecutionContext context)
+        protected override ICommandExecutionResult OnExecute(CommandExecutionContext context)
         {
             context.JournalData.Add("", "");
-            var selectedPaths = context.SpecificMutator.GetPathsForSelectionPath(Path);
+            var selectedPaths = context.ScriptExecutionContext.SpecificMutator.GetPathsForSelectionPath(Path);
 
-            selectedPaths.ForEach(p => AddValue(p, context));
-
-            return new CommandExecutionResult();
+            selectedPaths.ForEach(p => AddValue(p, context.ScriptExecutionContext));
+            return Success("");
         }
 
-        private void AddValue(string path, ExecutionContext context)
+        private void AddValue(string path, ScriptExecutionContext context)
         {
             var targetType = context.SpecificMutator.GetTargetType(path);
             if (targetType == TargetTypes.Array) AddItemToArray(path, context);
             throw new NotImplementedException();
         }
 
-        public void AddItemToArray(string path, ExecutionContext context)
+        public void AddItemToArray(string path, ScriptExecutionContext context)
         {
             context.SpecificMutator.AddItemToArray(path, Value);
         }

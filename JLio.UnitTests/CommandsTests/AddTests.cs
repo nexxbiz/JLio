@@ -1,4 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.IO;
+using System.IO.Compression;
+using System.Linq;
+using System.Text;
 using JLio.Commands;
 using JLio.Commands.Builders;
 using JLio.Core;
@@ -22,6 +26,24 @@ namespace JLio.UnitTests.CommandsTests
             executeOptions = ExecutionContext.CreateDefault();
             data = JToken.Parse(
                 "{\r\n  \"myString\": \"demo2\",\r\n  \"myNumber\": 2.2,\r\n  \"myInteger\": 20,\r\n  \"myObject\": {\r\n    \"myObject\": {\"myArray\": [\r\n      2,\r\n      20,\r\n      200,\r\n      2000\r\n    ]},\r\n    \"myArray\": [\r\n      2,\r\n      20,\r\n      200,\r\n      2000\r\n    ]\r\n  },\r\n  \"myArray\": [\r\n    2,\r\n    20,\r\n    200,\r\n    2000\r\n  ],\r\n  \"myBoolean\": true,\r\n  \"myNull\": null\r\n}");
+        }
+
+        [Test]
+        public void Test()
+        {
+            var inputBytes = File.ReadAllBytes("/Users/cristina.mudura/Temp/data.json");
+            var compressed = "";
+            using (var outputStream = new MemoryStream())
+
+            {
+                using (var gZipStream = new GZipStream(outputStream, CompressionMode.Compress))
+                {
+                    gZipStream.Write(inputBytes, 0, inputBytes.Length);
+                }
+                var outputBytes = outputStream.ToArray();
+                compressed = Convert.ToBase64String(outputBytes);
+
+            }
         }
 
         [TestCase("$.myObject.newItem", "newData")]

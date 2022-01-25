@@ -1,3 +1,8 @@
+using System.Threading;
+using JLio.Mutators;
+using Lio.Core.Commands.Implementations;
+using Lio.Core.Models;
+using Lio.Core.Runner;
 using Xunit;
 
 namespace Lio.Core.IntegrationTest
@@ -7,6 +12,15 @@ namespace Lio.Core.IntegrationTest
         [Fact]
         public void Test1()
         {
+            // var runner = new ScriptRunner(new NewtonsoftMutator(), null, null);
+            //
+            // runner.RunScriptAsync(new ScriptDefinition()
+            // {
+            //     new Add("", true);
+            // }, new ScriptInput(), CancellationToken.None);
+
+            //var runner = new ScriptRunner(null, null, null);
+
             //var scripttext = "[]";
             //var script = JLio2Convert.Parse(scripttext);
 
