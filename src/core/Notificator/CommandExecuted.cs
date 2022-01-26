@@ -6,13 +6,13 @@ namespace Lio.Core.Notificator
 {
     public class CommandExecuted : INotification
     {
-        public CommandExecuted(ScriptExecutionContext scriptExecutionContext, ICommand command)
+        public CommandExecuted(CommandExecutionContext commandExecutionContext, ICommand command)
         {
-            ScriptExecutionContext = scriptExecutionContext;
+            CommandExecutionContext = commandExecutionContext;
             Command = command;
         }
 
         public ICommand Command { get; }
-        public ScriptExecutionContext ScriptExecutionContext { get; }
+        public CommandExecutionContext CommandExecutionContext { get; }
     }
 }

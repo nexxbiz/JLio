@@ -1,8 +1,3 @@
-using System.Threading;
-using JLio.Mutators;
-using Lio.Core.Commands.Implementations;
-using Lio.Core.Models;
-using Lio.Core.Runner;
 using Xunit;
 
 namespace Lio.Core.IntegrationTest

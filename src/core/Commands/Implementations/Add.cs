@@ -1,6 +1,6 @@
-using System;
 using Lio.Core.Contexts;
 using Lio.Core.ExecutionResult;
+using Lio.Core.Models;
 
 namespace Lio.Core.Commands.Implementations
 {
@@ -33,22 +33,25 @@ namespace Lio.Core.Commands.Implementations
         protected override ICommandExecutionResult OnExecute(CommandExecutionContext context)
         {
             context.JournalData.Add("", "");
-            var selectedPaths = context.ScriptExecutionContext.SpecificMutator.GetPathsForSelectionPath(Path);
-
+            var selectedPaths = context.ScriptExecutionContext.SpecificMutator.GetItemsForSelectionPath(Path);
             selectedPaths.ForEach(p => AddValue(p, context.ScriptExecutionContext));
             return Success("");
         }
 
-        private void AddValue(string path, ScriptExecutionContext context)
+        private void AddValue(FetchedItem item, ScriptExecutionContext context)
         {
-            var targetType = context.SpecificMutator.GetTargetType(path);
-            if (targetType == TargetTypes.Array) AddItemToArray(path, context);
-            throw new NotImplementedException();
+            if (item.TargetType == TargetTypes.Array) AddItemToArray(item, context);
+            if (item.TargetType == TargetTypes.Object) AddItemToObject(item, context);
         }
 
-        public void AddItemToArray(string path, ScriptExecutionContext context)
+        private void AddItemToObject(FetchedItem item, ScriptExecutionContext context)
         {
-            context.SpecificMutator.AddItemToArray(path, Value);
+            context.SpecificMutator.AddItemToObject(item, Value);
+        }
+
+        public void AddItemToArray(FetchedItem item, ScriptExecutionContext context)
+        {
+            context.SpecificMutator.AddItemToArray(item, Value);
         }
     }
 }

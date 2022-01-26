@@ -6,6 +6,7 @@ namespace Lio.Core.Runner
 {
     public interface IScriptRunner
     {
-        Task<ScriptExecutionResult> RunScriptAsync(ScriptDefinition scriptDefinition, ScriptInput input = default, CancellationToken cancellationToken = default);
+        Task<ScriptExecutionResult> RunScriptAsync(ScriptDefinition scriptDefinition, ScriptInput input = default,
+            CancellationToken cancellationToken = default);
     }
 }

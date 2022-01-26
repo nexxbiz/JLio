@@ -1,3 +1,4 @@
+using JLio.SystemTextJson.Client;
 using Lio.Core.Commands.Implementations;
 using Lio.Core.Models;
 using Lio.Core.Runner;
@@ -9,12 +10,14 @@ namespace WebApplication1.Controllers;
 [Route("[controller]")]
 public class WeatherForecastController : ControllerBase
 {
-    private static readonly string[] Summaries = new[]
+    private static readonly string[] Summaries =
     {
         "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
     };
 
     private readonly ILogger<WeatherForecastController> _logger;
+
+    private readonly IScriptRunner _scriptRunner;
 
     public WeatherForecastController(ILogger<WeatherForecastController> logger, IScriptRunner scriptRunner)
     {
@@ -33,18 +36,14 @@ public class WeatherForecastController : ControllerBase
             })
             .ToArray();
     }
-    
-    
-    private readonly IScriptRunner _scriptRunner;
 
     [HttpPost("/run-script")]
     public async Task<IActionResult> RunScript()
     {
-        var result = await _scriptRunner.RunScriptAsync(new ScriptDefinition()
+        var result = await _scriptRunner.RunScriptAsync(new ScriptDefinition
         {
             new Add("$.test", true)
-        }, new ScriptInput());
+        }, SystemTextJsonScriptInput.Create("{\"demo\": 300}"));
         return Ok();
     }
-
 }

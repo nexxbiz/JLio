@@ -7,6 +7,17 @@ namespace Lio.Core.Notificator
     {
         public ScriptExecuting(ScriptExecutionContext scriptExecutionContext)
         {
+            ScriptExecutionContext = scriptExecutionContext;
+        }
+
+        public ScriptExecutionContext ScriptExecutionContext { get; }
+    }
+
+    public class ScriptExecuted : INotification
+    {
+        public ScriptExecuted(ScriptExecutionContext scriptExecutionContext)
+        {
+            ScriptExecutionContext = scriptExecutionContext;
         }
 
         public ScriptExecutionContext ScriptExecutionContext { get; }

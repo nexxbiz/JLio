@@ -2,7 +2,7 @@ using Lio.Core.Contexts;
 using Lio.Core.Models;
 using MediatR;
 
-namespace Lio.Core.Notificator
+namespace Lio.Core.Validator
 {
     public class ValidateScriptExecution : INotification
     {
@@ -15,9 +15,9 @@ namespace Lio.Core.Notificator
         }
 
         public bool CanExecuteScript { get; private set; } = true;
-        public ScriptExecutionContext ScriptExecutionContext { get; }
         public ScriptInput Input { get; }
         public ScriptDefinition ScriptDefinition { get; }
+        public ScriptExecutionContext ScriptExecutionContext { get; }
 
         public void PreventScriptExecution()
         {

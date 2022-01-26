@@ -6,8 +6,15 @@ using MediatR;
 
 namespace Lio.Core.Logs;
 
-public class ScriptExecutionLogWriter : INotificationHandler<CommandExecuting>, INotificationHandler<CommandExecuted>, INotificationHandler<CommandExecutionFailed>, INotificationHandler<CommandExecutionResultExecuted>
+public class CommandExecutionLogWriter : INotificationHandler<CommandExecuting>, INotificationHandler<CommandExecuted>,
+    INotificationHandler<CommandExecutionFailed>, INotificationHandler<CommandExecutionResultExecuted>
 {
+    public Task Handle(CommandExecuted notification, CancellationToken cancellationToken)
+    {
+        WriteEntry("Command executed", notification.CommandExecutionContext);
+        return Task.CompletedTask;
+    }
+
     public Task Handle(CommandExecuting notification, CancellationToken cancellationToken)
     {
         WriteEntry($"Executing with data {notification.CommandExecutionContext.Input}",
@@ -15,14 +22,9 @@ public class ScriptExecutionLogWriter : INotificationHandler<CommandExecuting>, 
         return Task.CompletedTask;
     }
 
-    public Task Handle(CommandExecuted notification, CancellationToken cancellationToken)
-    {
-        throw new System.NotImplementedException();
-    }
-
     public Task Handle(CommandExecutionFailed notification, CancellationToken cancellationToken)
     {
-        WriteEntry($"Command Execution Failed {notification.Exception.Message}", notification.CommandExecutionContext);
+        WriteEntry($"Command execution failed: {notification.Exception.Message}", notification.CommandExecutionContext);
         return Task.CompletedTask;
     }
 
@@ -34,6 +36,28 @@ public class ScriptExecutionLogWriter : INotificationHandler<CommandExecuting>, 
         return Task.CompletedTask;
     }
 
-    private void WriteEntry(string? message, CommandExecutionContext commandExecutionContext) => commandExecutionContext.AddEntry(message);
+    private void WriteEntry(string? message, CommandExecutionContext commandExecutionContext)
+    {
+        commandExecutionContext.AddEntry(message);
+    }
+}
 
+public class ScriptExecutionLogWriter : INotificationHandler<ScriptExecuting>, INotificationHandler<ScriptExecuted>
+{
+    public Task Handle(ScriptExecuted notification, CancellationToken cancellationToken)
+    {
+        WriteEntry("Script executed", notification.ScriptExecutionContext);
+        return Task.CompletedTask;
+    }
+
+    public Task Handle(ScriptExecuting notification, CancellationToken cancellationToken)
+    {
+        WriteEntry("Script executing", notification.ScriptExecutionContext);
+        return Task.CompletedTask;
+    }
+
+    private void WriteEntry(string? message, ScriptExecutionContext scriptExecutionContext)
+    {
+        scriptExecutionContext.AddEntry(message);
+    }
 }

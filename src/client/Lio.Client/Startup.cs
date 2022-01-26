@@ -1,11 +1,6 @@
 using JLio.Mutators;
 using Lio.Core.Extensions;
 using Lio.Core.Options;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace ElsaDashboard.Web
 {
@@ -23,10 +18,7 @@ namespace ElsaDashboard.Web
         {
             services.AddRazorPages();
 
-            services.AddLioCore(options =>
-            {
-                options.AddMutator(typeof(NewtonsoftMutator));
-            });
+            services.AddLioCore(options => { options.WithMutator<NewtonsoftMutator>(); });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
