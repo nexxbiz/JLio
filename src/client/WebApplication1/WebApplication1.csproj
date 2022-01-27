@@ -12,6 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\implementations\JLio\JLio.Newtonsoft\JLio.Newtonsoft.csproj" />
       <ProjectReference Include="..\..\implementations\JLio\JLio.SystemTextJson\JLio.SystemTextJson.csproj" />
     </ItemGroup>
 

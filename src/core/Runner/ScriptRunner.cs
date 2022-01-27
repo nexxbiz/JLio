@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Lio.Core.Contexts;
@@ -21,15 +22,18 @@ namespace Lio.Core.Runner
 
     public class ScriptRunner : IScriptRunner
     {
+        private readonly ISpecificFetcher fetcher;
         private readonly IMediator mediator;
         private readonly ISpecificMutator mutator;
         private readonly IServiceScopeFactory scopeFactory;
 
-        public ScriptRunner(ISpecificMutator mutator, IServiceScopeFactory scopeFactory, IMediator mediator)
+        public ScriptRunner(ISpecificMutator mutator, IServiceScopeFactory scopeFactory, IMediator mediator,
+            ISpecificFetcher fetcher)
         {
             this.mutator = mutator;
             this.scopeFactory = scopeFactory;
             this.mediator = mediator;
+            this.fetcher = fetcher;
         }
 
         public async Task<ScriptExecutionResult> RunScriptAsync(ScriptDefinition scriptDefinition,
@@ -37,7 +41,8 @@ namespace Lio.Core.Runner
         {
             var executionScope = scopeFactory.CreateScope();
 
-            var executionContext = new ScriptExecutionContext(executionScope.ServiceProvider, mutator, input);
+            var executionContext =
+                new ScriptExecutionContext(executionScope.ServiceProvider, mutator, fetcher, input.Data);
 
             var validateScriptExecution = new ValidateScriptExecution(executionContext, scriptDefinition, input);
             await mediator.Publish(validateScriptExecution, cancellationToken);
@@ -53,7 +58,7 @@ namespace Lio.Core.Runner
             var result = await RunScript(executionContext, scriptDefinition, cancellationToken);
 
             await mediator.Publish(new ScriptExecuted(executionContext), cancellationToken);
-
+            result.ExecutionLog = executionContext.ScriptExecutionLog.GetEntries().ToList();
             executionContext.ScriptExecutionLog.Flush();
             return result;
         }

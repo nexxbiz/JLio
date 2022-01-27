@@ -1,4 +1,4 @@
-using JLio.SystemTextJson.Client;
+using JLio.Newtonsoft.Client;
 using Lio.Core.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,13 +10,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddLioCore(JlioSystemTextJson.Options());
+//builder.Services.AddLioCore(JlioSystemTextJson.Options());
 
-//builder.Services.AddLioCore(optionsBuilder =>
-//{
-//    optionsBuilder
-//        .WithNewtonsoft();
-//});
+builder.Services.AddLioCore(optionsBuilder =>
+{
+    optionsBuilder
+        .WithNewtonsoft();
+});
 
 var app = builder.Build();
 

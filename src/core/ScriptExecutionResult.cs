@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Lio.Core.Runner;
 
 namespace Lio.Core
@@ -11,6 +12,7 @@ namespace Lio.Core
         }
 
         public bool Executed { get; }
+        public List<ExecutionLogRecord> ExecutionLog { get; set; }
         public ScriptInstance ScriptInstance { get; }
     }
 }

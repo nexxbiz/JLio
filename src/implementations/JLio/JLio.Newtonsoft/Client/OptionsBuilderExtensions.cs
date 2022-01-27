@@ -1,4 +1,5 @@
-﻿using JLio.Newtonsoft.Mutators;
+﻿using JLio.Newtonsoft.Fetcher;
+using JLio.Newtonsoft.Mutators;
 using Lio.Core.Options;
 
 namespace JLio.Newtonsoft.Client
@@ -7,7 +8,10 @@ namespace JLio.Newtonsoft.Client
     {
         public static LioOptionsBuilder WithNewtonsoft(this LioOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.WithMutator<NewtonsoftMutator>();
+            optionsBuilder
+                .WithMutator<NewtonsoftMutator>()
+                .WithFetcher<JsonPathFetcher>();
+
             return optionsBuilder;
         }
     }

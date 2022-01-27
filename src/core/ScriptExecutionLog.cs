@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using NodaTime;
 
 namespace Lio.Core
@@ -8,7 +6,7 @@ namespace Lio.Core
     public class ScriptExecutionLog
     {
         private readonly IClock _clock;
-        private readonly ICollection<ExecutionLogRecord> _records = new List<ExecutionLogRecord>();
+        private readonly ICollection<ExecutionLogRecord> records = new List<ExecutionLogRecord>();
 
         public ScriptExecutionLog(IClock clock)
         {
@@ -19,12 +17,17 @@ namespace Lio.Core
         {
             var timeStamp = _clock.GetCurrentInstant();
             var record = new ExecutionLogRecord(commandName, timeStamp, message);
-            _records.Add(record);
+            records.Add(record);
+        }
+
+        public ICollection<ExecutionLogRecord> GetEntries()
+        {
+            return records;
         }
 
         public void Flush()
         {
-            _records.Clear();
+            records.Clear();
         }
     }
 }

@@ -35,7 +35,7 @@ public static class LioOptionsExtensions
 
     public static LioOptionsBuilder WithFetcher<T>(this LioOptionsBuilder optionsBuilder) where T : ISpecificFetcher
     {
-        optionsBuilder.LioOptions.Mutator = typeof(T);
+        optionsBuilder.LioOptions.Fetcher = typeof(T);
         return optionsBuilder;
     }
 }

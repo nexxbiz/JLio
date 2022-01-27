@@ -1,4 +1,4 @@
-using JLio.SystemTextJson.Client;
+using JLio.Newtonsoft.Client;
 using Lio.Core.Commands.Implementations;
 using Lio.Core.Models;
 using Lio.Core.Runner;
@@ -42,8 +42,8 @@ public class WeatherForecastController : ControllerBase
     {
         var result = await _scriptRunner.RunScriptAsync(new ScriptDefinition
         {
-            new Add("$.test", true)
-        }, SystemTextJsonScriptInput.Create("{\"demo\": 300}"));
+            new Add("$.demo", 100)
+        }, NewtonSoftScriptInput.Create("{\"demo\": [1,2]}"));
         return Ok();
     }
 }

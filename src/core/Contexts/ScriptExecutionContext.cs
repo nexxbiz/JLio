@@ -11,12 +11,14 @@ namespace Lio.Core.Contexts
     public class ScriptExecutionContext
     {
         public ScriptExecutionContext(IServiceProvider serviceProvider, ISpecificMutator mutator,
+            ISpecificFetcher fetcher,
             object input = default)
         {
             Input = input;
             ScriptExecutionLog = ActivatorUtilities.CreateInstance<ScriptExecutionLog>(serviceProvider);
             Mediator = serviceProvider.GetRequiredService<IMediator>();
             SpecificMutator = mutator;
+            SpecificItemFetcher = fetcher;
             ScriptInstance = new ScriptInstance();
         }
 
@@ -32,6 +34,7 @@ namespace Lio.Core.Contexts
         public ScriptInstance ScriptInstance { get; }
 
         public IServiceProvider ServiceProvider { get; }
+        public ISpecificFetcher SpecificItemFetcher { get; }
 
         public ISpecificMutator SpecificMutator { get; }
 

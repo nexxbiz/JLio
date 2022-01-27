@@ -6,29 +6,22 @@ namespace JLio.Newtonsoft.Mutators;
 
 public class NewtonsoftMutator : ISpecificMutator
 {
-    private readonly ISpecificFetcher fetcher;
-
-    public NewtonsoftMutator(ISpecificFetcher fetcher)
+    public FetchedItems GetItemsForPath(string selectionPath)
     {
-        this.fetcher = fetcher;
+        throw new NotImplementedException();
+    }
+
+    public void AddValueToObject(FetchedItem item, IFunctionSupportedValue value)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void AddValueToArray(FetchedItem item, IFunctionSupportedValue value)
+    {
+        throw new NotImplementedException();
     }
 
     public FetchedItems GetTargetItems(string path)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void AddItemToArray(FetchedItem item, IFunctionSupportedValue value)
-    {
-        throw new NotImplementedException();
-    }
-
-    public FetchedItems GetItemsForSelectionPath(string selectionPath)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void AddItemToObject(FetchedItem item, IFunctionSupportedValue value)
     {
         throw new NotImplementedException();
     }

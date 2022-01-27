@@ -6,28 +6,21 @@ namespace JLio.SystemTextJson.Mutators;
 
 public class SystemTextJsonMutator : ISpecificMutator
 {
-    private readonly ISpecificFetcher fetcher;
-
-    public SystemTextJsonMutator(ISpecificFetcher fetcher)
+    public void AddValueToArray(FetchedItem item, IFunctionSupportedValue value)
     {
-        this.fetcher = fetcher;
+    }
+
+    public FetchedItems GetItemsForPath(string selectionPath)
+    {
+        return new FetchedItems();
+    }
+
+    public void AddValueToObject(FetchedItem item, IFunctionSupportedValue value)
+    {
     }
 
     public FetchedItems GetTargetItems(string path)
     {
         return new FetchedItems();
-    }
-
-    public void AddItemToArray(FetchedItem item, IFunctionSupportedValue value)
-    {
-    }
-
-    public FetchedItems GetItemsForSelectionPath(string selectionPath)
-    {
-        return new FetchedItems();
-    }
-
-    public void AddItemToObject(FetchedItem item, IFunctionSupportedValue value)
-    {
     }
 }
