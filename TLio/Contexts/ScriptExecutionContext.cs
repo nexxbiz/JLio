@@ -22,6 +22,8 @@ namespace TLio.Contexts
             Output = input;
             DataFetcher = GetDataFetcher();
             Mutator = GetMutator();
+
+            //should we fail here if the fetcher or the mutator are not found? because they are readonly so they cannot be set later on
         }
         
         public IReadOnlyDictionary<string, object> Input { get; }
@@ -52,13 +54,13 @@ namespace TLio.Contexts
         public IDataFetcher GetDataFetcher()
         {
             var registry = serviceProvider.GetRequiredService<IDataFetcherRegistry>();
-            return registry.GetFetcher(Script.FetcherType);
+            return registry.GetFetcher(Script.FetcherName);
         }
         
         public IMutator GetMutator()
         {
             var registry = serviceProvider.GetRequiredService<IMutatorRegistry>();
-            return registry.GetMutator(Script.MutatorType);
+            return registry.GetMutator(Script.MutatorName);
         }
     }
 }

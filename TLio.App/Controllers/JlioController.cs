@@ -11,17 +11,12 @@ namespace TLio.App.Controllers
 {
     [ApiController]
     [Route("/api/test")]
-    public class WeatherForecastController : ControllerBase
+    public class JlioController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-
-        private readonly ILogger<WeatherForecastController> _logger;
+        private readonly ILogger<JlioController> _logger;
         private readonly IScriptRunner scriptRunner;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger, IScriptRunner scriptRunner)
+        public JlioController(ILogger<JlioController> logger, IScriptRunner scriptRunner)
         {
             _logger = logger;
             this.scriptRunner = scriptRunner;
@@ -32,17 +27,12 @@ namespace TLio.App.Controllers
         {
             var result = await scriptRunner.RunAsync(new Script
             {
-                MutatorType = "Default",
-                FetcherType = "Default",
-                ScriptMetadata = new ScriptMetadata
-                {
-            
-                },
-                Commands = new List<ICommand>()
+                //removed items here , because they were default so minimaze the exposure of them. You still can set them if you want to
+                Commands = new CommandsList()
                 {
                     new Add("$", new LiteralValue(""))
                 }
-            }, new Dictionary<string, object>()
+            }, new Dictionary<string, object>()  //i would like to have a own type defintion of this like InputObjects
             {
                 ["myFirstInput"] = 10
             }, CancellationToken.None);

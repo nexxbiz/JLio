@@ -1,7 +1,3 @@
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using TLio.Contexts;
 using TLio.Models;
 
 namespace TLio.Contracts

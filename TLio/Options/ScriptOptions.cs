@@ -5,6 +5,9 @@ namespace TLio.Options
 {
     public class ScriptOptions
     {
+        public static string DefaultFetcherName = "Default";
+        public static string DefaultMutatorName = "Default";
+
         public ScriptOptions()
         {
             DataFetchers = new Dictionary<string, Type>();
@@ -16,12 +19,14 @@ namespace TLio.Options
         
         public ScriptOptions RegisterMutator(Type mutator, string name)
         {
+            //todo: what is the name already exisit? is the default error clear enough? should it override?
             Mutators.Add(name, mutator);
             return this;
         }
 
         public ScriptOptions RegisterDataFetcher(Type dataFetcher, string name)
         {
+            //todo: what is the name already exisit? is the default error clear enough? should it override?
             DataFetchers.Add(name, dataFetcher);
             return this;
         }

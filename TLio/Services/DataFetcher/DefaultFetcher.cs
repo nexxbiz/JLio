@@ -15,7 +15,7 @@ namespace TLio.Services.DataFetcher
             }
             catch (Exception ex)
             {
-                throw new Exception("Can not serialize input");
+                throw new Exception("Can not serialize input", ex);
             }
 
             return new FetchedItems()

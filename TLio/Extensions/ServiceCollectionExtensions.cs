@@ -30,8 +30,8 @@ namespace TLio.Extensions
                     .AddSingleton<IMutatorRegistry, MutatorRegistry>()
                 
                     //Add default data fetcher and mutator
-                    .AddDataFetcher<DefaultFetcher>("Default")
-                    .AddMutator<DefaultMutator>("Default")
+                    .AddDataFetcher<DefaultFetcher>(DefaultFetcherName)
+                    .AddMutator<DefaultMutator>(DefaultMutatorName)
                 ;
         }
 
@@ -39,6 +39,7 @@ namespace TLio.Extensions
         public static IServiceCollection AddDataFetcher<TType>(this IServiceCollection services, string name)
             where TType : class
         {
+            if (!typeof(TType).GetInterfaces().Contains(typeof(IDataFetcher))){ throw new NotImplementedException($"Registrating {nameof(TType)} failed because it needs to implement {nameof(IDataFetcher)}."); }
             // Register handler with DI.
             services.AddSingleton<TType>();
 
@@ -51,6 +52,7 @@ namespace TLio.Extensions
         public static IServiceCollection AddMutator<TType>(this IServiceCollection services, string name)
             where TType : class
         {
+            if (!typeof(TType).GetInterfaces().Contains(typeof(IMutator))) { throw new NotImplementedException($"Registrating {nameof(TType)} failed because it needs to implement {nameof(IMutator)}."); }
             // Register handler with DI.
             services.AddSingleton<TType>();
 

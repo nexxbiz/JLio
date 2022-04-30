@@ -31,7 +31,7 @@ namespace TLio.Services
             var scriptExecutionResult = new ScriptExecutionResult
             {
                 Output = executionContext.Input
-            };
+            };//why is this, always het the input on the output even when it fails. seems like a good plan
             
             //TODO validate script execution
             var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
@@ -54,29 +54,34 @@ namespace TLio.Services
                 CommandExecutionContext commandExecutionContext = null;
                 try
                 {
-                    commandExecutionContext =
-                        new CommandExecutionContext(executionContext, command, executionContext.Output);
-
-                    var executionStatus = command.CanExecute(commandExecutionContext);
-                    if (executionStatus.CanExecute)
-                    {
-                        var exception = new Exception(executionStatus.Message);
-                        await mediator.Publish(new CommandExecutionFailed(exception, commandExecutionContext), cancellationToken);
-
-                    }
-
-                    await mediator.Publish(new CommandExecuting(commandExecutionContext, command), cancellationToken);
-
-                    var result = command.ExecuteAsync(commandExecutionContext);
-                    commandExecutionContext.ScriptExecutionContext.UpdateOutput(result);
-
-                    await mediator.Publish(new CommandExecuted(commandExecutionContext, command), cancellationToken);
+                    commandExecutionContext = await ExecuteCommand(executionContext, mediator, command, cancellationToken);
                 }
                 catch (Exception ex)
                 {
                     await mediator.Publish(new CommandExecutionFailed(ex, commandExecutionContext), cancellationToken);
                 }
             }
+        }
+
+        private static async Task<CommandExecutionContext> ExecuteCommand(ScriptExecutionContext executionContext, IMediator mediator, ICommand command, CancellationToken cancellationToken)
+        {
+            CommandExecutionContext commandExecutionContext = new CommandExecutionContext(executionContext, command, executionContext.Output);
+            var executionStatus = command.CanExecute(commandExecutionContext);
+            if (executionStatus.CanExecute) //should this be !executionStatus.CanExecute
+            {
+                var exception = new Exception(executionStatus.Message);
+                await mediator.Publish(new CommandExecutionFailed(exception, commandExecutionContext), cancellationToken);
+                //should it return here a CommandExecutionContext? instead of continue while we now it cannot execute?
+                // or throw an error ? because the same log is in the try catch of the parent method
+            }
+
+            await mediator.Publish(new CommandExecuting(commandExecutionContext, command), cancellationToken);
+
+            var result = command.ExecuteAsync(commandExecutionContext);
+            commandExecutionContext.ScriptExecutionContext.UpdateOutput(result);
+
+            await mediator.Publish(new CommandExecuted(commandExecutionContext, command), cancellationToken);
+            return commandExecutionContext;
         }
 
         private ScriptExecutionContext CreateScriptExecutionContext(IServiceProvider serviceProvider, Script script,
