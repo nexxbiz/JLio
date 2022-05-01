@@ -6,9 +6,13 @@ namespace TLio.Services.Mutator
 {
     public class DefaultMutator : IMutator
     {
-        public void AddValueToObject(FetchedItem item, IValue value)
+        public void AddValueToObject(FetchedItem targetItem, IValue value)
         {
-            throw new System.NotImplementedException();
+            if(targetItem.ItemType != TargetTypes.Object)
+            {
+
+            }
+           
         }
 
         public void AddValueToArray(FetchedItem item, IValue value)
