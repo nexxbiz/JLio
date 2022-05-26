@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using TLio.Contexts;
+using TLio.Contracts;
 using TLio.Models;
 using TLio.Services.DataFetcher;
 
@@ -27,11 +27,11 @@ namespace TLio.Implementations
             };
         }
 
-        protected override IReadOnlyDictionary<string, object> ExecuteAsync(CommandExecutionContext context)
+        protected override CommandExecutionResult ExecuteAsync(CommandExecutionContext context)
         {
             var selectedItems = context.ScriptExecutionContext.DataFetcher.GetItemsForPath(Path, context.Input);
             selectedItems.ForEach(i => AddValue(i, context.ScriptExecutionContext));
-            return new Dictionary<string, object>();
+            return new SuccessCommandExecutionResult(new Dictionary<string, object>());
         }
         
         private void AddValue(FetchedItem item, ScriptExecutionContext context)

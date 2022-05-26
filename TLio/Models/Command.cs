@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using TLio.Contexts;
 using TLio.Contracts;
 
@@ -11,12 +10,12 @@ namespace TLio.Models
         public string Id { get; set; } = default!;
         public string Name { get; set; }
 
-        protected abstract IReadOnlyDictionary<string, object> ExecuteAsync(CommandExecutionContext context);
+        protected abstract ICommandExecutionResult ExecuteAsync(CommandExecutionContext context);
 
         ExecutionStatus ICommand.CanExecute(CommandExecutionContext context) => CanExecute(context);
 
         protected abstract ExecutionStatus CanExecute(CommandExecutionContext context);
 
-        IReadOnlyDictionary<string, object> ICommand.ExecuteAsync(CommandExecutionContext context) => ExecuteAsync(context);
+        ICommandExecutionResult ICommand.ExecuteAsync(CommandExecutionContext context) => ExecuteAsync(context);
     }
 }

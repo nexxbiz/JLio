@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using TLio.Contexts;
-
 namespace TLio.Models
 {
     public class ScriptExecutionResult

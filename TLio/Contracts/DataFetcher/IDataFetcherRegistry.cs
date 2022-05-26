@@ -1,5 +1,3 @@
-using System;
-
 namespace TLio.Contracts.DataFetcher
 {
     public interface IDataFetcherRegistry

@@ -1,5 +1,3 @@
-using System;
-
 namespace TLio.Contracts.Mutator
 {
     public interface IMutatorRegistry

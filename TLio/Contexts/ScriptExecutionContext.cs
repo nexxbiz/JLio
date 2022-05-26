@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
-using TLio.Contracts;
 using TLio.Contracts.DataFetcher;
 using TLio.Contracts.Mutator;
 using TLio.Models;
-using TLio.Services;
 
 namespace TLio.Contexts
 {
@@ -20,10 +16,8 @@ namespace TLio.Contexts
             Script = script;
             Input = input;
             Output = input;
-            DataFetcher = GetDataFetcher();
-            Mutator = GetMutator();
-
-            //should we fail here if the fetcher or the mutator are not found? because they are readonly so they cannot be set later on
+            DataFetcher = GetDataFetcher() ?? throw new Exception($"Could not find fetcher with name {Script.FetcherName}" );;
+            Mutator = GetMutator() ?? throw new Exception($"Could not find mutator with name {Script.MutatorName}" );;
         }
         
         public IReadOnlyDictionary<string, object> Input { get; }
@@ -51,13 +45,13 @@ namespace TLio.Contexts
             ExecutionLog.Add(log);
         }
 
-        public IDataFetcher GetDataFetcher()
+        private IDataFetcher GetDataFetcher()
         {
             var registry = serviceProvider.GetRequiredService<IDataFetcherRegistry>();
             return registry.GetFetcher(Script.FetcherName);
         }
         
-        public IMutator GetMutator()
+        private IMutator GetMutator()
         {
             var registry = serviceProvider.GetRequiredService<IMutatorRegistry>();
             return registry.GetMutator(Script.MutatorName);

@@ -1,5 +1,3 @@
-using System;
-
 namespace TLio.Models
 {
     public class ScriptExecutionLog

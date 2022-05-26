@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using TLio.Contexts;
-using TLio.Implementations;
 using TLio.Models;
 
 namespace TLio.Contracts
@@ -21,11 +19,54 @@ namespace TLio.Contracts
         /// Invoked when the command executes
         /// </summary>
         /// <param name="context"></param>
-        IReadOnlyDictionary<string, object> ExecuteAsync(CommandExecutionContext context);
+        ICommandExecutionResult ExecuteAsync(CommandExecutionContext context);
 
         /// <summary>
         /// Indicates if the command can be executed
         /// </summary>
         ExecutionStatus CanExecute(CommandExecutionContext context);
     }
+
+    public abstract class CommandExecutionResult : ICommandExecutionResult
+    {
+
+        public CommandExecutionResult(IReadOnlyDictionary<string, object> data)
+        {
+            Data = data;
+        }
+        
+        public IReadOnlyDictionary<string, object> Data { get; set; }
+
+    }
+
+    public class SuccessCommandExecutionResult : CommandExecutionResult
+    {
+        public SuccessCommandExecutionResult(IReadOnlyDictionary<string, object> data) : base(data)
+        {
+        }
+    }
+    
+    public class FailedCommandExecutionResult : CommandExecutionResult
+    {
+        public FailedCommandExecutionResult(IReadOnlyDictionary<string, object> data, List<string> errors) : base(data)
+        {
+           ExecutionErrors.AddRange(errors);
+        }
+        
+        public FailedCommandExecutionResult(IReadOnlyDictionary<string, object> data, string errorMessage) : base(data)
+        {
+            ExecutionErrors.Add(errorMessage);
+        }
+        
+        public List<string> ExecutionErrors { get; set; } = new();
+
+        public bool IsSuccessfullyExecuted => ExecutionErrors.Any();
+    }
+    
+    public interface ICommandExecutionResult
+    {
+        public IReadOnlyDictionary<string, object> Data { get; set; }
+    }
+    
+    
 }

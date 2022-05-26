@@ -1,6 +1,3 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using MediatR;
 using TLio.Models;
 
@@ -11,17 +8,15 @@ namespace TLio.Notifications.Implementations
         public Task Handle(CommandExecuting notification, CancellationToken cancellationToken)
         {
             var executionContext = notification.CommandExecutionContext;
-            
-            executionContext.ScriptExecutionContext.ExecutionLog.Add(new ScriptExecutionLog
+
+            executionContext.ScriptExecutionContext.WriteLog(new ScriptExecutionLog
             {
-                CommandName = executionContext.Command.Name,
+                CommandName = notification.Command.Name,
                 Message = "Executing command",
                 Payload = executionContext.Input,
                 Timestamp = DateTimeOffset.UtcNow
             });
             
-            executionContext.ScriptExecutionContext.CommandExecutionContexts.Add(executionContext);
-
             return Task.CompletedTask;
         }
     }

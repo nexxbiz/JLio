@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using TLio.Contracts;
 using TLio.Options;
 
 namespace TLio.Models
@@ -11,5 +9,6 @@ namespace TLio.Models
 
         public string MutatorName { get; set; } = ScriptOptions.DefaultMutatorName;
         public string FetcherName { get; set; } = ScriptOptions.DefaultFetcherName;
+        public bool StopOnError { get; set; }
     }
 }
