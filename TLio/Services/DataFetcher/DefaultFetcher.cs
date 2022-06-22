@@ -11,13 +11,13 @@ namespace TLio.Services.DataFetcher
         {
 
             var result = new JsonObject();
-            input.Keys.ToList().ForEach(key => result.Add(key,((JsonNode)input[key])));
+            input.Keys.ToList().ForEach(key => result.Add(key, ((JsonNode)input[key])));
             return result;
         }
 
         public FetchedItems GetItemsForParentPath(string path, object? input)
         {
-          var parentPath = path.Substring(0, path.LastIndexOf('.'));
+            var parentPath = path.Substring(0, path.LastIndexOf('.'));
             return GetItemsForPath(parentPath, input);
         }
 
@@ -26,10 +26,39 @@ namespace TLio.Services.DataFetcher
             var result = new FetchedItems();
             var items = JsonPath.Parse(path).Evaluate(JsonDocument.Parse(contextInput.ToString()!).RootElement);
 
-            items.Matches?.ToList().ForEach(item => result.Add(new FetchedItem { Item= item, Path = item.Location.ToString(), ItemType = TargetTypes.Array }));
+            items.Matches?.ToList().ForEach(item => result.Add(new FetchedItem { Item = item, Path = item.Location.ToString(), ItemType = GetTargetType(item) }));
 
             return result;
-          
+
+        }
+
+        private TargetTypes GetTargetType(PathMatch item)
+        {
+
+            switch (item.Value.ValueKind)
+            {
+                case JsonValueKind.Undefined:
+                    return TargetTypes.Undefined;
+                case JsonValueKind.Object:
+                    return TargetTypes.Object;
+                case JsonValueKind.Array:
+                    return TargetTypes.Array;
+                case JsonValueKind.String:
+                    return TargetTypes.String;
+                case JsonValueKind.Number:
+                    if (item.Value.GetType() == typeof(int))
+                        return TargetTypes.Integer;
+                    else
+                        return TargetTypes.Float;
+                case JsonValueKind.True:
+                    return TargetTypes.Boolean;
+                case JsonValueKind.False:
+                    return TargetTypes.Boolean;
+                case JsonValueKind.Null:
+                    return TargetTypes.Null;
+                default:
+                    return TargetTypes.None;
+            }
         }
     }
 }
