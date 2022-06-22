@@ -43,6 +43,7 @@ namespace JLio.UnitTests.CommandsTests
         }
 
         [TestCase("$.myObject.newItem", "newData")]
+        [TestCase("$.myObject.newItem", "")]
         [TestCase("$.NewObject.newItem.NewSubItem", "newData")]
         [TestCase("$.myArray", "newData")]
         [TestCase("$..myObject.newItem", "newData")]

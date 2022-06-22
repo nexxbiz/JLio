@@ -9,7 +9,7 @@ namespace TLio.Models
 
         public List<ScriptExecutionLog> ExecutionLogs { get; set; } = new List<ScriptExecutionLog>();
 
-        public IReadOnlyDictionary<string, object> Output = new Dictionary<string, object>();
+        public object? Output = null;
     }
 
     public enum ScriptExecutionType

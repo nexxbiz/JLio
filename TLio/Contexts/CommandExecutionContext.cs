@@ -4,9 +4,9 @@ namespace TLio.Contexts
     {
         public ScriptExecutionContext ScriptExecutionContext { get; }
         
-        public IReadOnlyDictionary<string, object> Input { get; }
+        public object? Input { get; }
 
-        public CommandExecutionContext(ScriptExecutionContext scriptExecutionContext, IReadOnlyDictionary<string, object> input)
+        public CommandExecutionContext(ScriptExecutionContext scriptExecutionContext, object? input)
         {
             Input = input;
             ScriptExecutionContext = scriptExecutionContext;

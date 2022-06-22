@@ -30,12 +30,12 @@ namespace TLio.Contracts
     public abstract class CommandExecutionResult : ICommandExecutionResult
     {
 
-        public CommandExecutionResult(IReadOnlyDictionary<string, object> data)
+        public CommandExecutionResult(object? data)
         {
             Data = data;
         }
         
-        public IReadOnlyDictionary<string, object> Data { get; set; }
+        public object? Data { get; set; }
 
     }
 
@@ -48,12 +48,12 @@ namespace TLio.Contracts
     
     public class FailedCommandExecutionResult : CommandExecutionResult
     {
-        public FailedCommandExecutionResult(IReadOnlyDictionary<string, object> data, List<string> errors) : base(data)
+        public FailedCommandExecutionResult(object? data, List<string> errors) : base(data)
         {
            ExecutionErrors.AddRange(errors);
         }
         
-        public FailedCommandExecutionResult(IReadOnlyDictionary<string, object> data, string errorMessage) : base(data)
+        public FailedCommandExecutionResult(object? data, string errorMessage) : base(data)
         {
             ExecutionErrors.Add(errorMessage);
         }
@@ -65,7 +65,7 @@ namespace TLio.Contracts
     
     public interface ICommandExecutionResult
     {
-        public IReadOnlyDictionary<string, object> Data { get; set; }
+        public object? Data { get; set; }
     }
     
     

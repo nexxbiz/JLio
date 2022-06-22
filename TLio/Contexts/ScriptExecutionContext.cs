@@ -14,14 +14,15 @@ namespace TLio.Contexts
         {
             this.serviceProvider = serviceProvider;
             Script = script;
-            Input = input;
-            Output = input;
-            DataFetcher = GetDataFetcher() ?? throw new Exception($"Could not find fetcher with name {Script.FetcherName}" );;
-            Mutator = GetMutator() ?? throw new Exception($"Could not find mutator with name {Script.MutatorName}" );;
+            DataFetcher = GetDataFetcher() ?? throw new Exception($"Could not find fetcher with name {Script.FetcherName}" );
+            Mutator = GetMutator() ?? throw new Exception($"Could not find mutator with name {Script.MutatorName}" );
+            Input = DataFetcher.GetExecutionInput(input);
+            Output = Input;
         }
-        
-        public IReadOnlyDictionary<string, object> Input { get; }
-        public IReadOnlyDictionary<string, object> Output { get; private set; }
+       
+
+        public object? Input { get; }
+        public object? Output { get; private set; }
 
         public ICollection<CommandExecutionContext> CommandExecutionContexts { get; set; } = new List<CommandExecutionContext>();
 
@@ -33,7 +34,7 @@ namespace TLio.Contexts
         
         public IMutator Mutator { get; }
         
-        public void UpdateOutput(IReadOnlyDictionary<string, object> value)
+        public void UpdateOutput(object? value)
         {
             Output = value;
         }

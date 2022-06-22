@@ -29,7 +29,7 @@ namespace TLio.Implementations
 
         protected override CommandExecutionResult ExecuteAsync(CommandExecutionContext context)
         {
-            var selectedItems = context.ScriptExecutionContext.DataFetcher.GetItemsForPath(Path, context.Input);
+            var selectedItems = context.ScriptExecutionContext.DataFetcher.GetItemsForParentPath(Path, context.Input);
             selectedItems.ForEach(i => AddValue(i, context.ScriptExecutionContext));
             return new SuccessCommandExecutionResult(new Dictionary<string, object>());
         }
