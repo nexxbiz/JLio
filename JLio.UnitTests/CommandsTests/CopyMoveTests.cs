@@ -96,6 +96,7 @@ namespace JLio.UnitTests.CommandsTests
             Assert.IsTrue(JToken.DeepEquals(JToken.Parse(expectedValueToPath), data.SelectToken(to)));
         }
 
+        [TestCase("$.myString", "$.mystring", "'demo2'")]
         [TestCase("$.myString", "$.myNewObject.newItem", "'demo2'")]
         [TestCase("$.myNumber", "$.myNewObject.newItem", "2.2")]
         [TestCase("$.myInteger", "$.myNewObject.newItem", "20")]
@@ -146,6 +147,19 @@ namespace JLio.UnitTests.CommandsTests
             Assert.IsTrue(JToken.DeepEquals(result.Data,
                 JToken.Parse(
                     "{\"myData\":[{\"new\":[{\"old\":3}]},{\"new\":[{\"old\":4}]},{\"new\":[{\"old\":5}]}]}")));
+        }
+
+        [Test]
+        public void CanCopyMovePropertiesInAnArrayCaseSensitive()
+        {
+            var startObject =
+                "{\"myData\":[{\"demo\":[{\"old\":3}]},{\"demo\":[{\"old\":4}]},{\"demo\":[{\"old\":5}]}]}";
+            var result =
+                new Move("$.myData[*].demo", "$.myData[*].Demo").Execute(
+                    JToken.Parse(startObject), executeOptions);
+            Assert.IsTrue(JToken.DeepEquals(result.Data,
+                JToken.Parse(
+                    "{\"myData\":[{\"Demo\":[{\"old\":3}]},{\"Demo\":[{\"old\":4}]},{\"Demo\":[{\"old\":5}]}]}")));
         }
 
         [Test]
