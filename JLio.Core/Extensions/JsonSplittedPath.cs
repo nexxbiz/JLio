@@ -73,7 +73,7 @@ namespace JLio.Core.Extensions
             while (result < Elements.Count && result < secondPath.Elements.Count)
             {
                 if (string.Compare(Elements[result].PathElementFullText,
-                    secondPath.Elements[result].PathElementFullText, StringComparison.InvariantCultureIgnoreCase) != 0)
+                    secondPath.Elements[result].PathElementFullText, StringComparison.InvariantCulture) != 0)
                     return result;
 
                 result++;
