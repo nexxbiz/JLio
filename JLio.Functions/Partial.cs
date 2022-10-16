@@ -65,7 +65,7 @@ namespace JLio.Functions
         {
             var sourcePaths = currentToken.GetAllElements().Select(i => i.Path).ToList();
             var selectionPaths = new List<JToken>();
-            values.ForEach(v => selectionPaths.AddRange(v.GetAllElements()));
+            values.Where(v  => !JToken.DeepEquals(v, JValue.CreateNull())).ToList().ForEach(v => selectionPaths.AddRange(v.GetAllElements()));
             selectionPaths.Select(s => s.Path).ToList().ForEach(p =>
             {
                 RemoveSelectionItems(p, sourcePaths);

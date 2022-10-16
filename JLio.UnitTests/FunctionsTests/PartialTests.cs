@@ -105,6 +105,18 @@ namespace JLio.UnitTests.FunctionsTests
             Assert.IsTrue(executeContext.Logger.LogEntries.Any(i => i.Level == LogLevel.Error));
         }
 
+        [TestCase("=partial(@.z, @.c.d, @.c.z)", "{\"result\":{\"a\":1,\"b\":[1,2,3],\"c\":{\"d\":5,\"e\":[4,5,6]}}}",
+       "{\"c\":{\"d\":5}}")]
+        public void CanHandleNonExisitedPaths(string function, string data, string expectedResult)
+        {
+            var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"set\"}}]";
+            var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeContext);
+
+            Assert.IsTrue(result.Success);
+            Assert.IsTrue(executeContext.Logger.LogEntries.TrueForAll(i => i.Level != LogLevel.Error));
+            Assert.IsTrue(JToken.DeepEquals(JToken.Parse(expectedResult), result.Data.SelectToken("$.result")));
+        }
+
         [Test]
         public void CanBeUsedInFluentApi()
         {
