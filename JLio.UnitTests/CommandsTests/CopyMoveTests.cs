@@ -123,17 +123,27 @@ namespace JLio.UnitTests.CommandsTests
             Assert.IsTrue(from == to || data.SelectToken(from) == null);
         }
 
-        [Test]
-        public void CanCopyMovePropertiesInAnLayeredArray()
+        [TestCase("{\"myData\":[{\"demo\":[{\"demo2\":3}]},{\"demo\":[{\"demo2\":4}]},{\"demo\":[{\"demo2\":5}]}]}",
+                  "$.myData[*].demo[*].demo2",
+                  "$.myData[*].demo[*].new",
+                  "{\"myData\":[{\"demo\":[{\"new\":3}]},{\"demo\":[{\"new\":4}]},{\"demo\":[{\"new\":5}]}]}")]
+        [TestCase("{\"myData\":[{\"demo\":[{\"demo2\":{\"oldProperty\":1}}]},{\"demo\":[{\"demo2\":{\"oldProperty\":2}}]},{\"demo\":[{\"demo2\":{\"oldProperty\":3}}]}]}",
+                  "$.myData[*].demo[*].demo2.oldProperty",
+                  "$.myData[*].demo[*].new",
+                  "{\"myData\":[{\"demo\":[{\"demo2\":{},\"new\":1}]},{\"demo\":[{\"demo2\":{},\"new\":2}]},{\"demo\":[{\"demo2\":{},\"new\":3}]}]}")]
+        [TestCase("{\"myData\":[{\"demo\":[{\"demo2\":{\"oldProperty\":1},\"newProperty\":[{}]}]},{\"demo\":[{\"demo2\":{\"oldProperty\":2},\"newProperty\":[{}]}]},{\"demo\":[{\"demo2\":{\"oldProperty\":3},\"newProperty\":[{}]}]}]}",
+                  "$.myData[*].demo[*].demo2.oldProperty",
+                  "$.myData[*].demo[*].newProperty[*].test",
+                  "{\"myData\":[{\"demo\":[{\"demo2\":{},\"newProperty\":[{\"test\":1}]}]},{\"demo\":[{\"demo2\":{},\"newProperty\":[{\"test\":2}]}]},{\"demo\":[{\"demo2\":{},\"newProperty\":[{\"test\":3}]}]}]}")]
+        public void CanCopyMovePropertiesInAnLayeredArray(string startobject, string moveFrom, string moveTo, string expectedValue)
         {
-            var startObject =
-                "{\"myData\":[{\"demo\":[{\"demo2\":3}]},{\"demo\":[{\"demo2\":4}]},{\"demo\":[{\"demo2\":5}]}]}";
+            var startObject = startobject;
             var result =
-                new Move("$.myData[*].demo[*].demo2", "$.myData[*].demo[*].new").Execute(
+                new Move(moveFrom,moveTo).Execute(
                     JToken.Parse(startObject), executeOptions);
             Assert.IsTrue(JToken.DeepEquals(result.Data,
                 JToken.Parse(
-                    "{\"myData\":[{\"demo\":[{\"new\":3}]},{\"demo\":[{\"new\":4}]},{\"demo\":[{\"new\":5}]}]}")));
+                    expectedValue)));
         }
 
         [Test]
