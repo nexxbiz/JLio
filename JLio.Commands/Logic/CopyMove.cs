@@ -51,7 +51,7 @@ namespace JLio.Commands.Logic
             var toPath = JsonPathMethods.SplitPath(ToPath);
             if (!fromPath.HasArrayIndication || !toPath.HasArrayIndication) return -1;
             var index = fromPath.GetSameElementsIndex(toPath);
-            if (!HasArrayNotationAfterIndex(fromPath, index) /*&& !HasArrayNotationAfterIndex(toPath, index)*/)
+            if (!HasArrayNotationAfterIndex(fromPath, index))
                 return index;
 
             return -1;
