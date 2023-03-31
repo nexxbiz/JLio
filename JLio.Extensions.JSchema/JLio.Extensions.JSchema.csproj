@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
-        <Copyright>Copyright © 2021</Copyright>
+        <Copyright>Copyright © 2023</Copyright>
         <PackageProjectUrl>https://jlio.online/</PackageProjectUrl>
         <Description>Extension for JLio for JSchema support. Utilities: filter by schema</Description>
     </PropertyGroup>

@@ -3,6 +3,7 @@ using JLio.Client;
 using JLio.Commands.Builders;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
+using JLio.Extensions.JSchema;
 using JLio.Functions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -18,7 +19,8 @@ namespace JLio.UnitTests.FunctionsTests
         [SetUp]
         public void Setup()
         {
-            parseOptions = ParseOptions.CreateDefault();
+            parseOptions = ParseOptions.CreateDefault()
+                .RegisterFunction<FilterBySchema>();
             executeContext = ExecutionContext.CreateDefault();
         }
 

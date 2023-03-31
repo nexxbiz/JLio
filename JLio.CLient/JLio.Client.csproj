@@ -5,7 +5,7 @@
     <Authors>JLio Transformers</Authors>
     <Company>JLio</Company>
     <Description>JLio (jay-lio) is a structured language definition for transforming JSON objects using a transformation script with a JSON notation. This library will provide the logic to parse a JSON script into an executable transformer.</Description>
-    <Copyright>Copyright © 2021</Copyright>
+    <Copyright>Copyright © 2023</Copyright>
     <PackageProjectUrl>https://jlio.online/</PackageProjectUrl>
   </PropertyGroup>
 
