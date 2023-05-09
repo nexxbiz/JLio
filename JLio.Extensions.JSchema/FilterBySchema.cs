@@ -49,8 +49,11 @@ namespace JLio.Extensions.JSchema
 
             foreach (var pathToRemove in GetPathsToRemove(inputObjectPaths, pathsInSchema))
             {
-                var token = currentObject.SelectToken(pathToRemove);
-                if (token != null) RemoveItems(currentObject, pathToRemove, context);
+                var tokens = currentObject.SelectTokens(pathToRemove);
+                if (tokens?.Any() == true) 
+                {
+                    RemoveItems(currentObject, pathToRemove, context);
+                }
             }
 
             return new JLioFunctionResult(true, currentObject);
