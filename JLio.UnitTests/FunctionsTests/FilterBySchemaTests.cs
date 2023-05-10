@@ -88,5 +88,41 @@ namespace JLio.UnitTests.FunctionsTests
 
             Assert.IsTrue(executeContext.Logger.LogEntries.Any(i => i.Level == LogLevel.Error));
         }
+        
+        [Test]
+        public void CanFilterPropertiesOfArrayItems()
+        {
+            // Arrange
+            var filterBySchemaScript = "[{\"path\":\"$.result\",\"value\":\"=filterBySchema($.schema)\",\"command\":\"set\"}]";
+            var input = "{\"result\":{\"policies\":[{\"country\":\"0\",\"sequenceNumber\":1,\"distributionType\":\"LKA\",\"statusType\":\"1\",\"TimeStamp\":\"1899-12-31\",\"processingCode\":\"4\",\"partyRef\":[\"1882937\",\"9928353\"]},{\"country\":\"0\",\"sequenceNumber\":1,\"distributionType\":\"ASD*\",\"statusType\":\"1\",\"TimeStamp\":\"1899-12-31\",\"processingCode\":\"4\",\"partyRef\":[\"1882937\",\"9928353\"]}]},\"schema\":{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"policies\":{\"type\":\"array\",\"items\":{\"properties\":{\"sequenceNumber\":{\"type\":\"integer\"},\"processingCode\":{\"type\":\"string\"},\"partyRef\":{\"type\":\"array\",\"items\":{\"format\":\"\",\"type\":\"string\"}}},\"type\":\"object\"}}}}}";
+            var parsedScript = JLioConvert.Parse(filterBySchemaScript, parseOptions);
+            var inputObject = JToken.Parse(input);
+
+            // Act
+            var result = parsedScript.Execute(inputObject);
+
+            // Assert
+            Assert.That(result.Success, Is.True);
+
+            var policies = result.Data["result"]!["policies"]!.Select(x => (JObject)x);
+            foreach (var policy in policies)
+            {
+                Assert.That(policy, Is.Not.Null);
+
+                // Assert number of keys
+                Assert.That(policy.Count, Is.EqualTo(3));
+
+                // Assert keys
+                Assert.That(policy.ContainsKey("sequenceNumber"), Is.True);
+                Assert.That(policy["sequenceNumber"], Is.Not.Null);
+
+                Assert.That(policy.ContainsKey("processingCode"), Is.True);
+                Assert.That(policy["processingCode"], Is.Not.Null);
+
+                Assert.That(policy.ContainsKey("partyRef"), Is.True);
+                Assert.That(policy["partyRef"], Is.Not.Null);
+                Assert.That(policy["partyRef"].Count(), Is.GreaterThan(1));
+            }
+        }
     }
 }
