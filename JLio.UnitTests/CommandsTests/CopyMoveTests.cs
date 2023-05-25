@@ -146,6 +146,23 @@ namespace JLio.UnitTests.CommandsTests
                     expectedValue)));
         }
 
+        [TestCase(
+           "{\"firstArray\":[{\"target\":[],\"secondArray\":[{\"id\":\"item1\",\"sub\":{\"name\":\"item 1\"}},{\"id\":\"item2\",\"sub\":{\"name\":\"item 2\"}}]},{\"target\":[],\"secondArray\":[{\"id\":\"item3\",\"sub\":{\"name\":\"item 3\"}},{\"id\":\"item4\",\"sub\":{\"name\":\"item 4\"}}]}]}",
+           "$.firstArray[*].secondArray[*].sub",
+           "$.firstArray[*].target",
+           "{\"firstArray\":[{\"target\":[{\"name\":\"item 1\"},{\"name\":\"item 2\"}],\"secondArray\":[{\"id\":\"item1\",\"sub\":{\"name\":\"item 1\"}},{\"id\":\"item2\",\"sub\":{\"name\":\"item 2\"}}]},{\"target\":[{\"name\":\"item 3\"},{\"name\":\"item 4\"}],\"secondArray\":[{\"id\":\"item3\",\"sub\":{\"name\":\"item 3\"}},{\"id\":\"item4\",\"sub\":{\"name\":\"item 4\"}}]}]}"
+           )]
+        public void CanCopyPropertiesInAnLayeredArray(string startobject, string copyFrom, string copyTo, string expectedValue)
+        {
+            var startObject = startobject;
+            var result =
+                new Copy(copyFrom, copyTo).Execute(
+                    JToken.Parse(startObject), executeOptions);
+            Assert.IsTrue(JToken.DeepEquals(result.Data,
+                JToken.Parse(
+                    expectedValue)));
+        }
+
         [Test]
         public void CanCopyMovePropertiesInAnArray()
         {
