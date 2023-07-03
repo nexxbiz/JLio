@@ -28,7 +28,7 @@ namespace JLio.UnitTests.CommandsTests
         [TestCase("$.myArray", "newData")]
         [TestCase("$.myNull", "newData")]
         [TestCase("$..myArray", "newData")]
-        [TestCase("$.myString", "")]
+        [TestCase("$.myString", "newData")]
         public void CanSetValues(string path, string value)
         {
             var valueToSet = new FunctionSupportedValue(new FixedValue(new JValue(value)));
