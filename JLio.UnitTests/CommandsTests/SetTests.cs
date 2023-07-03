@@ -28,6 +28,7 @@ namespace JLio.UnitTests.CommandsTests
         [TestCase("$.myArray", "newData")]
         [TestCase("$.myNull", "newData")]
         [TestCase("$..myArray", "newData")]
+        [TestCase("$.myString", "newData")]
         public void CanSetValues(string path, string value)
         {
             var valueToSet = new FunctionSupportedValue(new FixedValue(new JValue(value)));
@@ -41,6 +42,7 @@ namespace JLio.UnitTests.CommandsTests
         [TestCase("$.myArray", "newData")]
         [TestCase("$..myObject", "newData")]
         [TestCase("$..myArray", "newData")]
+        [TestCase("$.myString", "newData")]
         public void CanSetCorrectValues(string path, string value)
         {
             var valueToSet = new FunctionSupportedValue(new FixedValue(new JValue(value)));
@@ -51,6 +53,23 @@ namespace JLio.UnitTests.CommandsTests
             Assert.IsTrue(data.SelectTokens(path).All(i => i.Type != JTokenType.Null));
             Assert.IsTrue(data.SelectTokens(path).Any());
             Assert.IsTrue(data.SelectTokens(path).All(t => t.Value<string>() == "newData"));
+        }
+
+        [TestCase("$.myObject", "")]
+        [TestCase("$.myArray", "")]
+        [TestCase("$..myObject", "")]
+        [TestCase("$..myArray", "")]
+        [TestCase("$.myString", "")]
+        public void CanSetCorrectValuesEmptyString(string path, string value)
+        {
+            var valueToSet = new FunctionSupportedValue(new FixedValue(new JValue(value)));
+            var result = new Set(path, valueToSet).Execute(data, executeOptions);
+
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.Success);
+            Assert.IsTrue(data.SelectTokens(path).All(i => i.Type != JTokenType.Null));
+            Assert.IsTrue(data.SelectTokens(path).Any());
+            Assert.IsTrue(data.SelectTokens(path).All(t => t.Value<string>() == ""));
         }
 
         [TestCase("", "newData", "Path property for set command is missing")]
