@@ -3,13 +3,20 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32126.317
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TLio", "TLio\TLio.csproj", "{531C0E28-05BA-46E8-9C5A-8D784ED17DA4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TLio", "TLio\src\TLio\TLio.csproj", "{531C0E28-05BA-46E8-9C5A-8D784ED17DA4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TLio.App", "TLio.App\TLio.App.csproj", "{C2FF8459-572C-4687-96D7-C35F0724BA68}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TLio.App", "TLio\src\TLio.App\TLio.App.csproj", "{C2FF8459-572C-4687-96D7-C35F0724BA68}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TLio.Tests", "TLio.Tests\TLio.Tests.csproj", "{70C1282F-B607-4F11-8149-9662D012EEB5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TLio.Tests", "TLio\src\TLio.Tests\TLio.Tests.csproj", "{70C1282F-B607-4F11-8149-9662D012EEB5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TLio.Implementations.Newtonsoft", "Tlio.Implementations.Newtonsoft\TLio.Implementations.Newtonsoft.csproj", "{3C060A48-92C4-417A-9D11-5069FC1BEB75}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TLio.Implementations.Newtonsoft", "TLio\src\Tlio.Implementations.Newtonsoft\TLio.Implementations.Newtonsoft.csproj", "{3C060A48-92C4-417A-9D11-5069FC1BEB75}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TLio.Implementations.SystemTextJson", "TLio\src\Tlio.Implementations.SystemTextJson\TLio.Implementations.SystemTextJson.csproj", "{0660BE45-BB32-4342-8641-8C6B25608191}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F5745FB8-5F54-4491-9D17-9B3FCC88A864}"
+	ProjectSection(SolutionItems) = preProject
+		Implementations-details.md = Implementations-details.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +40,10 @@ Global
 		{3C060A48-92C4-417A-9D11-5069FC1BEB75}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C060A48-92C4-417A-9D11-5069FC1BEB75}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3C060A48-92C4-417A-9D11-5069FC1BEB75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0660BE45-BB32-4342-8641-8C6B25608191}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0660BE45-BB32-4342-8641-8C6B25608191}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0660BE45-BB32-4342-8641-8C6B25608191}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0660BE45-BB32-4342-8641-8C6B25608191}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
