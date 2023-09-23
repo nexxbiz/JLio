@@ -10,23 +10,26 @@ namespace TLio.Tests.Commands.SystemTextJson
 {
     internal class AddTests
     {
-        private CommandExecutionContext<JsonElement> commandExecutionContext;
+        private CommandExecutionContext<JsonNode> commandExecutionContext;
 
         [SetUp]
         public void Setup()
         {
-            commandExecutionContext = new CommandExecutionContext<JsonElement>(
+            string jsonString = @"{ ""demo"": {} }";
+            JsonNode node = JsonNode.Parse(jsonString);
+
+            commandExecutionContext = new CommandExecutionContext<JsonNode>(
                new SystemTextJsonExecutionContext(),
-               new JsonElement()
+               node
                ); 
         }
 
         [Test]
         public async Task AddPropertyToObjectUsingSystemTextJson()
         {
-            var command = new Add("$.demo", JsonValue.Create(5));
+            var command = new Add("$.demo.newItem", JsonValue.Create(5));
 
-            command.ExecuteAsync(commandExecutionContext);
+            var result =  command.ExecuteAsync(commandExecutionContext);
             
         }
     }
