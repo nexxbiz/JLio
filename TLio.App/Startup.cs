@@ -4,7 +4,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Tlio.Implementations.Newtonsoft.Mutator;
 using TLio.Extensions;
+using TLio.Implementations.Newtonsoft.DataFetcher;
+using TLio.Options;
+using TLio.Services.DataFetcher;
+using TLio.Services.Mutator;
 
 namespace TLio.App
 {
@@ -22,6 +27,12 @@ namespace TLio.App
         {
             services.AddControllers();
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "TLio.App", Version = "v1"}); });
+
+
+            services
+                .AddDataFetcher<NewtonsoftDataFetcher>("NewtonsoftEcosystem")
+                    .AddMutator<NewtonsoftMutator>("NewtonsoftEcosystem")
+                    ;
 
             services
                 .AddLio();

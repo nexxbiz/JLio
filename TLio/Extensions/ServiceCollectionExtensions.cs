@@ -30,8 +30,8 @@ namespace TLio.Extensions
                     .AddSingleton<IMutatorRegistry, MutatorRegistry>()
                 
                     //Add default data fetcher and mutator
-                    .AddDataFetcher<DefaultFetcher>(ScriptOptions.DefaultFetcherName)
-                    .AddMutator<DefaultMutator>(ScriptOptions.DefaultFetcherName)
+                    .AddDataFetcher<DefaultFetcher>(ScriptOptions.DataEcosystemName)
+                    .AddMutator<DefaultMutator>(ScriptOptions.DataEcosystemName)
                 ;
         }
 

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
@@ -9,6 +9,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Tlio.Implementations.Newtonsoft\TLio.Implementations.Newtonsoft.csproj" />
       <ProjectReference Include="..\TLio\TLio.csproj" />
     </ItemGroup>
 

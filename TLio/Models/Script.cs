@@ -7,8 +7,7 @@ namespace TLio.Models
         public ScriptMetadata ScriptMetadata { get; set; } =new ScriptMetadata();
         public CommandsList Commands { get; set; } = new CommandsList();
 
-        public string MutatorName { get; set; } = ScriptOptions.DefaultMutatorName;
-        public string FetcherName { get; set; } = ScriptOptions.DefaultFetcherName;
+        public string DataEcosystemName { get; set; } = ScriptOptions.DataEcosystemName;
         public bool StopOnError { get; set; }
     }
 }

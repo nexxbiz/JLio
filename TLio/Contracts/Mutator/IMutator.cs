@@ -5,7 +5,7 @@ namespace TLio.Contracts.Mutator
 {
     public interface IMutator
     {
-        void AddValueToObject(FetchedItem item, IValue value);
-        void AddValueToArray(FetchedItem item, IValue value);
+        void AddValueToObject(FetchedItem item, object value, string propertyName);
+        void AddValueToArray(FetchedItem item, object value, string? propertyName = default);
     }
 }

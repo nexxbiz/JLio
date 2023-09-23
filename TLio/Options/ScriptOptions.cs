@@ -2,8 +2,7 @@ namespace TLio.Options
 {
     public class ScriptOptions
     {
-        public static string DefaultFetcherName = "Default";
-        public static string DefaultMutatorName = "Default";
+        public static string DataEcosystemName = "Default";
 
         public ScriptOptions()
         {

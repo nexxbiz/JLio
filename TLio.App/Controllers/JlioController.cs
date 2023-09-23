@@ -27,17 +27,18 @@ namespace TLio.App.Controllers
         {
             var result = await scriptRunner.RunAsync(new Script
             {
+                DataEcosystemName = "NewtonsoftEcosystem",
                 //removed items here , because they were default so minimaze the exposure of them. You still can set them if you want to
                 Commands = new CommandsList()
                 {
-                    new Add("$", new LiteralValue(""))
+                    new Add("$.otherProperty", "sdsds")
                 }
             }, new Dictionary<string, object>()  //i would like to have a own type defintion of this like InputObjects
             {
                 ["myFirstInput"] = 10
             }, CancellationToken.None);
 
-            return Ok();
+            return Ok(result.Output);
         }
     }
 }

@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using TLio.Contracts.Mutator;
 using TLio.Implementations;
 using TLio.Services.DataFetcher;
@@ -6,18 +7,14 @@ namespace TLio.Services.Mutator
 {
     public class DefaultMutator : IMutator
     {
-        public void AddValueToObject(FetchedItem targetItem, IValue value)
+        public void AddValueToArray(FetchedItem item, object value, string? propertyName = null)
         {
-            if(targetItem.ItemType != TargetTypes.Object)
-            {
-
-            }
-           
+            throw new NotImplementedException();
         }
 
-        public void AddValueToArray(FetchedItem item, IValue value)
+        public void AddValueToObject(FetchedItem item, object value, string propertyName)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }

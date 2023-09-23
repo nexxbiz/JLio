@@ -14,8 +14,8 @@ namespace TLio.Contexts
         {
             this.serviceProvider = serviceProvider;
             Script = script;
-            DataFetcher = GetDataFetcher() ?? throw new Exception($"Could not find fetcher with name {Script.FetcherName}" );
-            Mutator = GetMutator() ?? throw new Exception($"Could not find mutator with name {Script.MutatorName}" );
+            DataFetcher = GetDataFetcher() ?? throw new Exception($"Could not find fetcher with name {Script.DataEcosystemName}" );
+            Mutator = GetMutator() ?? throw new Exception($"Could not find mutator with name {Script.DataEcosystemName}" );
             Input = DataFetcher.GetExecutionInput(input);
             Output = Input;
         }
@@ -33,6 +33,7 @@ namespace TLio.Contexts
         public IDataFetcher DataFetcher { get; }
         
         public IMutator Mutator { get; }
+
         
         public void UpdateOutput(object? value)
         {
@@ -49,13 +50,13 @@ namespace TLio.Contexts
         private IDataFetcher GetDataFetcher()
         {
             var registry = serviceProvider.GetRequiredService<IDataFetcherRegistry>();
-            return registry.GetFetcher(Script.FetcherName);
+            return registry.GetFetcher(Script.DataEcosystemName);
         }
         
         private IMutator GetMutator()
         {
             var registry = serviceProvider.GetRequiredService<IMutatorRegistry>();
-            return registry.GetMutator(Script.MutatorName);
+            return registry.GetMutator(Script.DataEcosystemName);
         }
     }
 }
