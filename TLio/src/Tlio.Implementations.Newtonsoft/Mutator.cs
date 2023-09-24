@@ -1,26 +1,26 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿
+using System.Text.Json.Nodes;
 using TLio.Contracts.Mutator;
 using TLio.Services.DataFetcher;
 
-namespace TLio.Implementations.Newtonsoft
+namespace TLio.Implementations.SystemTextJson
 {
-    public class Mutator : IMutator
+    public class Mutator : IMutator<JsonNode>
     {
-        public void AddValueToArray(FetchedItem item, object value, string? propertyName = "")
+        public void AddValueToArray(FetchedItem<JsonNode> item, object value, string? propertyName = "")
         {
             throw new NotImplementedException();
         }
 
-        public void AddValueToObject(FetchedItem item, object value, string propertyName)
+        public void AddValueToObject(FetchedItem<JsonNode> item, object value, string propertyName)
         {
-            var parsedValue = JToken.Parse(JsonConvert.SerializeObject(value));
+            //var parsedValue = JToken.Parse(JsonConvert.SerializeObject(value));
 
-            var obj = item.Item as JObject;
-            if (obj != null)
-            {
-                obj.Add(propertyName, parsedValue);
-            }
+            //var obj = item.Item as JObject;
+            //if (obj != null)
+            //{
+            //    obj.Add(propertyName, parsedValue);
+            //}
         }
     }
 }

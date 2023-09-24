@@ -2,7 +2,7 @@
 
 namespace TLio.Models
 {
-    public class CommandsList : List<ICommand>
+    public class CommandsList<T> : List<ICommand<T>>
     {
     }
 }

@@ -3,9 +3,9 @@ using TLio.Models;
 
 namespace TLio.Notifications.Implementations
 {
-    public class ScriptNotificator : INotificationHandler<ScriptExecuting>
+    public class ScriptNotificator<T> : INotificationHandler<ScriptExecuting<T>>
     {
-        public Task Handle(ScriptExecuting notification, CancellationToken cancellationToken)
+        public Task Handle(ScriptExecuting<T> notification, CancellationToken cancellationToken)
         {
             var scriptContext = notification.ScriptExecutionContext;
             

@@ -1,9 +1,9 @@
 namespace TLio.Services.DataFetcher
 {
-    public class FetchedItem
+    public class FetchedItem<T>
     {
-        public object Item { get; set; }
+        public T? Item { get; set; }
         public TargetTypes ItemType { get; set; }
-        public string Path { get; set; }
+        public string Path { get; set; } = string.Empty;
     }
 }

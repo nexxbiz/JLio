@@ -4,13 +4,13 @@ using TLio.Contracts;
 
 namespace TLio.Notifications
 {
-    public class ScriptExecuted : INotification
+    public class ScriptExecuted<T> : INotification
     {
-        public ScriptExecuted(ILibraryExecutionContext scriptExecutionContext)
+        public ScriptExecuted(ILibraryExecutionContext<T> scriptExecutionContext)
         {
             ScriptExecutionContext = scriptExecutionContext;
         }
 
-        public ILibraryExecutionContext ScriptExecutionContext { get; }
+        public ILibraryExecutionContext<T> ScriptExecutionContext { get; }
     }
 }

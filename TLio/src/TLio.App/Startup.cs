@@ -28,13 +28,13 @@ namespace TLio.App
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "TLio.App", Version = "v1"}); });
 
 
-            services
-                .AddDataFetcher<DataFetcher>("NewtonsoftEcosystem")
-                    .AddMutator<Mutator>("NewtonsoftEcosystem")
-                    ;
+            //services
+            //    .AddDataFetcher<DataFetcher>("NewtonsoftEcosystem")
+            //        .AddMutator<Mutator>("NewtonsoftEcosystem")
+            //        ;
 
-            services
-                .AddLio();
+            //services
+            //    .AddLio();
 
         }
 

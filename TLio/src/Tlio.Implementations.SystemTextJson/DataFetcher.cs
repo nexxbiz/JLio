@@ -5,20 +5,20 @@ using TLio.Services.DataFetcher;
 
 namespace TLio.Implementations.SystemTextJson
 {
-    public class DataFetcher : IDataFetcher
+    public class DataFetcher : IDataFetcher<JsonNode>
     {
-        public object? GetExecutionInput(IReadOnlyDictionary<string, object> input)
+        public JsonNode? GetExecutionInput(IReadOnlyDictionary<string, JsonNode> input)
         {
                return JsonNode.Parse(System.Text.Json.JsonSerializer.Serialize(input));
         }
 
-        public FetchedItems GetItemsForParentPath(string path, object? input)
+        public FetchedItems<JsonNode> GetItemsForParentPath(string path, JsonNode? input)
         {
             if (IsRootPath(path))
             {
-                return new FetchedItems()
+                return new FetchedItems<JsonNode>()
                 {
-                    new FetchedItem
+                    new FetchedItem<JsonNode>
                     {
                         ItemType = TargetTypes.Object,
                         Path = path,
@@ -38,25 +38,25 @@ namespace TLio.Implementations.SystemTextJson
             return path == "$";
         }
 
-        public FetchedItems GetItemsForPath(string path, object? contextInput)
+        public FetchedItems<JsonNode> GetItemsForPath(string path, JsonNode? contextInput)
         {
-            var result = new FetchedItems();
-            var items = contextInput as JsonNode;
+            var result = new FetchedItems<JsonNode>();
+           
             var jsonPath = JsonPath.Parse(path);
 
            
-            foreach (var item in jsonPath.Evaluate(items).Matches)
+            foreach (var item in jsonPath.Evaluate(contextInput).Matches)
             {
-                result.Add(new FetchedItem { Item = item, Path = item.Location.ToString(), ItemType = ConversionHelper.GetTargetType(item) });
+                result.Add(new FetchedItem<JsonNode> { Item = item?.Value, Path = item?.Location?.ToString()??string.Empty, ItemType = ConversionHelper.GetTargetType(item) });
             }
 
 
             return result;
         }
 
-        public Dictionary<string, object> GetExecutionResult(object? result)
+        public Dictionary<string, JsonNode> GetExecutionResult(JsonNode? result)
         {
-            var executionResult = new Dictionary<string, object>();
+            var executionResult = new Dictionary<string, JsonNode>();
             var data = result as JsonNode;
 
             //foreach (var property in data?.Properties())

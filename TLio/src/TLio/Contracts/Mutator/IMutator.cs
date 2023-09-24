@@ -1,11 +1,10 @@
-using TLio.Implementations;
 using TLio.Services.DataFetcher;
 
 namespace TLio.Contracts.Mutator
 {
-    public interface IMutator
+    public interface IMutator<T>
     {
-        void AddValueToObject(FetchedItem item, object value, string propertyName);
-        void AddValueToArray(FetchedItem item, object value, string? propertyName = default);
+        void AddValueToObject(FetchedItem<T> item, T value, string propertyName);
+        void AddValueToArray(FetchedItem<T> item, T value, string? propertyName = default);
     }
 }

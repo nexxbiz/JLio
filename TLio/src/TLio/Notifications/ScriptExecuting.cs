@@ -1,15 +1,15 @@
 using MediatR;
-using TLio.Contexts;
+using TLio.Contracts;
 
 namespace TLio.Notifications
 {
-    public class ScriptExecuting  : INotification
+    public class ScriptExecuting<T>  : INotification
     {
-        public ScriptExecuting(LibraryExecutionContext scriptExecutionContext)
+        public ScriptExecuting(ILibraryExecutionContext<T> scriptExecutionContext)
         {
             ScriptExecutionContext = scriptExecutionContext;
         }
 
-        public LibraryExecutionContext ScriptExecutionContext { get; }
+        public ILibraryExecutionContext<T> ScriptExecutionContext { get; }
     }
 }

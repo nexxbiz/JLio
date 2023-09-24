@@ -5,7 +5,7 @@ using TLio.Options;
 
 namespace TLio.Services.Mutator
 {
-    public class MutatorRegistry : IMutatorRegistry
+    public class MutatorRegistry<T> : IMutatorRegistry<T>
     {
         private readonly IServiceProvider serviceProvider;
         private IDictionary<string, Type> mutators { get; }
@@ -18,14 +18,14 @@ namespace TLio.Services.Mutator
 
         public void Register(Type mutator, string name) => mutators.Add(name, mutator);
 
-        public IMutator GetMutator(string type)
+        public IMutator<T> GetMutator(string type)
         {
             if (!mutators.ContainsKey(type))
             {
                 return null;
             }
 
-            return (IMutator)ActivatorUtilities.GetServiceOrCreateInstance(serviceProvider, mutators[type]);
+            return (IMutator<T>)ActivatorUtilities.GetServiceOrCreateInstance(serviceProvider, mutators[type]);
         }
     }
 }

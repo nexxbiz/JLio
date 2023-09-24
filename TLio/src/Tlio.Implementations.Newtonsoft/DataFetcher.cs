@@ -1,28 +1,29 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Json.Path;
+using System.Text.Json.Nodes;
 using TLio.Contracts.DataFetcher;
+using TLio.Implementations.Newtonsoft;
 using TLio.Services.DataFetcher;
 
-namespace TLio.Implementations.Newtonsoft
+namespace TLio.Implementations.SystemTextJson
 {
-    public class DataFetcher : IDataFetcher
+    public class DataFetcher : IDataFetcher<JsonNode>
     {
-        public object? GetExecutionInput(IReadOnlyDictionary<string, object> input)
+        public JsonNode? GetExecutionInput(IReadOnlyDictionary<string, JsonNode> input)
         {
-            return JToken.Parse(JsonConvert.SerializeObject(input));
+               return JsonNode.Parse(System.Text.Json.JsonSerializer.Serialize(input));
         }
 
-        public FetchedItems GetItemsForParentPath(string path, object? input)
+        public FetchedItems<JsonNode> GetItemsForParentPath(string path, JsonNode? input)
         {
             if (IsRootPath(path))
             {
-                return new FetchedItems()
+                return new FetchedItems<JsonNode>()
                 {
-                    new FetchedItem
+                    new FetchedItem<JsonNode>
                     {
                         ItemType = TargetTypes.Object,
                         Path = path,
-                        Item = JToken.Parse("{}")
+                        Item = JsonNode.Parse("{}")
                     }
                 };
             }
@@ -33,37 +34,36 @@ namespace TLio.Implementations.Newtonsoft
             }
         }
 
-        public FetchedItems GetItemsForPath(string path, object? contextInput)
+        private bool IsRootPath(string path)
         {
-            var result = new FetchedItems();
-            var items = contextInput as JToken;
+            return path == "$";
+        }
 
-            var matchedItems = items.SelectTokens(path);
+        public FetchedItems<JsonNode> GetItemsForPath(string path, JsonNode? contextInput)
+        {
+            var result = new FetchedItems<JsonNode>();
+           
+            var jsonPath = JsonPath.Parse(path);
 
-            foreach (var item in matchedItems)
+           
+            foreach (var item in jsonPath.Evaluate(contextInput).Matches)
             {
-                result.Add(new FetchedItem { Item = item, Path = item.Path, ItemType = ConversionHelper.GetTargetType(item) });
+                result.Add(new FetchedItem<JsonNode> { Item = item?.Value, Path = item?.Location?.ToString()??string.Empty, ItemType = ConversionHelper.GetTargetType(item) });
             }
 
 
             return result;
         }
 
-        //TODO: Move to commons so it can be reused
-        private static bool IsRootPath(string jsonPath)
+        public Dictionary<string, JsonNode> GetExecutionResult(JsonNode? result)
         {
-            return jsonPath == "$";
-        }
+            var executionResult = new Dictionary<string, JsonNode>();
+            var data = result as JsonNode;
 
-        public Dictionary<string, object> GetExecutionResult(object? result)
-        {
-            var executionResult = new Dictionary<string, object>();
-            var data = result as JObject;
-
-            foreach (var property in data?.Properties())
-            {
-                executionResult.Add(property.Name, property.Value);
-            }
+            //foreach (var property in data?.Properties())
+            //{
+            //    executionResult.Add(property.Name, property.Value);
+            //}
 
             return executionResult;
         }

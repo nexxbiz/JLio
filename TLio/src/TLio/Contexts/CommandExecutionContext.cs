@@ -4,11 +4,11 @@ namespace TLio.Contexts
 {
     public class CommandExecutionContext<T>
     {
-        public ILibraryExecutionContext ExecutionContext { get; }
+        public ILibraryExecutionContext<T> ExecutionContext { get; }
         
         public T? Input { get; }
 
-        public CommandExecutionContext(ILibraryExecutionContext scriptExecutionContext, T? input)
+        public CommandExecutionContext(ILibraryExecutionContext<T> scriptExecutionContext, T? input)
         {
             Input = input;
             ExecutionContext = scriptExecutionContext;

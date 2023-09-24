@@ -1,9 +1,9 @@
 namespace TLio.Contracts.Mutator
 {
-    public interface IMutatorRegistry
+    public interface IMutatorRegistry<T>
     {
         void Register(Type mutator, string name);
 
-        public IMutator GetMutator(string type);
+        public IMutator<T> GetMutator(string type);
     }
 }

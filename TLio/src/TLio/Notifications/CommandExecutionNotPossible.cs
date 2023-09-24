@@ -5,7 +5,7 @@ namespace TLio.Notifications;
 
 public class CommandExecutionNotPossible<T> : INotification
 {
-    public CommandExecutionNotPossible(ICommand command, string executionStatusMessage)
+    public CommandExecutionNotPossible(ICommand<T> command, string executionStatusMessage)
     {
         throw new NotImplementedException();
     }

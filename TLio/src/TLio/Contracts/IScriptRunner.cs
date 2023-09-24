@@ -2,8 +2,8 @@ using TLio.Models;
 
 namespace TLio.Contracts
 {
-    public interface IScriptRunner
+    public interface IScriptRunner<T>
     {
-        Task<ScriptExecutionResult> RunAsync(Script script, IReadOnlyDictionary<string, object> input, CancellationToken cancellationToken);
+        Task<ScriptExecutionResult> RunAsync(Script<T> script, IReadOnlyDictionary<string, object> input, CancellationToken cancellationToken);
     }
 }

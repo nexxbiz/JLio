@@ -1,6 +1,6 @@
 namespace TLio.Services.DataFetcher
 {
-    public class FetchedItems : List<FetchedItem>
+    public class FetchedItems<T> : List<FetchedItem<T>>
     {
         
     }

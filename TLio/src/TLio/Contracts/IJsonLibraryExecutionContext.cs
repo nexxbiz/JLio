@@ -4,10 +4,11 @@ using TLio.Models;
 
 namespace TLio.Contracts
 {
-    public interface ILibraryExecutionContext
+    public interface ILibraryExecutionContext<T>
     {
-        IDataFetcher DataFetcher { get; }
-        IMutator Mutator { get; }
-        ICollection<ScriptExecutionLog> ExecutionLog { get; } 
+        IDataFetcher<T> DataFetcher { get; }
+        IMutator<T> Mutator { get; }
+        ICollection<ScriptExecutionLog> ExecutionLog { get; }
+        void WriteLog(ScriptExecutionLog scriptExecutionLog);
     }
 }

@@ -1,17 +1,17 @@
 using MediatR;
-using TLio.Contexts;
+using TLio.Contracts;
 
 namespace TLio.Notifications
 {
-    public class ScriptExecutionFailed : INotification
+    public class ScriptExecutionFailed<T> : INotification
     {
-        public ScriptExecutionFailed(Exception exception, LibraryExecutionContext scriptExecutionContext)
+        public ScriptExecutionFailed(Exception exception, ILibraryExecutionContext<T> scriptExecutionContext)
         {
             ScriptExecutionContext = scriptExecutionContext;
             Exception = exception;
         }
 
-        public LibraryExecutionContext ScriptExecutionContext { get; }
+        public ILibraryExecutionContext<T> ScriptExecutionContext { get; }
         public Exception Exception { get; }
     }
 }

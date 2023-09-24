@@ -5,7 +5,7 @@ using TLio.Options;
 
 namespace TLio.Services.DataFetcher
 {
-    public class DataFetcherRegistry : IDataFetcherRegistry
+    public class DataFetcherRegistry<T> : IDataFetcherRegistry<T>
     {
         private readonly IServiceProvider serviceProvider;
         
@@ -19,14 +19,14 @@ namespace TLio.Services.DataFetcher
 
         public void Register(Type fetcher, string name) => fetchers.Add(name, fetcher);
 
-        public IDataFetcher GetFetcher(string type)
+        public IDataFetcher<T> GetFetcher(string type)
         {
             if (!fetchers.ContainsKey(type))
             {
                 return null;
             }
 
-            return (IDataFetcher)ActivatorUtilities.GetServiceOrCreateInstance(serviceProvider, fetchers[type]);
+            return (IDataFetcher<T>)ActivatorUtilities.GetServiceOrCreateInstance(serviceProvider, fetchers[type]);
         }
     }
 }

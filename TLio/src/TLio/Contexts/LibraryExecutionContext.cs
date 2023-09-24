@@ -5,21 +5,26 @@ using TLio.Models;
 
 namespace TLio.Contexts
 {
-    public class LibraryExecutionContext : ILibraryExecutionContext
+    public class LibraryExecutionContext<T> : ILibraryExecutionContext<T>
     {
 
-        public LibraryExecutionContext(IDataFetcher dataFetcher, IMutator mutator)
+        public LibraryExecutionContext(IDataFetcher<T> dataFetcher, IMutator<T> mutator)
         {
             DataFetcher = dataFetcher;
             Mutator = mutator;
         }
-        public IDataFetcher DataFetcher { get; }
+        public IDataFetcher<T> DataFetcher { get; }
 
-        public IMutator Mutator { get; }
+        public IMutator<T> Mutator { get; }
 
         public ICollection<ScriptExecutionLog> ExecutionLog => new List<ScriptExecutionLog>();
 
         internal void WriteLog(ScriptExecutionLog scriptExecutionLog)
+        {
+            throw new NotImplementedException();
+        }
+
+        void ILibraryExecutionContext<T>.WriteLog(ScriptExecutionLog scriptExecutionLog)
         {
             throw new NotImplementedException();
         }

@@ -1,9 +1,9 @@
 namespace TLio.Contracts.DataFetcher
 {
-    public interface IDataFetcherRegistry
+    public interface IDataFetcherRegistry<T>
     {
         void Register(Type fetcher, string name);
 
-        public IDataFetcher GetFetcher(string fetcher);
+        public IDataFetcher<T> GetFetcher(string fetcher);
     }
 }

@@ -2,13 +2,11 @@ using TLio.Services.DataFetcher;
 
 namespace TLio.Contracts.DataFetcher
 {
-    public interface IDataFetcher
+    public interface IDataFetcher<T>
     {
-        FetchedItems GetItemsForPath(string path, object? contextInput);
-        object? GetExecutionInput(IReadOnlyDictionary<string, object> input);
-        FetchedItems GetItemsForParentPath(string path, object? input);
-
-        Dictionary<string, object?> GetExecutionResult(object? result);
+        FetchedItems<T> GetItemsForPath(string path, T? contextInput);
+        T? GetExecutionInput(IReadOnlyDictionary<string, T> input);
+        FetchedItems<T> GetItemsForParentPath(string path, T? input);
+        Dictionary<string, T?> GetExecutionResult(T? result);
     }
-
 }

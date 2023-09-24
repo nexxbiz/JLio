@@ -1,23 +1,35 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System.Text.Json.Nodes;
 using TLio.Services.DataFetcher;
 
 namespace TLio.Implementations.Newtonsoft
 {
+
     internal static class ConversionHelper
     {
-        internal static TargetTypes GetTargetType(JToken? token)
+        public static TargetTypes GetTargetType(Json.Path.Node? node)
         {
-            //TODO: Add all conversions
-            switch (token.Type)
+            if (node == null)
+                return TargetTypes.Undefined;
+
+            if (node.Value is JsonObject)
+                return TargetTypes.Object;
+
+            if (node.Value is JsonArray)
+                return TargetTypes.Array;
+
+            if (node.Value is JsonValue value)
             {
-                case JTokenType.Object:
-                    return TargetTypes.Object;
-                case JTokenType.Boolean:
-                    return TargetTypes.Boolean;
-                case JTokenType.String:
-                    return TargetTypes.String;
-                default: return TargetTypes.Undefined;
+                //if (value..IsBoolean)
+                //    return TargetTypes.Boolean;
+
+                //if (value.IsString)
+                //    return TargetTypes.String;
+
+                //if (value.IsNumber)
+                //    return TargetTypes.Number;
             }
+
+            return TargetTypes.Undefined;
         }
     }
 }
