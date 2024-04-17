@@ -22,6 +22,8 @@ namespace JLio.UnitTests.FunctionsTests
             executeContext = ExecutionContext.CreateDefault();
         }
 
+        [TestCase("=partial(@.a)", "{\"result\":{\"a\":{\"b\":1},\"b\":1}}",
+            "{\"a\":{\"b\":1}}")]
         [TestCase("=partial(@.a, @.c.d)", "{\"result\":{\"a\":1,\"b\":[1,2,3],\"c\":{\"d\":5,\"e\":[4,5,6]}}}",
             "{\"a\":1,\"c\":{\"d\":5}}")]
         [TestCase("=partial(@.a, @.c.d)", "{\"result\":{\"a\":[1,2],\"b\":[1,2,3],\"c\":{\"d\":[4,5],\"e\":[4,5,6]}}}",

@@ -80,7 +80,7 @@ namespace JLio.Functions
         private List<string> RemoveLeadingPath(List<string> sourcePaths, string path, IExecutionContext context)
         {
             var prefixPath = $"{context.ItemsFetcher.RootPathIndicator}{context.ItemsFetcher.PathDelimiter}";
-            return sourcePaths.Select(i => $"{prefixPath}{i.Substring(path.Length)}").ToList();
+            return sourcePaths.Select(i => $"{prefixPath}{i.Substring(path.Length+1)}").ToList();
         }
 
         private static List<string> OptimizeRemovePaths(List<string> sourcePaths)
