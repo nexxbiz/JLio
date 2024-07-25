@@ -23,6 +23,8 @@ namespace JLio.UnitTests.FunctionsTests
 
         [TestCase("=format($.source,'dd-MM-yyyy')", "{\"source\" : \"2022-01-10T21:15:15.113Z\"}",
             "\"10-01-2022\"")]
+        [TestCase("=format($.source,'dd-MM-yyyy')", "{\"source\" : \"11/29/2023 1:54:49 PM\"}",
+            "\"29-11-2023\"")]
         public void ScriptTestWithPath(string function, string data, string expectedResult)
         {
             var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"add\"}}]";
