@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using JLio.Core;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
@@ -41,7 +42,15 @@ namespace JLio.Functions
 
         private static JLioFunctionResult DoFormat(string formatString, JToken value)
         {
-            if (value.Type == JTokenType.Date)
+            if (value.Type == JTokenType.String)
+            {
+                DateTime datetimeValue; 
+                if(DateTime.TryParse(value.Value<String>().ToString(), CultureInfo.InvariantCulture, DateTimeStyles.None, out datetimeValue)){
+                    return JLioFunctionResult.SuccessFul(new JValue(datetimeValue.ToString(formatString)));
+                }
+                return JLioFunctionResult.SuccessFul(value);
+            }
+            else if (value.Type == JTokenType.Date)
             {
                 var datetimeValue = value.Value<DateTime>();
                 return JLioFunctionResult.SuccessFul(new JValue(datetimeValue.ToString(formatString)));
