@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
-        <Copyright>Copyright © 2023</Copyright>
+        <TargetFramework>net8.0</TargetFramework>
+        <Copyright>Copyright © 2025</Copyright>
         <PackageProjectUrl>https://jlio.online/</PackageProjectUrl>
         <Description>Extension for JLio for JSchema support. Utilities: filter by schema</Description>
     </PropertyGroup>

@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Description>The core of the Jlio implementation facilitates the execution of commands and functions and allows the set of commands and functions to be extendable.</Description>
-    <Copyright>Copyright © 2023</Copyright>
+    <Copyright>Copyright © 2025</Copyright>
     <PackageProjectUrl>https://jlio.online/</PackageProjectUrl>
   </PropertyGroup>
 
