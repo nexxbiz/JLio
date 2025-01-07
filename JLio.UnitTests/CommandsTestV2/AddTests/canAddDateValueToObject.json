@@ -1,0 +1,15 @@
+{
+  "Name": "canAddDateValueToObject",
+  "Data": {
+    "myObject": {}
+  },
+  "Path": "$.myObject.newDate",
+  "Value": "2023-01-01T00:00:00Z",
+  "ExpectedSuccess": true,
+  "Description": "This test case validates that a date value can be added to an object.",
+  "ExpectedData": {
+    "myObject": {
+      "newDate": "2023-01-01T00:00:00Z"
+    }
+  }
+}

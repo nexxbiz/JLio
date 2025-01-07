@@ -1,0 +1,19 @@
+{
+  "Name": "canAddNestedObject",
+  "Data": {
+    "myObject": {}
+  },
+  "Path": "$.myObject.newNestedObject",
+  "Value": {
+    "nestedKey": "nestedValue"
+  },
+  "ExpectedSuccess": true,
+  "Description": "This test case validates that a nested object can be added to an existing object.",
+  "ExpectedData": {
+    "myObject": {
+      "newNestedObject": {
+        "nestedKey": "nestedValue"
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "Name": "canAddValueToNonExistingArray",
+  "Data": {
+    "myObject": {}
+  },
+  "Path": "$.myObject.newArray",
+  "Value": [
+    1
+  ],
+  "ExpectedSuccess": true,
+  "Description": "This test case validates that a new array can be added to an object.",
+  "ExpectedData": {
+    "myObject": {
+      "newArray": [
+        1
+      ]
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "Name": "canAddObjectValueOnNewproperty",
+  "Data": {
+    "myObject": {
+      "myBoolean": true,
+      "myNull": null
+    }
+  },
+  "Path": "$.myObject.newProperty",
+  "Value": {
+    "demo": 3
+  },
+  "ExpectedSuccess": true,
+  "Description": "This test case validates that a object value ({'demo': 3}) can be added at the target location '$.myObject.newProperty' in the data structure. Expected success: True.",
+  "ExpectedData": {
+    "myObject": {
+      "newProperty": {
+        "demo": 3
+      },
+      "myBoolean": true,
+      "myNull": null
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "Name": "canAddValueUsingComplexPath",
+  "Data": {
+    "myObject": {
+      "myArray": []
+    }
+  },
+  "Path": "$.myObject.myArray",
+  "Value": "complexData",
+  "ExpectedSuccess": true,
+  "Description": "This test case validates adding a value using a complex path targeting an array index.",
+  "ExpectedData": {
+    "myObject": {
+      "myArray": [
+        "complexData"
+      ]
+    }
+  }
+}

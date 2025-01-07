@@ -1,0 +1,19 @@
+{
+  "Name": "canAddValueWithRecursivePath",
+  "Data": {
+    "myObject": {
+      "nestedObject": {}
+    }
+  },
+  "Path": "$..nestedObject.newItem",
+  "Value": "recursiveData",
+  "ExpectedSuccess": true,
+  "Description": "This test case validates adding a value using a recursive path.",
+  "ExpectedData": {
+    "myObject": {
+      "nestedObject": {
+        "newItem": "recursiveData"
+      }
+    }
+  }
+}

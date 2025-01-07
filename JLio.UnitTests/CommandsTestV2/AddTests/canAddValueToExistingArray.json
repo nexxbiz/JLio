@@ -1,0 +1,17 @@
+{
+  "Name": "canAddValueToExistingArray",
+  "Data": {
+    "myObject": {
+      "myArray": [ 1, 2, 3 ]
+    }
+  },
+  "Path": "$.myObject.myArray",
+  "Value": 4,
+  "ExpectedSuccess": true,
+  "Description": "This test case validates that a value (4) can be added to the end of an existing array at the target location '$.myObject.myArray[-1]'. Expected success: True.",
+  "ExpectedData": {
+    "myObject": {
+      "myArray": [ 1, 2, 3, 4 ]
+    }
+  }
+}

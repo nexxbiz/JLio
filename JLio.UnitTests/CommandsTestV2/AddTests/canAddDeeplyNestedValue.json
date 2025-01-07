@@ -1,0 +1,23 @@
+{
+  "Name": "canAddDeeplyNestedValue",
+  "Data": {
+    "level1": {
+      "level2": {
+        "level3": {}
+      }
+    }
+  },
+  "Path": "$.level1.level2.level3.newKey",
+  "Value": "deepValue",
+  "ExpectedSuccess": true,
+  "Description": "This test case validates adding a deeply nested value.",
+  "ExpectedData": {
+    "level1": {
+      "level2": {
+        "level3": {
+          "newKey": "deepValue"
+        }
+      }
+    }
+  }
+}

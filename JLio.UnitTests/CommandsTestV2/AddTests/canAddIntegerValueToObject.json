@@ -1,0 +1,15 @@
+{
+  "Name": "canAddIntegerValueToObject",
+  "Data": {
+    "myObject": {}
+  },
+  "Path": "$.myObject.newInteger",
+  "Value": 42,
+  "ExpectedSuccess": true,
+  "Description": "This test case validates that an integer value can be added to an object.",
+  "ExpectedData": {
+    "myObject": {
+      "newInteger": 42
+    }
+  }
+}

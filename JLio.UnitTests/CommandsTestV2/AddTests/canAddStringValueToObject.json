@@ -1,0 +1,15 @@
+{
+  "Name": "canAddStringValueToObject",
+  "Data": {
+    "myObject": {}
+  },
+  "Path": "$.myObject.newString",
+  "Value": "Hello, World!",
+  "ExpectedSuccess": true,
+  "Description": "This test case validates that a string value can be added as a new property in an object.",
+  "ExpectedData": {
+    "myObject": {
+      "newString": "Hello, World!"
+    }
+  }
+}

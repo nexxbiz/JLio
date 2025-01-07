@@ -22,6 +22,11 @@
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
     </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="CommandsTestV2\AddTests\canAddObjectValueOnNewproperty.json" />
+      <None Remove="commandstestv2\addtests\canAddValueToExistingArray.json" />
+    </ItemGroup>
     
 
 </Project>

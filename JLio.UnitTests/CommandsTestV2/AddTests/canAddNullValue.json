@@ -1,0 +1,15 @@
+{
+  "Name": "canAddNullValue",
+  "Data": {
+    "myObject": {}
+  },
+  "Path": "$.myObject.nullValue",
+  "Value": null,
+  "ExpectedSuccess": true,
+  "Description": "This test case validates that a null value can be added to an object.",
+  "ExpectedData": {
+    "myObject": {
+      "nullValue": null
+    }
+  }
+}
