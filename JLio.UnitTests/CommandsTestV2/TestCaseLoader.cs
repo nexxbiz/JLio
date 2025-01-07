@@ -7,12 +7,12 @@ namespace JLio.UnitTests.CommandsTestV2
 {
     public static partial class TestCaseLoader
     {
-        public static TestCase LoadTestCase(string filePath)
+        public static T LoadTestCase<T>(string filePath) where T : TestCase
         {
             try
             {
                 var testCaseJson = File.ReadAllText(filePath);
-                var testCase = JsonConvert.DeserializeObject<TestCase>(testCaseJson, new JsonSerializerSettings
+                var testCase = JsonConvert.DeserializeObject<T>(testCaseJson, new JsonSerializerSettings
                 {
                     Converters = { new JTokenConverter() }
                 });
@@ -22,8 +22,8 @@ namespace JLio.UnitTests.CommandsTestV2
             catch (Exception ex)
             {
                 Assert.Fail($"Failed to load or deserialize test case from file: {filePath}\n{ex.Message}");
-                return null; // This line is unreachable due to Assert.Fail.
             }
+            return null;
         }
     }
 }
