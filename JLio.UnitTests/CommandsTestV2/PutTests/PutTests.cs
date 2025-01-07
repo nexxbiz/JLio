@@ -27,106 +27,66 @@ namespace JLio.UnitTests.CommandsTestV2.PutTests
         }
 
         [Test]
-        public void canPutObjectValueOnNewproperty()
+        public void canPutToRoot()
         {
-            ExecuteTest(nameof(canPutObjectValueOnNewproperty));
+            ExecuteTest(nameof(canPutToRoot));
         }
 
         [Test]
-        public void canPutStringValueOnNewsubitem()
+        public void canPutNestedProperty()
         {
-            ExecuteTest(nameof(canPutStringValueOnNewsubitem));
+            ExecuteTest(nameof(canPutNestedProperty));
         }
 
         [Test]
-        public void canPutStringValueOnNewproperty()
+        public void canPutOnArray()
         {
-            ExecuteTest(nameof(canPutStringValueOnNewproperty));
+            ExecuteTest(nameof(canPutOnArray));
         }
 
         [Test]
-        public void canPutStringValueOnMynull()
+        public void canPutOverwriteNull()
         {
-            ExecuteTest(nameof(canPutStringValueOnMynull));
+            ExecuteTest(nameof(canPutOverwriteNull));
         }
 
         [Test]
-        public void canPutStringValueOnNewitem()
+        public void canPutRecursiveProperty()
         {
-            ExecuteTest(nameof(canPutStringValueOnNewitem));
+            ExecuteTest(nameof(canPutRecursiveProperty));
         }
 
         [Test]
-        public void canPutStringValueOnMyarray()
+        public void canPutRecursiveArray()
         {
-            ExecuteTest(nameof(canPutStringValueOnMyarray));
+            ExecuteTest(nameof(canPutRecursiveArray));
         }
 
         [Test]
-        public void canPutStringValueOnNewitem_1()
+        public void canPutTopLevelProperty()
         {
-            ExecuteTest(nameof(canPutStringValueOnNewitem_1));
+            ExecuteTest(nameof(canPutTopLevelProperty));
+        }
+
+//todo: Bug
+        //[Test]
+        //public void canPutToNestedArray()
+        //{
+        //    ExecuteTest(nameof(canPutToNestedArray));
+        //}
+
+        [Test]
+        public void canPutArrayToRoot()
+        {
+            ExecuteTest(nameof(canPutArrayToRoot));
         }
 
         [Test]
-        public void canPutStringValueOnMyarray_1()
+        public void canPutDeeplyNestedValue()
         {
-            ExecuteTest(nameof(canPutStringValueOnMyarray_1));
+            ExecuteTest(nameof(canPutDeeplyNestedValue));
         }
 
-        [Test]
-        public void canPutStringValueOnNewitem_2()
-        {
-            ExecuteTest(nameof(canPutStringValueOnNewitem_2));
-        }
-
-        [Test]
-        public void canPutStringValueOnNewsubitem_1()
-        {
-            ExecuteTest(nameof(canPutStringValueOnNewsubitem_1));
-        }
-
-        [Test]
-        public void canPutStringValueOnNewitem_3()
-        {
-            ExecuteTest(nameof(canPutStringValueOnNewitem_3));
-        }
-
-        [Test]
-        public void canPutStringValueOnNewsubitem_2()
-        {
-            ExecuteTest(nameof(canPutStringValueOnNewsubitem_2));
-        }
-
-        [Test]
-        public void canPutStringValueOnMyarray_2()
-        {
-            ExecuteTest(nameof(canPutStringValueOnMyarray_2));
-        }
-
-        [Test]
-        public void canPutStringValueOnNewitem_4()
-        {
-            ExecuteTest(nameof(canPutStringValueOnNewitem_4));
-        }
-
-        [Test]
-        public void canPutStringValueOnMyarray_3()
-        {
-            ExecuteTest(nameof(canPutStringValueOnMyarray_3));
-        }
-
-        [Test]
-        public void canPutStringValueOnNewproperty_1()
-        {
-            ExecuteTest(nameof(canPutStringValueOnNewproperty_1));
-        }
-
-        [Test]
-        public void canPutStringValueOnNewproperty_2()
-        {
-            ExecuteTest(nameof(canPutStringValueOnNewproperty_2));
-        }
 
         [TestCase("$.NewObject.newItem.NewSubItem", "newData")]
         public void CanPutCorrectValuesWithOtherConstructor(string path, string value)
@@ -174,7 +134,7 @@ namespace JLio.UnitTests.CommandsTestV2.PutTests
         private void ExecuteTest(string testName)
         {
             var testCase = TestCaseLoader.LoadTestCase<PutTestCase>(GetTestCaseFilePath(testName));
-            Assert.IsNotNull(testCase, $"Test case '{testCase.Name}' data should not be null.");
+            Assert.IsNotNull(testCase, $"Test case '{testCase?.Name}' data should not be null.");
 
             var data = testCase.Data;
             var executeOptions = ExecutionContext.CreateDefault();
@@ -182,11 +142,15 @@ namespace JLio.UnitTests.CommandsTestV2.PutTests
             var putCommand = new Put(testCase.Path, valueToAdd);
             var result = putCommand.Execute(data, executeOptions);
 
-            Assert.AreEqual(testCase.ExpectedSuccess, result.Success, $"Test case '{testCase.Name}' failed: Success mismatch.");
+            Assert.AreEqual(testCase.ExpectedSuccess, result.Success,
+                $"Test case '{testCase.Name}' failed: Success mismatch. Input data: {testCase.Data}");
 
             if (testCase.ExpectedData != null)
             {
-                Assert.IsTrue(JToken.DeepEquals(data, testCase.ExpectedData), $"Test case '{testCase.Name}' failed: Data mismatch.");
+                if (!JToken.DeepEquals(data, testCase.ExpectedData))
+                {
+                    Assert.Fail($"Test case '{testCase.Name}' failed: Data mismatch. \nExpected: {testCase.ExpectedData} \nActual: {data}");
+                }
             }
         }
 

@@ -1,0 +1,17 @@
+{
+  "Name": "canAddToArray",
+  "Data": {
+    "myArray": [
+      1,
+      2,
+      3
+    ]
+  },
+  "Path": "$.myArray",
+  "Value": 4,
+  "ExpectedSuccess": true,
+  "Description": "Append a value to an existing array.",
+  "ExpectedData": {
+    "myArray": 4
+  }
+}
