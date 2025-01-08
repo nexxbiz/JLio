@@ -1,0 +1,13 @@
+{
+  "Name": "SetAddNestedProperty",
+  "Data": {
+    "NewObject": {}
+  },
+  "Path": "$.NewObject.newItem.NewSubItem",
+  "Value": "nestedValue",
+  "ExpectedSuccess": true,
+  "Description": "set a nested property within an existing object. will not change anything",
+  "ExpectedData": {
+    "NewObject": {}
+  }
+}

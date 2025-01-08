@@ -1,0 +1,24 @@
+{
+  "Name": "canAddRecursiveArray",
+  "Data": {
+    "myObject": {
+      "myArray": [
+        1,
+        2
+      ]
+    }
+  },
+  "Path": "$..myArray",
+  "Value": [
+    3
+  ],
+  "ExpectedSuccess": true,
+  "Description": "Append an array using a recursive path.",
+  "ExpectedData": {
+    "myObject": {
+      "myArray": [
+          3
+      ]
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "Name": "canAddTopLevelProperty",
+  "Data": {},
+  "Path": "$.newProperty",
+  "Value": "topLevelValue",
+  "ExpectedSuccess": true,
+  "Description": "Add a new property at the top level of the object.",
+  "ExpectedData": {
+    "newProperty": "topLevelValue"
+  }
+}

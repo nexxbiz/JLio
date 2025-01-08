@@ -1,0 +1,32 @@
+{
+  "Name": "canAddToNestedArray",
+  "Data": {
+    "myObject": {
+      "nestedArray": [
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          4
+        ]
+      ]
+    }
+  },
+  "Path": "$.myObject.nestedArray[1].",
+  "Value": 5,
+  "ExpectedSuccess": true,
+  "Description": "This test case validates adding a value to an inner array in a nested array.",
+  "ExpectedData": {
+    "myObject": {
+      "nestedArray": [
+        5,
+        [
+          3,
+          4
+        ]
+      ]
+    }
+  }
+}

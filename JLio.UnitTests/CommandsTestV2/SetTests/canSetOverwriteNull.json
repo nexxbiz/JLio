@@ -1,0 +1,13 @@
+{
+  "Name": "canOverwriteNull",
+  "Data": {
+    "myNull": null
+  },
+  "Path": "$.myNull",
+  "Value": "newValue",
+  "ExpectedSuccess": true,
+  "Description": "Overwrite a null property with a new value.",
+  "ExpectedData": {
+    "myNull": "newValue"
+  }
+}

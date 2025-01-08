@@ -1,0 +1,19 @@
+{
+  "Name": "canSetArrayToRoot",
+  "Data": { "myArray": [] },
+  "Path": "$.myArray",
+  "Value": [
+    1,
+    2,
+    3
+  ],
+  "ExpectedSuccess": true,
+  "Description": "This test case validates adding an array to the root level.",
+  "ExpectedData": {
+    "myArray": [
+      1,
+      2,
+      3
+    ]
+  }
+}
