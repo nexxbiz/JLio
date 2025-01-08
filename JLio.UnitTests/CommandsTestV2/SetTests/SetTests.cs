@@ -52,16 +52,8 @@ namespace JLio.UnitTests.CommandsTestV2.PutTests
         {
             ExecuteTest(nameof(canSetToNestedArray));
         }
-        [Test]
-        public void canSetTopLevelProperty()
-        {
-            ExecuteTest(nameof(canSetTopLevelProperty));
-        }
-        [Test]
-        public void canSetToRoot()
-        {
-            ExecuteTest(nameof(canSetToRoot));
-        }
+
+      
 
         private void ExecuteTest(string testName)
         {

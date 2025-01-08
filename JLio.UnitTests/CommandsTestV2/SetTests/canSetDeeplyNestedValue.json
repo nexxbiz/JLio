@@ -1,5 +1,5 @@
 {
-  "Name": "canAddDeeplyNestedValue",
+  "Name": "canSetDeeplyNestedValue",
   "Data": {
     "level1": {
       "level2": {

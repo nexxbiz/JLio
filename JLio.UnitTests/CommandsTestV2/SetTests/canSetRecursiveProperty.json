@@ -1,18 +1,17 @@
 {
-  "Name": "canAddRecursiveProperty",
+  "Name": "canSetRecursiveProperty",
   "Data": {
     "myObject": {
       "existingProperty": "value"
     }
   },
-  "Path": "$..myObject.newItem",
+  "Path": "$..myObject.existingProperty",
   "Value": "recursiveValue",
   "ExpectedSuccess": true,
   "Description": "Add a property using a recursive path.",
   "ExpectedData": {
     "myObject": {
-      "existingProperty": "value",
-      "newItem": "recursiveValue"
+      "existingProperty": "recursiveValue"
     }
   }
 }
