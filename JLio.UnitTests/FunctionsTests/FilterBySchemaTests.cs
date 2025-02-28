@@ -88,7 +88,23 @@ namespace JLio.UnitTests.FunctionsTests
 
             Assert.IsTrue(executeContext.Logger.LogEntries.Any(i => i.Level == LogLevel.Error));
         }
-        
+
+        [Test]
+        [TestCase(
+            "{\r\n    \"$schema\": \"http://json-schema.org/draft-07/schema#\",\r\n    \"type\": \"object\",\r\n    \"properties\": {\r\n        \"transactionInfo\": {\r\n            \"type\": \"object\",\r\n            \"properties\": {\r\n                \"policy\": {\r\n                    \"type\": \"array\",\r\n                    \"items\": {\r\n                        \"type\": \"object\",\r\n                        \"properties\": {\r\n                            \"exceptionHandlingInfo\": {\r\n                                \"type\": [\r\n                                    \"object\",\r\n                                    \"null\"\r\n                                ],\r\n                                \"properties\": {\r\n                                    \"exceptionTicketUniqueIdentifier\": {\r\n                                        \"type\": \"string\"\r\n                                    },\r\n                                    \"alterationAllowed\": {\r\n                                        \"type\": \"boolean\"\r\n                                    },\r\n                                    \"bypassAllowed\": {\r\n                                        \"type\": \"boolean\"\r\n                                    },\r\n                                    \"exceptionHandlingAllowed\": {\r\n                                        \"type\": \"boolean\"\r\n                                    }\r\n                                },\r\n                                \"required\": [\r\n                                    \"alterationAllowed\",\r\n                                    \"bypassAllowed\",\r\n                                    \"exceptionHandlingAllowed\"\r\n                                ]\r\n                            }\r\n                        },\r\n                        \"required\": [\r\n                            \"exceptionHandlingInfo\"\r\n                        ]\r\n                    }\r\n                }\r\n            }\r\n        }\r\n    }\r\n}",
+            "{\"result\" :  {\"transactionInfo\":{\"policy\":[{\"processingCode\":\"0\",\"refKey\":\"0001_Policy\",\"contractNumber\":\"\",\"exceptionHandlingInfo\":{\"exceptionTicketUniqueIdentifier\":\"45cca6d6b120490284d995b5b0e2a291\",\"exceptionHandlingAllowed\":true,\"bypassAllowed\":true,\"alterationAllowed\":false},\"productProcessingInfo\":null,\"contractProcessingInfo\":null,\"processLockInfo\":{\"enabled\":false}}]}}   }")]
+        public void WillBeUntoutched(string function, string data)
+        {
+            var endResult = data;
+            var functionValue =
+                JsonConvert.SerializeObject($"=filterBySchema({function})");
+            var script = $"[{{\"path\":\"$.result[*]\",\"value\":{functionValue},\"command\":\"set\"}}]";
+            var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeContext);
+            Assert.IsTrue(JToken.DeepEquals(JToken.Parse(endResult).SelectToken("$.result"), result.Data.SelectToken("$.result")));
+            Assert.IsFalse(executeContext.Logger.LogEntries.Any(i => i.Level == LogLevel.Error));
+        }
+
+
         [Test]
         public void CanFilterPropertiesOfArrayItems()
         {
