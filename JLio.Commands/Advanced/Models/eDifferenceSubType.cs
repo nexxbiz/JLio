@@ -1,12 +1,11 @@
-﻿namespace JLio.Commands.Advanced.Models
+﻿namespace JLio.Commands.Advanced.Models;
+
+public enum eDifferenceSubType
 {
-    public enum eDifferenceSubType
-    {
-        NotSet,
-        LessThan,
-        GreaterThan,
-        Equals,
-        NotEquals,
-        IndexDifference
-    }
+    NotSet,
+    LessThan,
+    GreaterThan,
+    Equals,
+    NotEquals,
+    IndexDifference
 }

@@ -2,18 +2,17 @@
 using System.Linq;
 using JLio.Core.Models.Path;
 
-namespace JLio.Core.Extensions
-{
-    public static class PathExtensions
-    {
-        public static string ToPathString(this IEnumerable<PathElement> source)
-        {
-            return source.ToList().ToPathString();
-        }
+namespace JLio.Core.Extensions;
 
-        public static string ToPathString(this List<PathElement> source)
-        {
-            return string.Join(".", source.Select(i => i.PathElementFullText)).TrimEnd('.');
-        }
+public static class PathExtensions
+{
+    public static string ToPathString(this IEnumerable<PathElement> source)
+    {
+        return source.ToList().ToPathString();
+    }
+
+    public static string ToPathString(this List<PathElement> source)
+    {
+        return string.Join(".", source.Select(i => i.PathElementFullText)).TrimEnd('.');
     }
 }

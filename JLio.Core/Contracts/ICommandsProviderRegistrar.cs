@@ -1,7 +1,6 @@
-﻿namespace JLio.Core.Contracts
+﻿namespace JLio.Core.Contracts;
+
+public interface ICommandsProviderRegistrar
 {
-    public interface ICommandsProviderRegistrar
-    {
-        ICommandsProviderRegistrar Register<T>() where T : ICommand;
-    }
+    ICommandsProviderRegistrar Register<T>() where T : ICommand;
 }

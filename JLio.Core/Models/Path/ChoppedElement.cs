@@ -1,12 +1,11 @@
-﻿namespace JLio.Core.Models.Path
-{
-    public class ChoppedElement
-    {
-        public ChoppedElement(string text)
-        {
-            Text = text.Trim(' ');
-        }
+﻿namespace JLio.Core.Models.Path;
 
-        public string Text { get; }
+public class ChoppedElement
+{
+    public ChoppedElement(string text)
+    {
+        Text = text.Trim(' ');
     }
+
+    public string Text { get; }
 }

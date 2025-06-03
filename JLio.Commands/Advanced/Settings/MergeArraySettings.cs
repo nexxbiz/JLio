@@ -1,17 +1,16 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace JLio.Commands.Advanced.Settings
+namespace JLio.Commands.Advanced.Settings;
+
+public class MergeArraySettings
 {
-    public class MergeArraySettings
-    {
-        [JsonProperty("arrayPath")]
-        public string ArrayPath { get; set; } = string.Empty;
+    [JsonProperty("arrayPath")]
+    public string ArrayPath { get; set; } = string.Empty;
 
-        [JsonProperty("keyPaths")]
-        public List<string> KeyPaths { get; set; } = new List<string>();
+    [JsonProperty("keyPaths")]
+    public List<string> KeyPaths { get; set; } = new List<string>();
 
-        [JsonProperty("uniqueItemsWithoutKeys")]
-        public bool UniqueItemsWithoutKeys { get; set; }
-    }
+    [JsonProperty("uniqueItemsWithoutKeys")]
+    public bool UniqueItemsWithoutKeys { get; set; }
 }
