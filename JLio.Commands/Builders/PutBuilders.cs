@@ -3,55 +3,54 @@ using JLio.Core.Contracts;
 using JLio.Core.Models;
 using Newtonsoft.Json.Linq;
 
-namespace JLio.Commands.Builders
+namespace JLio.Commands.Builders;
+
+public static class PutBuilders
 {
-    public static class PutBuilders
+    public static JLioScript OnPath(this PutValueContainer source, string path)
     {
-        public static JLioScript OnPath(this PutValueContainer source, string path)
+        source.Script.AddLine(new Put(path, new FunctionSupportedValue(new FixedValue(source.Value))));
+        return source.Script;
+    }
+
+    public static JLioScript OnPath(this PutValueAsFunctionContainer source, string path)
+    {
+        source.Script.AddLine(new Put(path, new FunctionSupportedValue(source.Function)));
+        return source.Script;
+    }
+
+    public static PutValueContainer Put(this JLioScript source, JToken value)
+    {
+        return new PutValueContainer(source, value);
+    }
+
+    public static PutValueAsFunctionContainer Put(this JLioScript source, IFunction function)
+    {
+        return new PutValueAsFunctionContainer(source, function);
+    }
+
+    public class PutValueContainer
+    {
+        public PutValueContainer(JLioScript source, JToken value)
         {
-            source.Script.AddLine(new Put(path, new FunctionSupportedValue(new FixedValue(source.Value))));
-            return source.Script;
+            Script = source;
+            Value = value;
         }
 
-        public static JLioScript OnPath(this PutValueAsFunctionContainer source, string path)
+        internal JLioScript Script { get; }
+        internal JToken Value { get; }
+    }
+
+    public class PutValueAsFunctionContainer
+    {
+        public PutValueAsFunctionContainer(JLioScript source, IFunction function)
         {
-            source.Script.AddLine(new Put(path, new FunctionSupportedValue(source.Function)));
-            return source.Script;
+            Script = source;
+            Function = function;
         }
 
-        public static PutValueContainer Put(this JLioScript source, JToken value)
-        {
-            return new PutValueContainer(source, value);
-        }
+        internal IFunction Function { get; }
 
-        public static PutValueAsFunctionContainer Put(this JLioScript source, IFunction function)
-        {
-            return new PutValueAsFunctionContainer(source, function);
-        }
-
-        public class PutValueContainer
-        {
-            public PutValueContainer(JLioScript source, JToken value)
-            {
-                Script = source;
-                Value = value;
-            }
-
-            internal JLioScript Script { get; }
-            internal JToken Value { get; }
-        }
-
-        public class PutValueAsFunctionContainer
-        {
-            public PutValueAsFunctionContainer(JLioScript source, IFunction function)
-            {
-                Script = source;
-                Function = function;
-            }
-
-            internal IFunction Function { get; }
-
-            internal JLioScript Script { get; }
-        }
+        internal JLioScript Script { get; }
     }
 }

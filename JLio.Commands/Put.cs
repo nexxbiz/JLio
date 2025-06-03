@@ -5,42 +5,41 @@ using JLio.Core.Extensions;
 using JLio.Core.Models;
 using Newtonsoft.Json.Linq;
 
-namespace JLio.Commands
+namespace JLio.Commands;
+
+public class Put : PropertyChangeCommand
 {
-    public class Put : PropertyChangeCommand
+    public Put()
     {
-        public Put()
-        {
-        }
+    }
 
-        public Put(string path, JToken value)
-        {
-            Path = path;
-            Value = new FunctionSupportedValue(new FixedValue(value));
-        }
+    public Put(string path, JToken value)
+    {
+        Path = path;
+        Value = new FunctionSupportedValue(new FixedValue(value));
+    }
 
-        public Put(string path, IFunctionSupportedValue value)
-        {
-            Path = path;
-            Value = value;
-        }
+    public Put(string path, IFunctionSupportedValue value)
+    {
+        Path = path;
+        Value = value;
+    }
 
-        internal override void ApplyValueToTarget(string propertyName, JToken jToken, JToken dataContext)
+    internal override void ApplyValueToTarget(string propertyName, JToken jToken, JToken dataContext)
+    {
+        switch (jToken)
         {
-            switch (jToken)
-            {
-                case JObject o:
-                    if (JsonMethods.IsPropertyOfTypeArray(propertyName, o) || o.ContainsKey(propertyName))
-                    {
-                        ReplaceCurrentValueWithNew (propertyName, o, dataContext);
-                        return;
-                    }
-                    AddProperty(propertyName, o, dataContext);
-                    break;
-                case JArray a:
-                    ReplaceCurrentValueWithNew(propertyName, (JObject)a.Parent?.Parent, dataContext);
-                    break;
-            }
+            case JObject o:
+                if (JsonMethods.IsPropertyOfTypeArray(propertyName, o) || o.ContainsKey(propertyName))
+                {
+                    ReplaceCurrentValueWithNew (propertyName, o, dataContext);
+                    return;
+                }
+                AddProperty(propertyName, o, dataContext);
+                break;
+            case JArray a:
+                ReplaceCurrentValueWithNew(propertyName, (JObject)a.Parent?.Parent, dataContext);
+                break;
         }
     }
 }

@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace JLio.Core.Models
+namespace JLio.Core.Models;
+
+public class ValidationResult
 {
-    public class ValidationResult
-    {
-        public bool IsValid => !ValidationMessages.Any();
-        public List<string> ValidationMessages { get; set; } = new List<string>();
-    }
+    public bool IsValid => !ValidationMessages.Any();
+    public List<string> ValidationMessages { get; set; } = new List<string>();
 }

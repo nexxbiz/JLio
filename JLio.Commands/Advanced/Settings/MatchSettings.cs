@@ -2,13 +2,12 @@
 using System.Linq;
 using Newtonsoft.Json;
 
-namespace JLio.Commands.Advanced.Settings
-{
-    public class MatchSettings
-    {
-        public bool HasKeys => KeyPaths.Any();
+namespace JLio.Commands.Advanced.Settings;
 
-        [JsonProperty("keyPaths")]
-        public List<string> KeyPaths { get; set; } = new List<string>();
-    }
+public class MatchSettings
+{
+    public bool HasKeys => KeyPaths.Any();
+
+    [JsonProperty("keyPaths")]
+    public List<string> KeyPaths { get; set; } = new List<string>();
 }

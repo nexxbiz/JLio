@@ -1,8 +1,7 @@
-﻿namespace JLio.Core.Models.Path
+﻿namespace JLio.Core.Models.Path;
+
+internal class DelimiterInfo
 {
-    internal class DelimiterInfo
-    {
-        internal int Index { get; set; }
-        internal int Level { get; set; }
-    }
+    internal int Index { get; set; }
+    internal int Level { get; set; }
 }

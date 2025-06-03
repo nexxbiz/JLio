@@ -1,8 +1,7 @@
-﻿namespace JLio.Commands.Logic
+﻿namespace JLio.Commands.Logic;
+
+internal enum EAction
 {
-    internal enum EAction
-    {
-        Copy,
-        Move
-    }
+    Copy,
+    Move
 }
