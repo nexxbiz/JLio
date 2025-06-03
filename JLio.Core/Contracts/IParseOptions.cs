@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace JLio.Core.Contracts
+namespace JLio.Core.Contracts;
+
+public interface IParseOptions
 {
-    public interface IParseOptions
-    {
-        JsonConverter JLioCommandConverter { get; set; }
-        JsonConverter JLioFunctionConverter { get; set; }
-    }
+    JsonConverter JLioCommandConverter { get; set; }
+    JsonConverter JLioFunctionConverter { get; set; }
 }

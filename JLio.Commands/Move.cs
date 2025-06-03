@@ -4,43 +4,42 @@ using JLio.Core.Contracts;
 using JLio.Core.Models;
 using Newtonsoft.Json.Linq;
 
-namespace JLio.Commands
+namespace JLio.Commands;
+
+public class Move : CopyMove
 {
-    public class Move : CopyMove
+    public Move()
     {
-        public Move()
+    }
+
+    public Move(string from, string to)
+    {
+        FromPath = from;
+        ToPath = to;
+    }
+
+    public override JLioExecutionResult Execute(JToken dataContext, IExecutionContext context)
+    {
+        var validationResult = ValidateCommandInstance();
+        if (!validationResult.IsValid)
         {
+            validationResult.ValidationMessages.ForEach(i =>
+                context.LogWarning(CoreConstants.CommandExecution, i));
+            return new JLioExecutionResult(false, dataContext);
         }
 
-        public Move(string from, string to)
-        {
-            FromPath = from;
-            ToPath = to;
-        }
+        return Execute(dataContext, context, EAction.Move);
+    }
 
-        public override JLioExecutionResult Execute(JToken dataContext, IExecutionContext context)
-        {
-            var validationResult = ValidateCommandInstance();
-            if (!validationResult.IsValid)
-            {
-                validationResult.ValidationMessages.ForEach(i =>
-                    context.LogWarning(CoreConstants.CommandExecution, i));
-                return new JLioExecutionResult(false, dataContext);
-            }
+    public override ValidationResult ValidateCommandInstance()
+    {
+        var result = new ValidationResult();
+        if (string.IsNullOrWhiteSpace(FromPath))
+            result.ValidationMessages.Add($"FromPath property for {CommandName} command is missing");
 
-            return Execute(dataContext, context, EAction.Move);
-        }
+        if (string.IsNullOrWhiteSpace(ToPath))
+            result.ValidationMessages.Add($"ToPath property for {CommandName} command is missing");
 
-        public override ValidationResult ValidateCommandInstance()
-        {
-            var result = new ValidationResult();
-            if (string.IsNullOrWhiteSpace(FromPath))
-                result.ValidationMessages.Add($"FromPath property for {CommandName} command is missing");
-
-            if (string.IsNullOrWhiteSpace(ToPath))
-                result.ValidationMessages.Add($"ToPath property for {CommandName} command is missing");
-
-            return result;
-        }
+        return result;
     }
 }

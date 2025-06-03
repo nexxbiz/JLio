@@ -4,35 +4,34 @@ using JLio.Core.Contracts;
 using JLio.Core.Extensions;
 using Newtonsoft.Json.Linq;
 
-namespace JLio.Core.Models
+namespace JLio.Core.Models;
+
+public abstract class FunctionBase : IFunction
 {
-    public abstract class FunctionBase : IFunction
+    public Arguments Arguments = new Arguments();
+
+    public string FunctionName => GetType().Name.CamelCasing();
+
+    public IFunction SetArguments(Arguments functionArguments)
     {
-        public Arguments Arguments = new Arguments();
+        Arguments = functionArguments;
+        return this;
+    }
 
-        public string FunctionName => GetType().Name.CamelCasing();
+    public string ToScript()
+    {
+        return
+            $"{FunctionName}({string.Join(CoreConstants.ArgumentsDelimiter.ToString(), Arguments.Select(a => a.Function.ToScript()))})";
+    }
 
-        public IFunction SetArguments(Arguments functionArguments)
-        {
-            Arguments = functionArguments;
-            return this;
-        }
+    public abstract JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context);
 
-        public string ToScript()
-        {
-            return
-                $"{FunctionName}({string.Join(CoreConstants.ArgumentsDelimiter.ToString(), Arguments.Select(a => a.Function.ToScript()))})";
-        }
-
-        public abstract JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context);
-
-        public static List<JToken> GetArguments(Arguments arguments, JToken currentToken, JToken dataContext,
-            IExecutionContext context)
-        {
-            var argumentValues = new List<JToken>();
-            arguments.ForEach(a => argumentValues.Add(
-                a.GetValue(currentToken, dataContext, context).Data.GetJTokenValue()));
-            return argumentValues;
-        }
+    public static List<JToken> GetArguments(Arguments arguments, JToken currentToken, JToken dataContext,
+        IExecutionContext context)
+    {
+        var argumentValues = new List<JToken>();
+        arguments.ForEach(a => argumentValues.Add(
+            a.GetValue(currentToken, dataContext, context).Data.GetJTokenValue()));
+        return argumentValues;
     }
 }

@@ -1,14 +1,13 @@
 ﻿using System;
 
-namespace JLio.Core.Models
-{
-    public class CommandRegistration
-    {
-        public CommandRegistration(Type type)
-        {
-            Type = type;
-        }
+namespace JLio.Core.Models;
 
-        public Type Type { get; }
+public class CommandRegistration
+{
+    public CommandRegistration(Type type)
+    {
+        Type = type;
     }
+
+    public Type Type { get; }
 }

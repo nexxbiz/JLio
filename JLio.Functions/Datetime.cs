@@ -8,90 +8,89 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace JLio.Functions
+namespace JLio.Functions;
+
+//> - datetime()
+//> - datetime(UTC)
+//> - datetime(startOfDay)
+//> - datetime(startofDayUTC)
+//> - datetime('dd-MM-yyyy HH:mm:ss')
+//> - datetime(UTC, 'dd-MM-yyyy HH:mm:ss')
+//> - datetime(startOfDay,'dd-MM-yyyy HH:mm:ss'
+//> - datetime(startOfDayUTC, 'dd-MM-yyyy HH:mm:ss')
+
+// default:
+// timeselection , local time now
+// format : 2012-04-23T18:25:43.511Z
+public class Datetime : FunctionBase
 {
-    //> - datetime()
-    //> - datetime(UTC)
-    //> - datetime(startOfDay)
-    //> - datetime(startofDayUTC)
-    //> - datetime('dd-MM-yyyy HH:mm:ss')
-    //> - datetime(UTC, 'dd-MM-yyyy HH:mm:ss')
-    //> - datetime(startOfDay,'dd-MM-yyyy HH:mm:ss'
-    //> - datetime(startOfDayUTC, 'dd-MM-yyyy HH:mm:ss')
-
-    // default:
-    // timeselection , local time now
-    // format : 2012-04-23T18:25:43.511Z
-    public class Datetime : FunctionBase
+    public Datetime()
     {
-        public Datetime()
+    }
+
+    public Datetime(params string[] arguments)
+    {
+        arguments.ToList().ForEach(a =>
+            Arguments.Add(new FunctionSupportedValue(new FixedValue(a))));
+    }
+
+    public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)
+    {
+        var argumentValues = GetArguments(Arguments, currentToken, dataContext, context).Select(i => i.ToString());
+        var (dateSelection, format) = GetExecutionSettings(argumentValues.ToList());
+        var result = GetToken(dateSelection, format, context.Logger);
+        return new JLioFunctionResult(result.Success, result.JToken);
+    }
+
+    private DateTimeConversionResult GetToken(string dateSelection, string format, IExecutionLogger logger)
+    {
+        var datetimeConversionResult = GetDateTime(dateSelection, logger);
+        if (!datetimeConversionResult.Success)
         {
+            // no datetime indication so the first argument could be the format
+            format = dateSelection;
+            datetimeConversionResult.Success = true;
         }
 
-        public Datetime(params string[] arguments)
+        var settings = new JsonSerializerSettings {DateFormatString = format};
+        datetimeConversionResult.JToken =
+            JToken.Parse(JsonConvert.SerializeObject(datetimeConversionResult.DateTime, settings));
+        return datetimeConversionResult;
+    }
+
+    private DateTimeConversionResult GetDateTime(string dateSelection, IExecutionLogger logger)
+    {
+        switch (dateSelection)
         {
-            arguments.ToList().ForEach(a =>
-                Arguments.Add(new FunctionSupportedValue(new FixedValue(a))));
+            case "now":
+                return new DateTimeConversionResult {DateTime = DateTime.Now, Success = true};
+            case "UTC":
+                return new DateTimeConversionResult {DateTime = DateTime.UtcNow, Success = true};
+            case "startOfDay":
+                return new DateTimeConversionResult {DateTime = DateTime.Now.Date, Success = true};
+            case "startOfDayUTC":
+                return new DateTimeConversionResult {DateTime = DateTime.UtcNow.Date, Success = true};
+            default:
+                logger.Log(LogLevel.Information, CoreConstants.FunctionExecution,
+                    $"unknown datetime indication {dateSelection}, assuming this is a datetime format");
+                return new DateTimeConversionResult {DateTime = DateTime.Now, Success = false};
         }
+    }
 
-        public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)
-        {
-            var argumentValues = GetArguments(Arguments, currentToken, dataContext, context).Select(i => i.ToString());
-            var (dateSelection, format) = GetExecutionSettings(argumentValues.ToList());
-            var result = GetToken(dateSelection, format, context.Logger);
-            return new JLioFunctionResult(result.Success, result.JToken);
-        }
+    private static (string dateSelection, string format) GetExecutionSettings(List<string> argumentValues)
+    {
+        var dateSelection = "now";
+        var format = "yyyy-MM-ddTHH:mm:ss.fffZ";
+        if (argumentValues.Count > 0) dateSelection = argumentValues[0].Trim(CoreConstants.StringIndicator);
+        if (argumentValues.Count > 1) format = argumentValues[1].Trim(CoreConstants.StringIndicator);
 
-        private DateTimeConversionResult GetToken(string dateSelection, string format, IExecutionLogger logger)
-        {
-            var datetimeConversionResult = GetDateTime(dateSelection, logger);
-            if (!datetimeConversionResult.Success)
-            {
-                // no datetime indication so the first argument could be the format
-                format = dateSelection;
-                datetimeConversionResult.Success = true;
-            }
+        return (dateSelection, format);
+    }
 
-            var settings = new JsonSerializerSettings {DateFormatString = format};
-            datetimeConversionResult.JToken =
-                JToken.Parse(JsonConvert.SerializeObject(datetimeConversionResult.DateTime, settings));
-            return datetimeConversionResult;
-        }
-
-        private DateTimeConversionResult GetDateTime(string dateSelection, IExecutionLogger logger)
-        {
-            switch (dateSelection)
-            {
-                case "now":
-                    return new DateTimeConversionResult {DateTime = DateTime.Now, Success = true};
-                case "UTC":
-                    return new DateTimeConversionResult {DateTime = DateTime.UtcNow, Success = true};
-                case "startOfDay":
-                    return new DateTimeConversionResult {DateTime = DateTime.Now.Date, Success = true};
-                case "startOfDayUTC":
-                    return new DateTimeConversionResult {DateTime = DateTime.UtcNow.Date, Success = true};
-                default:
-                    logger.Log(LogLevel.Information, CoreConstants.FunctionExecution,
-                        $"unknown datetime indication {dateSelection}, assuming this is a datetime format");
-                    return new DateTimeConversionResult {DateTime = DateTime.Now, Success = false};
-            }
-        }
-
-        private static (string dateSelection, string format) GetExecutionSettings(List<string> argumentValues)
-        {
-            var dateSelection = "now";
-            var format = "yyyy-MM-ddTHH:mm:ss.fffZ";
-            if (argumentValues.Count > 0) dateSelection = argumentValues[0].Trim(CoreConstants.StringIndicator);
-            if (argumentValues.Count > 1) format = argumentValues[1].Trim(CoreConstants.StringIndicator);
-
-            return (dateSelection, format);
-        }
-
-        internal class DateTimeConversionResult
-        {
-            public DateTime DateTime { get; set; }
-            public JToken JToken { get; set; }
-            public bool Success { get; set; }
-        }
+    internal class DateTimeConversionResult
+    {
+        public DateTime DateTime { get; set; }
+        public JToken JToken { get; set; }
+        public bool Success { get; set; }
     }
 }

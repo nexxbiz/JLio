@@ -1,7 +1,6 @@
-﻿namespace JLio.Core.Contracts
+﻿namespace JLio.Core.Contracts;
+
+public interface ICommandsProvider
 {
-    public interface ICommandsProvider
-    {
-        ICommand this[string command] { get; }
-    }
+    ICommand this[string command] { get; }
 }

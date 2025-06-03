@@ -6,60 +6,60 @@ using JLio.Functions;
 using Newtonsoft.Json;
 using System.Threading;
 
-namespace JLio.Client
+namespace JLio.Client;
+
+public class ParseOptions : IParseOptions
 {
-    public class ParseOptions : IParseOptions
+    public FunctionsProvider FunctionsProvider { get; private set; }
+    public CommandsProvider CommandsProvider { get; private set; }
+
+    public JsonConverter JLioFunctionConverter { get; set; }
+    public JsonConverter JLioCommandConverter { get; set; }
+
+    public ParseOptions RegisterFunction<F>() where F : IFunction
     {
-        public FunctionsProvider FunctionsProvider { get; private set; }
-        public CommandsProvider CommandsProvider { get; private set; }
+        FunctionsProvider.Register<F>();
+        return this;
+    }
 
-        public JsonConverter JLioFunctionConverter { get; set; }
-        public JsonConverter JLioCommandConverter { get; set; }
+    public ParseOptions RegisterCommand<C>() where C : ICommand
+    {
+        CommandsProvider.Register<C>();
+        return this;
+    }
+    public static ParseOptions CreateDefault()
+    {
+        var commandsProvider = new CommandsProvider();
+        commandsProvider
+           .Register<Add>()
+           .Register<Put>()
+           .Register<Set>()
+           .Register<Remove>()
+           .Register<Copy>()
+           .Register<Move>()
+           .Register<Compare>()
+           .Register<Merge>()
+           .Register<DecisionTable>();
 
-        public ParseOptions RegisterFunction<F>() where F : IFunction
+        var functionsProvider = new FunctionsProvider();
+        functionsProvider
+           .Register<Datetime>()
+           .Register<NewGuid>()
+           .Register<Concat>()
+           .Register<Parse>()
+           .Register<Partial>()
+           .Register<ToString>()
+           .Register<Promote>()
+           .Register<Format>();
+
+
+
+        return new ParseOptions
         {
-            FunctionsProvider.Register<F>();
-            return this;
-        }
-
-        public ParseOptions RegisterCommand<C>() where C : ICommand
-        {
-            CommandsProvider.Register<C>();
-            return this;
-        }
-        public static ParseOptions CreateDefault()
-        {
-            var commandsProvider = new CommandsProvider();
-            commandsProvider
-               .Register<Add>()
-               .Register<Put>()
-               .Register<Set>()
-               .Register<Remove>()
-               .Register<Copy>()
-               .Register<Move>()
-               .Register<Compare>()
-               .Register<Merge>();
-
-            var functionsProvider = new FunctionsProvider();
-            functionsProvider
-               .Register<Datetime>()
-               .Register<NewGuid>()
-               .Register<Concat>()
-               .Register<Parse>()
-               .Register<Partial>()
-               .Register<ToString>()
-               .Register<Promote>()
-               .Register<Format>();
-
-
-
-            return new ParseOptions
-            {
-                FunctionsProvider = functionsProvider,
-                CommandsProvider = commandsProvider,
-                JLioCommandConverter = new CommandConverter(commandsProvider),
-                JLioFunctionConverter = new FunctionConverter(functionsProvider)
-            };
-        }
+            FunctionsProvider = functionsProvider,
+            CommandsProvider = commandsProvider,
+            JLioCommandConverter = new CommandConverter(commandsProvider),
+            JLioFunctionConverter = new FunctionConverter(functionsProvider)
+        };
     }
 }

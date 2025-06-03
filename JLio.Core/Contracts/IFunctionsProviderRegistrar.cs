@@ -1,7 +1,6 @@
-﻿namespace JLio.Core.Contracts
+﻿namespace JLio.Core.Contracts;
+
+public interface IFunctionsProviderRegistrar
 {
-    public interface IFunctionsProviderRegistrar
-    {
-        IFunctionsProviderRegistrar Register<T>() where T : IFunction;
-    }
+    IFunctionsProviderRegistrar Register<T>() where T : IFunction;
 }

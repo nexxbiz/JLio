@@ -1,14 +1,13 @@
 ﻿using JLio.Core.Models;
 using Newtonsoft.Json.Linq;
 
-namespace JLio.Core.Contracts
+namespace JLio.Core.Contracts;
+
+public interface ICommand
 {
-    public interface ICommand
-    {
-        string CommandName { get; }
+    string CommandName { get; }
 
-        JLioExecutionResult Execute(JToken dataContext, IExecutionContext context);
+    JLioExecutionResult Execute(JToken dataContext, IExecutionContext context);
 
-        ValidationResult ValidateCommandInstance();
-    }
+    ValidationResult ValidateCommandInstance();
 }

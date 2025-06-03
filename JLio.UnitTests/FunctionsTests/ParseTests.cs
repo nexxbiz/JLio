@@ -9,86 +9,85 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 
-namespace JLio.UnitTests.FunctionsTests
+namespace JLio.UnitTests.FunctionsTests;
+
+public class ParseTests
 {
-    public class ParseTests
+    private IExecutionContext executeContext;
+    private ParseOptions parseOptions;
+
+    [SetUp]
+    public void Setup()
     {
-        private IExecutionContext executeContext;
-        private ParseOptions parseOptions;
+        parseOptions = ParseOptions.CreateDefault()
+            .RegisterFunction<FilterBySchema>();
+        executeContext = ExecutionContext.CreateDefault();
+    }
 
-        [SetUp]
-        public void Setup()
-        {
-            parseOptions = ParseOptions.CreateDefault()
-                .RegisterFunction<FilterBySchema>();
-            executeContext = ExecutionContext.CreateDefault();
-        }
+    [TestCase("=parse()", "{\"result\" : \"3\" }", 3)]
+    [TestCase("=parse()", "{\"result\" : \"\\\"3\\\"\"}", "\"3\"")]
+    [TestCase("=parse()", "{\"result\" : \"{\\\"demo\\\":67}\"}", "{\"demo\":67}")]
+    public void ScriptTestSet(string function, string data, object expectedResult)
+    {
+        var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"set\"}}]";
+        var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeContext);
 
-        [TestCase("=parse()", "{\"result\" : \"3\" }", 3)]
-        [TestCase("=parse()", "{\"result\" : \"\\\"3\\\"\"}", "\"3\"")]
-        [TestCase("=parse()", "{\"result\" : \"{\\\"demo\\\":67}\"}", "{\"demo\":67}")]
-        public void ScriptTestSet(string function, string data, object expectedResult)
-        {
-            var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"set\"}}]";
-            var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeContext);
+        Assert.IsTrue(result.Success);
+        Assert.IsTrue(executeContext.Logger.LogEntries.TrueForAll(i => i.Level != LogLevel.Error));
+        Assert.IsNotNull(result.Data.SelectToken("$.result"));
+        Assert.IsTrue(JToken.DeepEquals(JToken.Parse(expectedResult.ToString() ?? string.Empty),
+            result.Data.SelectToken("$.result")));
+    }
 
-            Assert.IsTrue(result.Success);
-            Assert.IsTrue(executeContext.Logger.LogEntries.TrueForAll(i => i.Level != LogLevel.Error));
-            Assert.IsNotNull(result.Data.SelectToken("$.result"));
-            Assert.IsTrue(JToken.DeepEquals(JToken.Parse(expectedResult.ToString() ?? string.Empty),
-                result.Data.SelectToken("$.result")));
-        }
+    [TestCase("=parse($.item)", "{\"item\" : \"3\" }", "3")]
+    [TestCase("=parse($.item)", "{\"item\" : \"\\\"3\\\"\"}", "\"3\"")]
+    [TestCase("=parse($.item)", "{\"item\" : \"{\\\"demo\\\":67}\"}", "{\"demo\": 67}")]
+    public void ScriptTestAdd(string function, string data, string expectedResult)
+    {
+        var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"add\"}}]";
+        var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeContext);
 
-        [TestCase("=parse($.item)", "{\"item\" : \"3\" }", "3")]
-        [TestCase("=parse($.item)", "{\"item\" : \"\\\"3\\\"\"}", "\"3\"")]
-        [TestCase("=parse($.item)", "{\"item\" : \"{\\\"demo\\\":67}\"}", "{\"demo\": 67}")]
-        public void ScriptTestAdd(string function, string data, string expectedResult)
-        {
-            var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"add\"}}]";
-            var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeContext);
+        Assert.IsTrue(result.Success);
+        Assert.IsTrue(executeContext.Logger.LogEntries.TrueForAll(i => i.Level != LogLevel.Error));
+        Assert.IsNotNull(result.Data.SelectToken("$.result"));
+        Assert.IsTrue(JToken.DeepEquals(result.Data.SelectToken("$.result"),
+            JToken.Parse(expectedResult)));
+    }
 
-            Assert.IsTrue(result.Success);
-            Assert.IsTrue(executeContext.Logger.LogEntries.TrueForAll(i => i.Level != LogLevel.Error));
-            Assert.IsNotNull(result.Data.SelectToken("$.result"));
-            Assert.IsTrue(JToken.DeepEquals(result.Data.SelectToken("$.result"),
-                JToken.Parse(expectedResult)));
-        }
+    [TestCase("=parse($.item)", "{\"result\" : \"{\\\"demo :67}\"}")]
+    public void ScriptTestAddFaultyString(string function, string data)
+    {
+        var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"set\"}}]";
+        var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeContext);
 
-        [TestCase("=parse($.item)", "{\"result\" : \"{\\\"demo :67}\"}")]
-        public void ScriptTestAddFaultyString(string function, string data)
-        {
-            var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"set\"}}]";
-            var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeContext);
+        Assert.IsFalse(result.Success);
+        Assert.IsTrue(executeContext.Logger.LogEntries.Any(i => i.Level == LogLevel.Error));
+    }
 
-            Assert.IsFalse(result.Success);
-            Assert.IsTrue(executeContext.Logger.LogEntries.Any(i => i.Level == LogLevel.Error));
-        }
+    [TestCase("=parse()", "{\"result\" : {\"demo\" :67}}")]
+    public void ParseOnNonStringTypeString(string function, string data)
+    {
+        var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"set\"}}]";
+        var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeContext);
 
-        [TestCase("=parse()", "{\"result\" : {\"demo\" :67}}")]
-        public void ParseOnNonStringTypeString(string function, string data)
-        {
-            var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"set\"}}]";
-            var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeContext);
+        Assert.IsFalse(result.Success);
+        Assert.IsTrue(executeContext.Logger.LogEntries.Any(i => i.Level == LogLevel.Error));
+    }
 
-            Assert.IsFalse(result.Success);
-            Assert.IsTrue(executeContext.Logger.LogEntries.Any(i => i.Level == LogLevel.Error));
-        }
+    [Test]
+    public void CanbeUsedInFluentApi()
+    {
+        var script = new JLioScript()
+                .Set(new Parse())
+                .OnPath("$.id")
+                .Add(new Parse("$.id"))
+                .OnPath("$.result")
+            ;
+        var result = script.Execute(JObject.Parse("{\"id\" : \"3\" }"));
 
-        [Test]
-        public void CanbeUsedInFluentApi()
-        {
-            var script = new JLioScript()
-                    .Set(new Parse())
-                    .OnPath("$.id")
-                    .Add(new Parse("$.id"))
-                    .OnPath("$.result")
-                ;
-            var result = script.Execute(JObject.Parse("{\"id\" : \"3\" }"));
-
-            Assert.IsNotNull(result);
-            Assert.IsTrue(result.Success);
-            Assert.AreNotEqual(result.Data.SelectToken("$.result")?.Type, JTokenType.Null);
-            Assert.AreEqual(result.Data.SelectToken("$.result").Value<int>(), 3);
-        }
+        Assert.IsNotNull(result);
+        Assert.IsTrue(result.Success);
+        Assert.AreNotEqual(result.Data.SelectToken("$.result")?.Type, JTokenType.Null);
+        Assert.AreEqual(result.Data.SelectToken("$.result").Value<int>(), 3);
     }
 }
