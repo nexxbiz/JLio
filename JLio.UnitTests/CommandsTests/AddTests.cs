@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using JLio.Client;
 using JLio.Commands;
 using JLio.Commands.Builders;
 using JLio.Core;
@@ -96,6 +97,23 @@ namespace JLio.UnitTests.CommandsTests
             Assert.IsTrue(data.SelectTokens(path).All(i => i.Type != JTokenType.Null));
             Assert.IsTrue(data.SelectTokens(path).Any());
             Assert.IsTrue(JToken.DeepEquals(data.SelectToken(path), tokenToAdd));
+        }
+
+        [TestCase("$.newProperty", "{\"demo\" : \"=newGuid()\"}")]
+        [TestCase("$.newProperty", "{\"demo\" : \"=concat($.myString, '-demo')\"}")]
+        public void CanAddCorrectValuesAsFunctions(string path, string value)
+        {
+            var tokenToAdd = JToken.Parse(value);
+            FunctionConverter functionsConverter = new FunctionConverter( ParseOptions.CreateDefault().FunctionsProvider);
+            var valueToAdd = new FunctionSupportedValue(new FixedValue(tokenToAdd) { FunctionConverter = functionsConverter });
+            var result = new Add(path, valueToAdd).Execute(data, executeOptions);
+
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.Success);
+            Assert.IsTrue(data.SelectTokens(path).All(i => i.Type != JTokenType.Null));
+            Assert.IsTrue(data.SelectTokens(path).Any());
+            // it should not be the same as the tokenToAdd, because the function is executed
+            Assert.IsFalse(JToken.DeepEquals(data.SelectToken(path), tokenToAdd));
         }
 
         [TestCase("", "newData", "Path property for add command is missing")]

@@ -46,11 +46,11 @@ namespace JLio.Core
             return new FunctionSupportedValue(new FixedValue(value));
         }
 
-        private IFunctionSupportedValue ParseString(string text)
+        public IFunctionSupportedValue ParseString(string text)
         {
             if (string.IsNullOrEmpty(text)) return new FunctionSupportedValue(new FixedValue(JValue.CreateNull()));
             if (!text.StartsWith(CoreConstants.FunctionStartCharacters))
-                return new FunctionSupportedValue(new FixedValue(JToken.Parse($"\"{text}\"")));
+                return new FunctionSupportedValue(new FixedValue(JToken.Parse($"\"{text}\"")) { FunctionConverter = this });
             var (function, arguments) = GetFunctionAndArguments(text);
 
             return new FunctionSupportedValue(function.SetArguments(arguments));
