@@ -100,7 +100,8 @@ namespace JLio.UnitTests.CommandsTests
         }
 
         [TestCase("$.newProperty", "{\"demo\" : \"=newGuid()\"}")]
-        [TestCase("$.newProperty", "{\"demo\" : \"=concat($.myString, '-demo')\"}")]
+        [TestCase("$.newProperty", "{\"demo\" : \"=concat($.myString, '-demo-', newGuid())\", \"demo2\" : \"=concat($.myString, '-demo2-', newGuid())\"}")]
+        [TestCase("$.newProperty", "{\"newprop\" : { \"newSubProp\" : 56},   \"demo\" : \"=fetch($.myObject.myArray)\", \"demo2\" : \"=concat($.myString, '-demo2-', newGuid())\", \"demo2\" : \"=fetch($.myArray[1])\"}")]
         public void CanAddCorrectValuesAsFunctions(string path, string value)
         {
             var tokenToAdd = JToken.Parse(value);

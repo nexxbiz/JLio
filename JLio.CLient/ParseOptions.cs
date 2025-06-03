@@ -49,7 +49,8 @@ namespace JLio.Client
                .Register<Partial>()
                .Register<ToString>()
                .Register<Promote>()
-               .Register<Format>();
+               .Register<Format>()
+               .Register<Fetch>();
 
 
 
