@@ -374,21 +374,24 @@ public class DecisionTable : CommandBase
         return true;
     }
 
-    private bool EvaluateCondition(object inputValue, object conditionValue)
+
+
+    private bool EvaluateCondition(object inputValue, JToken conditionValue)
     {
-        if (conditionValue is JArray arrayCondition)
+        if (conditionValue.Type == JTokenType.Array)
         {
-            // Array membership check
-            return arrayCondition.Any(item => AreEqual(inputValue, item.ToObject<object>()));
+            // Array membership check - conditionValue is already JArray
+            return conditionValue.Any(item => AreEqual(inputValue, item.ToObject<object>()));
         }
 
-        if (conditionValue is string stringCondition)
+        if (conditionValue.Type == JTokenType.String)
         {
+            var stringCondition = conditionValue.ToString();
             return EvaluateComplexCondition(inputValue, stringCondition);
         }
 
         // Direct equality check
-        return AreEqual(inputValue, conditionValue);
+        return AreEqual(inputValue, conditionValue.ToObject<object>());
     }
 
     private bool EvaluateComplexCondition(object inputValue, string condition)
@@ -672,7 +675,7 @@ public class DecisionTableConfig
     public List<DecisionRule> Rules { get; set; }
 
     [JsonProperty("defaultResults")]
-    public Dictionary<string, object> DefaultResults { get; set; }
+    public Dictionary<string, JToken> DefaultResults { get; set; }
 
     [JsonProperty("executionStrategy")]
     public ExecutionStrategy ExecutionStrategy { get; set; }
@@ -709,10 +712,10 @@ public class DecisionRule
 {
     [JsonProperty("conditions")]
 
-    public Dictionary<string, object> Conditions { get; set; }
+    public Dictionary<string, JToken> Conditions { get; set; }
 
     [JsonProperty("results")]
-    public Dictionary<string, object> Results { get; set; }
+    public Dictionary<string, JToken> Results { get; set; }
 
     [JsonProperty("priority")]
     public int Priority { get; set; }

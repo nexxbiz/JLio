@@ -99,14 +99,14 @@ public class DecisionTablePerformanceTests
                     new DecisionRule
                     {
                         Priority = 100,
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "age", ">=65" },
                             { "membershipLevel", new JArray("gold", "platinum") },
                             { "orderValue", ">=500" },
                             { "creditScore", ">=750" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "discountRate", 0.25 },
                             { "riskLevel", "low" },
@@ -118,14 +118,14 @@ public class DecisionTablePerformanceTests
                     new DecisionRule
                     {
                         Priority = 90,
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "age", ">=25 && <=45" },
                             { "membershipLevel", "platinum" },
                             { "orderValue", ">=200" },
                             { "country", new JArray("US", "CA", "UK") }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "discountRate", 0.20 },
                             { "riskLevel", "low" },
@@ -137,13 +137,13 @@ public class DecisionTablePerformanceTests
                     new DecisionRule
                     {
                         Priority = 80,
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "creditScore", ">=700 && <=800" },
                             { "yearsActive", ">=2" },
                             { "orderValue", ">100" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "discountRate", 0.15 },
                             { "riskLevel", "medium" },
@@ -155,13 +155,13 @@ public class DecisionTablePerformanceTests
                     new DecisionRule
                     {
                         Priority = 70,
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "membershipLevel", "gold" },
                             { "orderValue", ">=300 || <=50 && >=500" }, // Complex OR with AND
                             { "yearsActive", ">=1" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "discountRate", 0.10 },
                             { "riskLevel", "medium" },
@@ -173,11 +173,11 @@ public class DecisionTablePerformanceTests
                     new DecisionRule
                     {
                         Priority = 60,
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "orderValue", ">=1000" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "discountRate", 0.30 },
                             { "riskLevel", "low" },
@@ -189,11 +189,11 @@ public class DecisionTablePerformanceTests
                     new DecisionRule
                     {
                         Priority = 10,
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "age", ">=18" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "discountRate", 0.05 },
                             { "riskLevel", "standard" },
@@ -202,7 +202,7 @@ public class DecisionTablePerformanceTests
                         }
                     }
                 },
-                DefaultResults = new Dictionary<string, object>
+                DefaultResults = new Dictionary<string, JToken>
                 {
                     { "discountRate", 0.0 },
                     { "riskLevel", "unknown" },
@@ -309,20 +309,20 @@ public class DecisionTablePerformanceTests
                 {
                     new DecisionRule
                     {
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             // Super complex condition
                             { "age", ">=18 && <=25 || >=65 && <=80" },
                             { "orderValue", ">=100 && <=500 || >=1000 && <=2000" },
                             { "creditScore", ">=300 && <=600 || >=750 && <=850" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "result", "complex_match" }
                         }
                     }
                 },
-                DefaultResults = new Dictionary<string, object>
+                DefaultResults = new Dictionary<string, JToken>
                 {
                     { "result", "no_match" }
                 },
@@ -455,12 +455,12 @@ public class DecisionTablePerformanceTests
             rules.Add(new DecisionRule
             {
                 Priority = random.Next(1, 100),
-                Conditions = new Dictionary<string, object>
+                Conditions = new Dictionary<string, JToken>
                 {
                     { "age", $">={random.Next(18, 70)}" },
                     { "orderValue", $">={random.Next(50, 1000)}" }
                 },
-                Results = new Dictionary<string, object>
+                Results = new Dictionary<string, JToken>
                 {
                     { "tier", $"tier_{i}" }
                 }
@@ -482,7 +482,7 @@ public class DecisionTablePerformanceTests
                     new DecisionOutput { Name = "tier", Path = "@.tier" }
                 },
                 Rules = rules,
-                DefaultResults = new Dictionary<string, object>
+                DefaultResults = new Dictionary<string, JToken>
                 {
                     { "tier", "default" }
                 },

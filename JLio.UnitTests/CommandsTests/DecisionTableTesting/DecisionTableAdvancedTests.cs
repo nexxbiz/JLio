@@ -79,7 +79,7 @@ public class DecisionTableAdvancedTests
                             { "category", "electronics" },
                             { "price", ">=100" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "discount", 0.15 },
                             { "promotion", "premium_electronics" }
@@ -88,11 +88,11 @@ public class DecisionTableAdvancedTests
                     new DecisionRule
                     {
                         Priority = 2,
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "category", "electronics" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "discount", 0.05 },
                             { "promotion", "basic_electronics" }
@@ -105,7 +105,7 @@ public class DecisionTableAdvancedTests
                     ConflictResolution = "priority",
                     StopOnError = false
                 },
-                DefaultResults = new Dictionary<string, object>
+                DefaultResults = new Dictionary<string, JToken>
                 {
                     { "discount", 0.0 },
                     { "promotion", "none" }
@@ -153,11 +153,11 @@ public class DecisionTableAdvancedTests
                     new DecisionRule
                     {
                         Priority = 1,
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "price", ">=50" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "tags", new JArray("premium") },
                             { "bonusPoints", 50 }
@@ -166,11 +166,11 @@ public class DecisionTableAdvancedTests
                     new DecisionRule
                     {
                         Priority = 2,
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "rating", ">=4.0" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "tags", new JArray("high_rated") },
                             { "bonusPoints", 25 }
@@ -179,11 +179,11 @@ public class DecisionTableAdvancedTests
                     new DecisionRule
                     {
                         Priority = 3,
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "stock", "<=10" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "tags", new JArray("limited") },
                             { "bonusPoints", 10 }
@@ -238,12 +238,12 @@ public class DecisionTableAdvancedTests
                     new DecisionRule
                     {
                         Priority = 1,
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "price", ">=40" },
                             { "rating", ">=4.0" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "recommendation", "good_value" }
                         }
@@ -251,13 +251,13 @@ public class DecisionTableAdvancedTests
                     new DecisionRule
                     {
                         Priority = 3,
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "category", "books" },
                             { "price", ">=30" },
                             { "rating", ">=4.0" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "recommendation", "excellent_book" }
                         }
@@ -265,11 +265,11 @@ public class DecisionTableAdvancedTests
                     new DecisionRule
                     {
                         Priority = 5,
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "rating", ">=4.0" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "recommendation", "highly_rated" }
                         }
@@ -316,22 +316,22 @@ public class DecisionTableAdvancedTests
                 {
                     new DecisionRule
                     {
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "category", "electronics" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "status", "tech_product" }
                         }
                     },
                     new DecisionRule
                     {
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "rating", ">=4.0" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "status", "quality_product" }
                         }
@@ -378,42 +378,42 @@ public class DecisionTableAdvancedTests
                 {
                     new DecisionRule
                     {
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "price", ">=50 && <=100" }, // Complex AND condition
                             { "rating", ">4.0" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "tier", "sweet_spot" }
                         }
                     },
                     new DecisionRule
                     {
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "stock", "<=10 || >=100" }, // Complex OR condition
                             { "price", "<30" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "tier", "budget_special" }
                         }
                     },
                     new DecisionRule
                     {
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "price", ">100" },
                             { "rating", ">=4.5 && <=5.0" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "tier", "premium" }
                         }
                     }
                 },
-                DefaultResults = new Dictionary<string, object>
+                DefaultResults = new Dictionary<string, JToken>
                 {
                     { "tier", "standard" }
                 }
@@ -459,30 +459,30 @@ public class DecisionTableAdvancedTests
                 {
                     new DecisionRule
                     {
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "price", ">=40 && <=50" },
                             { "stock", ">=20 && <=30" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "action", "perfect_match" }
                         }
                     },
                     new DecisionRule
                     {
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "price", "<20 || >100" },
                             { "stock", "<=5 || >=100" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "action", "extreme_case" }
                         }
                     }
                 },
-                DefaultResults = new Dictionary<string, object>
+                DefaultResults = new Dictionary<string, JToken>
                 {
                     { "action", "no_match" }
                 }
@@ -519,8 +519,8 @@ public class DecisionTableAdvancedTests
                 {
                     new DecisionRule
                     {
-                        Conditions = new Dictionary<string, object> { { "test", "value" } },
-                        Results = new Dictionary<string, object> { { "result", "success" } }
+                        Conditions = new Dictionary<string, JToken> { { "test", "value" } },
+                        Results = new Dictionary<string, JToken> { { "result", "success" } }
                     }
                 },
                 ExecutionStrategy = new ExecutionStrategy
@@ -559,11 +559,11 @@ public class DecisionTableAdvancedTests
                 {
                     new DecisionRule
                     {
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "price", ">=100" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "benefits", new JArray("premium_shipping", "extended_warranty") },
                             { "score", 75 }
@@ -571,11 +571,11 @@ public class DecisionTableAdvancedTests
                     },
                     new DecisionRule
                     {
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "category", "electronics" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "benefits", new JArray("tech_support", "software_bundle") },
                             { "score", 85 }
@@ -583,11 +583,11 @@ public class DecisionTableAdvancedTests
                     },
                     new DecisionRule
                     {
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "rating", ">=4.5" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "benefits", new JArray("priority_support") },
                             { "score", 90 }
@@ -643,11 +643,11 @@ public class DecisionTableAdvancedTests
                     new DecisionRule
                     {
                         Priority = 10,
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "category", "books" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "handler", "general_books" }
                         }
@@ -655,11 +655,11 @@ public class DecisionTableAdvancedTests
                     new DecisionRule
                     {
                         Priority = 1,
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "category", "books" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "handler", "premium_books" }
                         }
@@ -667,11 +667,11 @@ public class DecisionTableAdvancedTests
                     new DecisionRule
                     {
                         Priority = 5, // Medium priority
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "category", "books" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "handler", "standard_books" }
                         }
@@ -718,19 +718,19 @@ public class DecisionTableAdvancedTests
                 {
                     new DecisionRule
                     {
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             // (price >= 20 AND price <= 30) OR (price >= 70 AND price <= 80)
                             { "price", ">=20 && <=30 || >=70 && <=80" },
                             { "rating", ">3.5" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "status", "target_range" }
                         }
                     }
                 },
-                DefaultResults = new Dictionary<string, object>
+                DefaultResults = new Dictionary<string, JToken>
                 {
                     { "status", "outside_range" }
                 }
@@ -776,18 +776,18 @@ public class DecisionTableAdvancedTests
                 {
                     new DecisionRule
                     {
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "category", "!=clothing" },
                             { "price", "!=75.00" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "eligible", true }
                         }
                     }
                 },
-                DefaultResults = new Dictionary<string, object>
+                DefaultResults = new Dictionary<string, JToken>
                 {
                     { "eligible", false }
                 }
@@ -832,8 +832,8 @@ public class DecisionTableAdvancedTests
                 {
                     new DecisionRule
                     {
-                        Conditions = new Dictionary<string, object> { { "price", ">0" } },
-                        Results = new Dictionary<string, object> { { "result", "positive" } }
+                        Conditions = new Dictionary<string, JToken> { { "price", ">0" } },
+                        Results = new Dictionary<string, JToken> { { "result", "positive" } }
                     }
                 },
                 ExecutionStrategy = null // Should use defaults

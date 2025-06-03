@@ -72,19 +72,19 @@ public class DecisionTableTests
                 {
                     new DecisionRule
                     {
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "age", ">=18" },
                             { "membership", "gold" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "discount", 0.3 },
                             { "category", "premium" }
                         }
                     }
                 },
-                DefaultResults = new Dictionary<string, object>
+                DefaultResults = new Dictionary<string, JToken>
                 {
                     { "discount", 0.0 },
                     { "category", "standard" }
@@ -124,12 +124,12 @@ public class DecisionTableTests
                     new DecisionRule
                     {
                         Priority = 1,
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "age", ">=65" },
                             { "orderValue", ">=100" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "discount", 0.25 }
                         }
@@ -137,17 +137,17 @@ public class DecisionTableTests
                     new DecisionRule
                     {
                         Priority = 2,
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "orderValue", ">=100" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "discount", 0.1 }
                         }
                     }
                 },
-                DefaultResults = new Dictionary<string, object>
+                DefaultResults = new Dictionary<string, JToken>
                 {
                     { "discount", 0.0 }
                 }
@@ -193,18 +193,18 @@ public class DecisionTableTests
                 {
                     new DecisionRule
                     {
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "country", new JArray("US", "CA") },
                             { "membership", new JArray("gold", "silver") }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "shippingCost", 5.0 }
                         }
                     }
                 },
-                DefaultResults = new Dictionary<string, object>
+                DefaultResults = new Dictionary<string, JToken>
                 {
                     { "shippingCost", 15.0 }
                 }
@@ -251,19 +251,19 @@ public class DecisionTableTests
                 {
                     new DecisionRule
                     {
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "customerAge", "<50" },
                             { "otherCustomerAge", ">=50" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "comparison", "younger" },
                             { "globalFlag", "mixed_ages" }
                         }
                     }
                 },
-                DefaultResults = new Dictionary<string, object>
+                DefaultResults = new Dictionary<string, JToken>
                 {
                     { "comparison", "same_range" },
                     { "globalFlag", "uniform_ages" }
@@ -345,17 +345,17 @@ public class DecisionTableTests
                 {
                     new DecisionRule
                     {
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "age", ">=65" } // Won't match age=22
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "category", "senior" }
                         }
                     }
                 },
-                DefaultResults = new Dictionary<string, object>
+                DefaultResults = new Dictionary<string, JToken>
                 {
                     { "category", "standard" }
                 }
@@ -391,11 +391,11 @@ public class DecisionTableTests
                 {
                     new DecisionRule
                     {
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "age", ">=65" } // Won't match age=22
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "category", "senior" }
                         }
@@ -435,30 +435,30 @@ public class DecisionTableTests
                 {
                     new DecisionRule
                     {
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "age", ">65" },
                             { "orderValue", "<=200" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "tier", "senior_budget" }
                         }
                     },
                     new DecisionRule
                     {
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "age", "<30" },
                             { "orderValue", ">100" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "tier", "young_spender" }
                         }
                     }
                 },
-                DefaultResults = new Dictionary<string, object>
+                DefaultResults = new Dictionary<string, JToken>
                 {
                     { "tier", "standard" }
                 }
@@ -504,17 +504,17 @@ public class DecisionTableTests
                 {
                     new DecisionRule
                     {
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "age", ">=18" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "result", "adult" }
                         }
                     }
                 },
-                DefaultResults = new Dictionary<string, object>
+                DefaultResults = new Dictionary<string, JToken>
                 {
                     { "result", "unknown" }
                 }
@@ -554,11 +554,11 @@ public class DecisionTableTests
                 {
                     new DecisionRule
                     {
-                        Conditions = new Dictionary<string, object>
+                        Conditions = new Dictionary<string, JToken>
                         {
                             { "age", ">=18" }
                         },
-                        Results = new Dictionary<string, object>
+                        Results = new Dictionary<string, JToken>
                         {
                             { "category", "adult" }
                         }
