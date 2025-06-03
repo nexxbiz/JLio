@@ -75,7 +75,7 @@ public class AddTests
     public void CanAddCorrectValuesWithEmptyConstructor(string path, string value)
     {
         var command = new Add
-            {Path = path, Value = new FunctionSupportedValue(new FixedValue(new JValue(value)))};
+        { Path = path, Value = new FunctionSupportedValue(new FixedValue(new JValue(value))) };
 
         var result = command.Execute(data, executeOptions);
 
@@ -99,30 +99,24 @@ public class AddTests
         Assert.IsTrue(JToken.DeepEquals(data.SelectToken(path), tokenToAdd));
     }
 
-        [TestCase("$.newProperty", "{\"demo\" : \"=newGuid()\"}")]
-        [TestCase("$.newProperty", "{\"demo\" : \"=concat($.myString, '-demo-', newGuid())\", \"demo2\" : \"=concat($.myString, '-demo2-', newGuid())\"}")]
-        [TestCase("$.newProperty", "{\"newprop\" : { \"newSubProp\" : 56},   \"demo\" : \"=fetch($.myObject.myArray)\", \"demo2\" : \"=concat($.myString, '-demo2-', newGuid())\", \"demo2\" : \"=fetch($.myArray[1])\"}")]
-        public void CanAddCorrectValuesAsFunctions(string path, string value)
-        {
-            var tokenToAdd = JToken.Parse(value);
-            FunctionConverter functionsConverter = new FunctionConverter( ParseOptions.CreateDefault().FunctionsProvider);
-            var valueToAdd = new FunctionSupportedValue(new FixedValue(tokenToAdd) { FunctionConverter = functionsConverter });
-            var result = new Add(path, valueToAdd).Execute(data, executeOptions);
+    [TestCase("$.newProperty", "{\"demo\" : \"=newGuid()\"}")]
+    [TestCase("$.newProperty", "{\"demo\" : \"=concat($.myString, '-demo-', newGuid())\", \"demo2\" : \"=concat($.myString, '-demo2-', newGuid())\"}")]
+    [TestCase("$.newProperty", "{\"newprop\" : { \"newSubProp\" : 56},   \"demo\" : \"=fetch($.myObject.myArray)\", \"demo2\" : \"=concat($.myString, '-demo2-', newGuid())\", \"demo2\" : \"=fetch($.myArray[1])\"}")]
+    public void CanAddCorrectValuesAsFunctions(string path, string value)
+    {
+        var tokenToAdd = JToken.Parse(value);
+        FunctionConverter functionsConverter = new FunctionConverter(ParseOptions.CreateDefault().FunctionsProvider);
+        var valueToAdd = new FunctionSupportedValue(new FixedValue(tokenToAdd) { FunctionConverter = functionsConverter });
+        var result = new Add(path, valueToAdd).Execute(data, executeOptions);
 
-            Assert.IsNotNull(result);
-            Assert.IsTrue(result.Success);
-            Assert.IsTrue(data.SelectTokens(path).All(i => i.Type != JTokenType.Null));
-            Assert.IsTrue(data.SelectTokens(path).Any());
-            // it should not be the same as the tokenToAdd, because the function is executed
-            Assert.IsFalse(JToken.DeepEquals(data.SelectToken(path), tokenToAdd));
-        }
+        Assert.IsNotNull(result);
+        Assert.IsTrue(result.Success);
+        Assert.IsTrue(data.SelectTokens(path).All(i => i.Type != JTokenType.Null));
+        Assert.IsTrue(data.SelectTokens(path).Any());
+        // it should not be the same as the tokenToAdd, because the function is executed
+        Assert.IsFalse(JToken.DeepEquals(data.SelectToken(path), tokenToAdd));
+    }
 
-        [TestCase("", "newData", "Path property for add command is missing")]
-        [TestCase("", null, "Path property for add command is missing")]
-        public void CanExecuteWithArgumentsNotProvided(string path, string value, string message)
-        {
-            var valueToAdd = new FunctionSupportedValue(new FixedValue(new JValue(value)));
-            var result = new Add(path, valueToAdd).Execute(data, executeOptions);
     [TestCase("", "newData", "Path property for add command is missing")]
     [TestCase("", null, "Path property for add command is missing")]
     public void CanExecuteWithArgumentsNotProvided(string path, string value, string message)
