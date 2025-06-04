@@ -31,7 +31,7 @@ public class Datetime : FunctionBase
     public Datetime(params string[] arguments)
     {
         arguments.ToList().ForEach(a =>
-            Arguments.Add(new FunctionSupportedValue(new FixedValue(a))));
+            Arguments.Add(new FunctionSupportedValue(new FixedValue(a, null))));
     }
 
     public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)

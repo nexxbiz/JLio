@@ -56,7 +56,7 @@ public class TextHandling
     }
 
     [TestCase("", "{\"myObject\":{\"initialProperty\":\"initial value\"}}")]
-    [TestCase("[{\"path\":\"$.myObject.newProperty\",\"value\":\"new value\",\"command\":\"add\"}]",
+    [TestCase("[{\"path\":\"$.myObject.newProperty\",\"value\":\"=newGuid()\",\"command\":\"add\"}]",
         "{\"myObject\":{\"initialProperty\":\"initial value\"}}")]
     public void CanParseAndExecute(string scriptText, string data)
     {

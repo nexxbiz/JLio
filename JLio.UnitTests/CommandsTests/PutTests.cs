@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using JLio.Client;
 using JLio.Commands;
 using JLio.Commands.Builders;
 using JLio.Core;
@@ -13,12 +14,13 @@ namespace JLio.UnitTests.CommandsTests;
 public class PutTests
 {
     private JToken data;
-
+    private FunctionConverter functionConverter;
     private IExecutionContext executeOptions;
 
     [SetUp]
     public void Setup()
     {
+        functionConverter = new FunctionConverter(ParseOptions.CreateDefault().FunctionsProvider);
         executeOptions = ExecutionContext.CreateDefault();
         data = JToken.Parse(
             "{\r\n  \"myString\": \"demo2\",\r\n  \"myNumber\": 2.2,\r\n  \"myInteger\": 20,\r\n  \"myObject\": {\r\n    \"myObject\": {\"myArray\": [\r\n      2,\r\n      20,\r\n      200,\r\n      2000\r\n    ]},\r\n    \"myArray\": [\r\n      2,\r\n      20,\r\n      200,\r\n      2000\r\n    ]\r\n  },\r\n  \"myArray\": [\r\n    2,\r\n    20,\r\n    200,\r\n    2000\r\n  ],\r\n  \"myBoolean\": true,\r\n  \"myNull\": null\r\n}");
@@ -35,7 +37,7 @@ public class PutTests
         "newData")] // this is not working yet  need to consult newtonsoft
     public void CanPutValues(string path, string value)
     {
-        var valueToAdd = new FunctionSupportedValue(new FixedValue(new JValue(value)));
+        var valueToAdd = new FunctionSupportedValue(new FixedValue(new JValue(value), functionConverter));
         var result = new Put(path, valueToAdd).Execute(data, executeOptions);
 
         Assert.IsNotNull(result);
@@ -50,7 +52,7 @@ public class PutTests
     [TestCase("$.newProperty", "newData")]
     public void CanPutCorrectValues(string path, string value)
     {
-        var valueToAdd = new FunctionSupportedValue(new FixedValue(new JValue(value)));
+        var valueToAdd = new FunctionSupportedValue(new FixedValue(new JValue(value), functionConverter));
         var result = new Put(path, valueToAdd).Execute(data, executeOptions);
 
         Assert.IsNotNull(result);
@@ -74,7 +76,7 @@ public class PutTests
     public void CanPutCorrectValuesWithEmptyConstructor(string path, string value)
     {
         var command = new Put
-            {Path = path, Value = new FunctionSupportedValue(new FixedValue(new JValue(value)))};
+            {Path = path, Value = new FunctionSupportedValue(new FixedValue(new JValue(value), functionConverter))};
 
         var result = command.Execute(data, executeOptions);
 
@@ -88,7 +90,7 @@ public class PutTests
     public void CanPutCorrectValuesAsTokens(string path, string value)
     {
         var tokenToAdd = JToken.Parse(value);
-        var valueToAdd = new FunctionSupportedValue(new FixedValue(tokenToAdd));
+        var valueToAdd = new FunctionSupportedValue(new FixedValue(tokenToAdd, functionConverter ));
         var result = new Put(path, valueToAdd).Execute(data, executeOptions);
 
         Assert.IsNotNull(result);
@@ -102,7 +104,7 @@ public class PutTests
     [TestCase("", null, "Path property for put command is missing")]
     public void CanExecuteWithArgumentsNotProvided(string path, string value, string message)
     {
-        var valueToAdd = new FunctionSupportedValue(new FixedValue(new JValue(value)));
+        var valueToAdd = new FunctionSupportedValue(new FixedValue(new JValue(value), functionConverter));
         var result = new Put(path, valueToAdd).Execute(data, executeOptions);
 
         Assert.IsNotNull(result);

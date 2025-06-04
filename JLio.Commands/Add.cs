@@ -16,7 +16,7 @@ public class Add : PropertyChangeCommand
     public Add(string path, JToken value)
     {
         Path = path;
-        Value = new FunctionSupportedValue(new FixedValue(value));
+        Value = new FunctionSupportedValue(new FixedValue(value, null));
     }
 
     public Add(string path, IFunctionSupportedValue value)

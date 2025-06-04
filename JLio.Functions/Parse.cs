@@ -16,7 +16,7 @@ public class Parse : FunctionBase
 
     public Parse(string path)
     {
-        Arguments.Add(new FunctionSupportedValue(new FixedValue(path)));
+        Arguments.Add(new FunctionSupportedValue(new FixedValue(path, null)));
     }
 
     public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)
