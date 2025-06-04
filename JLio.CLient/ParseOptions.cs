@@ -51,7 +51,7 @@ public class ParseOptions : IParseOptions
            .Register<ToString>()
            .Register<Promote>()
            .Register<Format>()
-           .Register<Fetch>(); 
+           .Register<Fetch>(); ;
 
 
 
