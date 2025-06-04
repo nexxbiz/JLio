@@ -112,6 +112,24 @@ public class AddTests
         Assert.IsTrue(executeOptions.GetLogEntries().Any(l => l.Message == message));
     }
 
+    //[TestCase("$.newProperty", "{\"demo\" : \"=newGuid()\"}")]
+    //[TestCase("$.newProperty", "{\"demo\" : \"=concat($.myString, '-demo-', newGuid())\", \"demo2\" : \"=concat($.myString, '-demo2-', newGuid())\"}")]
+    [TestCase("$.newProperty", "{\"newprop\" : { \"newSubProp\" : 56},   \"demo\" : \"=fetch($.myObject.myArray)\", \"demo2\" : { \"prop\": \"=concat($.myString, '-demo2-', newGuid())\", \"demo2\" : \"=fetch($.myArray[1])\"}}")]
+    public void CanAddCorrectValuesAsFunctions(string path, string value)
+    {
+        var tokenToAdd = JToken.Parse(value);
+        FunctionConverter functionsConverter = new FunctionConverter(ParseOptions.CreateDefault().FunctionsProvider);
+        var valueToAdd = new FunctionSupportedValue(new FixedValue(tokenToAdd, functionsConverter));
+        var result = new Add(path, valueToAdd).Execute(data, executeOptions);
+
+        Assert.IsNotNull(result);
+        Assert.IsTrue(result.Success);
+        Assert.IsTrue(data.SelectTokens(path).All(i => i.Type != JTokenType.Null));
+        Assert.IsTrue(data.SelectTokens(path).Any());
+        // it should not be the same as the tokenToAdd, because the function is executed
+        Assert.IsFalse(JToken.DeepEquals(data.SelectToken(path), tokenToAdd));
+    }
+
     [Test]
     public void CanUseFluentApi()
     {

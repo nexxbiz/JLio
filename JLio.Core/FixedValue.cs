@@ -57,8 +57,14 @@ public class FixedValue : IFunction
     private JToken ProcessValue(JToken value, JToken currentToken, JToken dataContext, IExecutionContext context)
     {
         if (IsFunction(value)) return ExecuteFunction(value.ToString(), currentToken, dataContext, context);
-        if (value.Type == JTokenType.Object || value.Type == JTokenType.Array) { ProcessToken(value, currentToken, dataContext, context); }
-        ;
+
+        if (value.Type == JTokenType.Object || value.Type == JTokenType.Array)
+        {
+            // FIX: Use the return value from ProcessToken instead of discarding it
+            var result = ProcessToken(value, currentToken, dataContext, context);
+            return result.Success ? result.Data.FirstOrDefault() ?? value : value;
+        }
+
         return value;
     }
 
@@ -81,11 +87,6 @@ public class FixedValue : IFunction
         return result.Data.FirstOrDefault(); // Return the result of the function execution   
 
     }
-
-    //traverse if it is a object or array 
-    // properties that are a string and start with =
-    // try parse to fucntion and exectute function
-
 
     public string ToScript()
     {
