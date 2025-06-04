@@ -15,13 +15,13 @@ public class Format : FunctionBase
 
     public Format(string formatString)
     {
-        Arguments.Add(new FunctionSupportedValue(new FixedValue(formatString)));
+        Arguments.Add(new FunctionSupportedValue(new FixedValue(formatString,null)));
     }
 
     public Format(string path, string formatString)
     {
-        Arguments.Add(new FunctionSupportedValue(new FixedValue(JToken.Parse($"\"{path}\""))));
-        Arguments.Add(new FunctionSupportedValue(new FixedValue(JToken.Parse($"\"{formatString}\""))));
+        Arguments.Add(new FunctionSupportedValue(new FixedValue(JToken.Parse($"\"{path}\""),null)));
+        Arguments.Add(new FunctionSupportedValue(new FixedValue(JToken.Parse($"\"{formatString}\""),null)));
     }
 
     public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)

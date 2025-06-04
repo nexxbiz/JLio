@@ -9,7 +9,7 @@ public static class SetBuilders
 {
     public static JLioScript OnPath(this SetValueContainer source, string path)
     {
-        source.Script.AddLine(new Set(path, new FunctionSupportedValue(new FixedValue(source.Value))));
+        source.Script.AddLine(new Set(path, new FunctionSupportedValue(new FixedValue(source.Value, null))));
         return source.Script;
     }
 

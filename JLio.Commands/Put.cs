@@ -16,7 +16,7 @@ public class Put : PropertyChangeCommand
     public Put(string path, JToken value)
     {
         Path = path;
-        Value = new FunctionSupportedValue(new FixedValue(value));
+        Value = new FunctionSupportedValue(new FixedValue(value, null));
     }
 
     public Put(string path, IFunctionSupportedValue value)

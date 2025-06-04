@@ -17,7 +17,7 @@ public class Partial : FunctionBase
     public Partial(params string[] arguments)
     {
         arguments.ToList().ForEach(a =>
-            Arguments.Add(new FunctionSupportedValue(new FixedValue(a))));
+            Arguments.Add(new FunctionSupportedValue(new FixedValue(a, null))));
     }
 
     public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)

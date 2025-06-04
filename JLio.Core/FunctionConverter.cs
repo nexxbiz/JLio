@@ -43,14 +43,14 @@ public class FunctionConverter : JsonConverter
         var value = JToken.Load(reader);
         if (value.Type == JTokenType.String) return ParseString(value.ToString());
 
-        return new FunctionSupportedValue(new FixedValue(value));
+        return new FunctionSupportedValue(new FixedValue(value, this));
     }
 
         public IFunctionSupportedValue ParseString(string text)
         {
-            if (string.IsNullOrEmpty(text)) return new FunctionSupportedValue(new FixedValue(JValue.CreateNull()));
+            if (string.IsNullOrEmpty(text)) return new FunctionSupportedValue(new FixedValue(JValue.CreateNull(), this));
             if (!text.StartsWith(CoreConstants.FunctionStartCharacters))
-                return new FunctionSupportedValue(new FixedValue(JToken.Parse($"\"{text}\"")) { FunctionConverter = this });
+                return new FunctionSupportedValue(new FixedValue(JToken.Parse($"\"{text}\""), this));
             var (function, arguments) = GetFunctionAndArguments(text);
 
         return new FunctionSupportedValue(function.SetArguments(arguments));
@@ -70,7 +70,7 @@ public class FunctionConverter : JsonConverter
         if (mainSplit.Count > 1 && function != null)
             return DiscoverFunctionsUsedInArguments(function, mainSplit[1].Text);
 
-        return (new FixedValue(new JValue(text)), new Arguments());
+        return (new FixedValue(new JValue(text), this), new Arguments());
     }
 
     private (IFunction function, Arguments arguments) DiscoverFunctionsUsedInArguments(IFunction function,

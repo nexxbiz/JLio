@@ -20,7 +20,7 @@ public class Set : PropertyChangeCommand
     public Set(string path, JToken value)
     {
         Path = path;
-        Value = new FunctionSupportedValue(new FixedValue(value));
+        Value = new FunctionSupportedValue(new FixedValue(value, null));
     }
 
     public Set(string path, IFunctionSupportedValue value)
