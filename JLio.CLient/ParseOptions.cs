@@ -4,7 +4,6 @@ using JLio.Core;
 using JLio.Core.Contracts;
 using JLio.Functions;
 using Newtonsoft.Json;
-using System.Threading;
 
 namespace JLio.Client;
 
@@ -51,16 +50,20 @@ public class ParseOptions : IParseOptions
            .Register<ToString>()
            .Register<Promote>()
            .Register<Format>()
-           .Register<Fetch>(); 
+           .Register<Fetch>();
 
 
 
-        return new ParseOptions
+        var options = new ParseOptions
         {
             FunctionsProvider = functionsProvider,
             CommandsProvider = commandsProvider,
             JLioCommandConverter = new CommandConverter(commandsProvider),
             JLioFunctionConverter = new FunctionConverter(functionsProvider)
         };
+
+        FixedValue.DefaultFunctionConverter = (FunctionConverter)options.JLioFunctionConverter;
+
+        return options;
     }
 }

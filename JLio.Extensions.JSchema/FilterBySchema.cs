@@ -21,12 +21,12 @@ public class FilterBySchema : FunctionBase
 
     public FilterBySchema(NewtonsoftJSchema schema)
     {
-        Arguments.Add(new FunctionSupportedValue(new FixedValue(schema.ToString(),null)));
+        Arguments.Add(new FunctionSupportedValue(new FixedValue(schema.ToString())));
     }
 
     public FilterBySchema(string path)
     {
-        Arguments.Add(new FunctionSupportedValue(new FixedValue(path,null)));
+        Arguments.Add(new FunctionSupportedValue(new FixedValue(path)));
     }
 
     public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)

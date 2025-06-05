@@ -8,10 +8,13 @@ namespace JLio.Core;
 
 public class FixedValue : IFunction
 {
-    public FixedValue(JToken value, FunctionConverter functionConverter)
+    public static FunctionConverter DefaultFunctionConverter { get; set; } =
+        new FunctionConverter(new FunctionsProvider());
+
+    public FixedValue(JToken value, FunctionConverter functionConverter = null)
     {
         Value = value;
-        this.FunctionConverter = functionConverter;
+        FunctionConverter = functionConverter ?? DefaultFunctionConverter;
     }
 
     public JToken Value { get; }

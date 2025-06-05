@@ -9,7 +9,7 @@ public static class AddBuilders
 {
     public static JLioScript OnPath(this AddValueContainer source, string path)
     {
-        source.Script.AddLine(new Add(path, new FunctionSupportedValue(new FixedValue(source.Value, null))));
+        source.Script.AddLine(new Add(path, new FunctionSupportedValue(new FixedValue(source.Value))));
         return source.Script;
     }
 

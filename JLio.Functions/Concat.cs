@@ -16,7 +16,7 @@ public class Concat : FunctionBase
     public Concat(params string[] arguments)
     {
         arguments.ToList().ForEach(a =>
-            Arguments.Add(new FunctionSupportedValue(new FixedValue(a, null))));
+            Arguments.Add(new FunctionSupportedValue(new FixedValue(a))));
     }
 
     public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)
