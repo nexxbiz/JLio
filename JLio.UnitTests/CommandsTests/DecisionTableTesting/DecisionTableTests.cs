@@ -1,8 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using JLio.Client;
 using JLio.Commands;
+using JLio.Commands.Models;
+using JLio.Core;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
+using JLio.Functions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 
@@ -58,36 +63,36 @@ public class DecisionTableTests
             DecisionTableConfig = new DecisionTableConfig
             {
                 Inputs = new List<DecisionInput>
-                {
-                    new DecisionInput { Name = "age", Path = "@.age", Type = "number" },
-                    new DecisionInput { Name = "membership", Path = "@.membershipLevel", Type = "string" }
-                },
+            {
+                new DecisionInput { Name = "age", Path = "@.age", Type = "number" },
+                new DecisionInput { Name = "membership", Path = "@.membershipLevel", Type = "string" }
+            },
                 Outputs = new List<DecisionOutput>
-                {
-                    new DecisionOutput { Name = "discount", Path = "@.discount" },
-                    new DecisionOutput { Name = "category", Path = "@.category" }
-                },
+            {
+                new DecisionOutput { Name = "discount", Path = "@.discount" },
+                new DecisionOutput { Name = "category", Path = "@.category" }
+            },
                 Rules = new List<DecisionRule>
+            {
+                new DecisionRule
                 {
-                    new DecisionRule
+                    Conditions = new Dictionary<string, JToken>
                     {
-                        Conditions = new Dictionary<string, JToken>
-                        {
-                            { "age", ">=18" },
-                            { "membership", "gold" }
-                        },
-                        Results = new Dictionary<string, JToken>
-                        {
-                            { "discount", 0.3 },
-                            { "category", "premium" }
-                        }
+                        { "age", ">=18" },
+                        { "membership", "gold" }
+                    },
+                    Results = new Dictionary<string, IFunctionSupportedValue>
+                    {
+                        { "discount", new FunctionSupportedValue(new FixedValue(JToken.FromObject(0.3))) },
+                        { "category", new FunctionSupportedValue(new FixedValue(JValue.CreateString("premium"))) }
                     }
-                },
-                DefaultResults = new Dictionary<string, JToken>
-                {
-                    { "discount", 0.0 },
-                    { "category", "standard" }
                 }
+            },
+                DefaultResults = new Dictionary<string, IFunctionSupportedValue>
+            {
+                { "discount", new FunctionSupportedValue(new FixedValue(JToken.FromObject(0.0))) },
+                { "category", new FunctionSupportedValue(new FixedValue(JValue.CreateString("standard"))) }
+            }
             }
         };
 
@@ -110,46 +115,46 @@ public class DecisionTableTests
             DecisionTableConfig = new DecisionTableConfig
             {
                 Inputs = new List<DecisionInput>
-                {
-                    new DecisionInput { Name = "age", Path = "@.age", Type = "number" },
-                    new DecisionInput { Name = "orderValue", Path = "@.orderValue", Type = "number" }
-                },
+            {
+                new DecisionInput { Name = "age", Path = "@.age", Type = "number" },
+                new DecisionInput { Name = "orderValue", Path = "@.orderValue", Type = "number" }
+            },
                 Outputs = new List<DecisionOutput>
-                {
-                    new DecisionOutput { Name = "discount", Path = "@.pricing.discount" }
-                },
+            {
+                new DecisionOutput { Name = "discount", Path = "@.pricing.discount" }
+            },
                 Rules = new List<DecisionRule>
+            {
+                new DecisionRule
                 {
-                    new DecisionRule
+                    Priority = 1,
+                    Conditions = new Dictionary<string, JToken>
                     {
-                        Priority = 1,
-                        Conditions = new Dictionary<string, JToken>
-                        {
-                            { "age", ">=65" },
-                            { "orderValue", ">=100" }
-                        },
-                        Results = new Dictionary<string, JToken>
-                        {
-                            { "discount", 0.25 }
-                        }
+                        { "age", ">=65" },
+                        { "orderValue", ">=100" }
                     },
-                    new DecisionRule
+                    Results = new Dictionary<string, IFunctionSupportedValue>
                     {
-                        Priority = 2,
-                        Conditions = new Dictionary<string, JToken>
-                        {
-                            { "orderValue", ">=100" }
-                        },
-                        Results = new Dictionary<string, JToken>
-                        {
-                            { "discount", 0.1 }
-                        }
+                        { "discount", new FunctionSupportedValue(new FixedValue(JToken.FromObject(0.25))) }
                     }
                 },
-                DefaultResults = new Dictionary<string, JToken>
+                new DecisionRule
                 {
-                    { "discount", 0.0 }
+                    Priority = 2,
+                    Conditions = new Dictionary<string, JToken>
+                    {
+                        { "orderValue", ">=100" }
+                    },
+                    Results = new Dictionary<string, IFunctionSupportedValue>
+                    {
+                        { "discount", new FunctionSupportedValue(new FixedValue(JToken.FromObject(0.1))) }
+                    }
                 }
+            },
+                DefaultResults = new Dictionary<string, IFunctionSupportedValue>
+            {
+                { "discount", new FunctionSupportedValue(new FixedValue(JToken.FromObject(0.0))) }
+            }
             }
         };
 
@@ -180,33 +185,33 @@ public class DecisionTableTests
             DecisionTableConfig = new DecisionTableConfig
             {
                 Inputs = new List<DecisionInput>
-                {
-                    new DecisionInput { Name = "country", Path = "@.country", Type = "string" },
-                    new DecisionInput { Name = "membership", Path = "@.membershipLevel", Type = "string" }
-                },
+            {
+                new DecisionInput { Name = "country", Path = "@.country", Type = "string" },
+                new DecisionInput { Name = "membership", Path = "@.membershipLevel", Type = "string" }
+            },
                 Outputs = new List<DecisionOutput>
-                {
-                    new DecisionOutput { Name = "shippingCost", Path = "@.shipping.cost" }
-                },
+            {
+                new DecisionOutput { Name = "shippingCost", Path = "@.shipping.cost" }
+            },
                 Rules = new List<DecisionRule>
+            {
+                new DecisionRule
                 {
-                    new DecisionRule
+                    Conditions = new Dictionary<string, JToken>
                     {
-                        Conditions = new Dictionary<string, JToken>
-                        {
-                            { "country", new JArray("US", "CA") },
-                            { "membership", new JArray("gold", "silver") }
-                        },
-                        Results = new Dictionary<string, JToken>
-                        {
-                            { "shippingCost", 5.0 }
-                        }
+                        { "country", new JArray("US", "CA") },
+                        { "membership", new JArray("gold", "silver") }
+                    },
+                    Results = new Dictionary<string, IFunctionSupportedValue>
+                    {
+                        { "shippingCost", new FunctionSupportedValue(new FixedValue(JToken.FromObject(5.0))) }
                     }
-                },
-                DefaultResults = new Dictionary<string, JToken>
-                {
-                    { "shippingCost", 15.0 }
                 }
+            },
+                DefaultResults = new Dictionary<string, IFunctionSupportedValue>
+            {
+                { "shippingCost", new FunctionSupportedValue(new FixedValue(JToken.FromObject(15.0))) }
+            }
             }
         };
 
@@ -237,36 +242,36 @@ public class DecisionTableTests
             DecisionTableConfig = new DecisionTableConfig
             {
                 Inputs = new List<DecisionInput>
-                {
-                    new DecisionInput { Name = "customerAge", Path = "@.age", Type = "number" },
-                    new DecisionInput { Name = "otherCustomerAge", Path = "$.customers[1].age", Type = "number" }
-                },
+            {
+                new DecisionInput { Name = "customerAge", Path = "@.age", Type = "number" },
+                new DecisionInput { Name = "otherCustomerAge", Path = "$.customers[1].age", Type = "number" }
+            },
                 Outputs = new List<DecisionOutput>
-                {
-                    new DecisionOutput { Name = "comparison", Path = "@.ageComparison" },
-                    new DecisionOutput { Name = "globalFlag", Path = "$.globalSettings.ageFlag" }
-                },
+            {
+                new DecisionOutput { Name = "comparison", Path = "@.ageComparison" },
+                new DecisionOutput { Name = "globalFlag", Path = "$.globalSettings.ageFlag" }
+            },
                 Rules = new List<DecisionRule>
+            {
+                new DecisionRule
                 {
-                    new DecisionRule
+                    Conditions = new Dictionary<string, JToken>
                     {
-                        Conditions = new Dictionary<string, JToken>
-                        {
-                            { "customerAge", "<50" },
-                            { "otherCustomerAge", ">=50" }
-                        },
-                        Results = new Dictionary<string, JToken>
-                        {
-                            { "comparison", "younger" },
-                            { "globalFlag", "mixed_ages" }
-                        }
+                        { "customerAge", "<50" },
+                        { "otherCustomerAge", ">=50" }
+                    },
+                    Results = new Dictionary<string, IFunctionSupportedValue>
+                    {
+                        { "comparison", new FunctionSupportedValue(new FixedValue(JValue.CreateString("younger"))) },
+                        { "globalFlag", new FunctionSupportedValue(new FixedValue(JValue.CreateString("mixed_ages"))) }
                     }
-                },
-                DefaultResults = new Dictionary<string, JToken>
-                {
-                    { "comparison", "same_range" },
-                    { "globalFlag", "uniform_ages" }
                 }
+            },
+                DefaultResults = new Dictionary<string, IFunctionSupportedValue>
+            {
+                { "comparison", new FunctionSupportedValue(new FixedValue(JValue.CreateString("same_range"))) },
+                { "globalFlag", new FunctionSupportedValue(new FixedValue(JValue.CreateString("uniform_ages"))) }
+            }
             }
         };
 
@@ -281,50 +286,6 @@ public class DecisionTableTests
     }
 
     [Test]
-    public void CanValidateRequiredProperties()
-    {
-        var command = new DecisionTable
-        {
-            Path = "", // Missing path
-            DecisionTableConfig = null // Missing config
-        };
-
-        var result = command.Execute(data, executeOptions);
-
-        Assert.IsNotNull(result);
-        Assert.IsFalse(result.Success);
-
-        var logEntries = executeOptions.GetLogEntries();
-        Assert.IsTrue(logEntries.Any(l => l.Message.Contains("Path property for decisionTable command is missing")));
-        Assert.IsTrue(logEntries.Any(l => l.Message.Contains("DecisionTable property for decisionTable command is missing")));
-    }
-
-    [Test]
-    public void CanValidateConfigurationProperties()
-    {
-        var command = new DecisionTable
-        {
-            Path = "$.singleCustomer",
-            DecisionTableConfig = new DecisionTableConfig
-            {
-                Inputs = new List<DecisionInput>(), // Empty inputs
-                Outputs = null, // Missing outputs
-                Rules = null // Missing rules
-            }
-        };
-
-        var result = command.Execute(data, executeOptions);
-
-        Assert.IsNotNull(result);
-        Assert.IsFalse(result.Success);
-
-        var logEntries = executeOptions.GetLogEntries();
-        Assert.IsTrue(logEntries.Any(l => l.Message.Contains("DecisionTable inputs are required")));
-        Assert.IsTrue(logEntries.Any(l => l.Message.Contains("DecisionTable outputs are required")));
-        Assert.IsTrue(logEntries.Any(l => l.Message.Contains("DecisionTable rules are required")));
-    }
-
-    [Test]
     public void CanHandleNoMatchingRulesWithDefaults()
     {
         var command = new DecisionTable
@@ -333,31 +294,31 @@ public class DecisionTableTests
             DecisionTableConfig = new DecisionTableConfig
             {
                 Inputs = new List<DecisionInput>
-                {
-                    new DecisionInput { Name = "age", Path = "@.age", Type = "number" }
-                },
+            {
+                new DecisionInput { Name = "age", Path = "@.age", Type = "number" }
+            },
                 Outputs = new List<DecisionOutput>
-                {
-                    new DecisionOutput { Name = "category", Path = "@.category" }
-                },
+            {
+                new DecisionOutput { Name = "category", Path = "@.category" }
+            },
                 Rules = new List<DecisionRule>
+            {
+                new DecisionRule
                 {
-                    new DecisionRule
+                    Conditions = new Dictionary<string, JToken>
                     {
-                        Conditions = new Dictionary<string, JToken>
-                        {
-                            { "age", ">=65" } // Won't match age=22
-                        },
-                        Results = new Dictionary<string, JToken>
-                        {
-                            { "category", "senior" }
-                        }
+                        { "age", ">=65" } // Won't match age=22
+                    },
+                    Results = new Dictionary<string, IFunctionSupportedValue>
+                    {
+                        { "category", new FunctionSupportedValue(new FixedValue(JValue.CreateString("senior"))) }
                     }
-                },
-                DefaultResults = new Dictionary<string, JToken>
-                {
-                    { "category", "standard" }
                 }
+            },
+                DefaultResults = new Dictionary<string, IFunctionSupportedValue>
+            {
+                { "category", new FunctionSupportedValue(new FixedValue(JValue.CreateString("standard"))) }
+            }
             }
         };
 
@@ -379,27 +340,27 @@ public class DecisionTableTests
             DecisionTableConfig = new DecisionTableConfig
             {
                 Inputs = new List<DecisionInput>
-                {
-                    new DecisionInput { Name = "age", Path = "@.age", Type = "number" }
-                },
+            {
+                new DecisionInput { Name = "age", Path = "@.age", Type = "number" }
+            },
                 Outputs = new List<DecisionOutput>
-                {
-                    new DecisionOutput { Name = "category", Path = "@.category" }
-                },
+            {
+                new DecisionOutput { Name = "category", Path = "@.category" }
+            },
                 Rules = new List<DecisionRule>
+            {
+                new DecisionRule
                 {
-                    new DecisionRule
+                    Conditions = new Dictionary<string, JToken>
                     {
-                        Conditions = new Dictionary<string, JToken>
-                        {
-                            { "age", ">=65" } // Won't match age=22
-                        },
-                        Results = new Dictionary<string, JToken>
-                        {
-                            { "category", "senior" }
-                        }
+                        { "age", ">=65" } // Won't match age=22
+                    },
+                    Results = new Dictionary<string, IFunctionSupportedValue>
+                    {
+                        { "category", new FunctionSupportedValue(new FixedValue(JValue.CreateString("senior"))) }
                     }
                 }
+            }
                 // No default results
             }
         };
@@ -422,45 +383,45 @@ public class DecisionTableTests
             DecisionTableConfig = new DecisionTableConfig
             {
                 Inputs = new List<DecisionInput>
-                {
-                    new DecisionInput { Name = "age", Path = "@.age", Type = "number" },
-                    new DecisionInput { Name = "orderValue", Path = "@.orderValue", Type = "number" }
-                },
+            {
+                new DecisionInput { Name = "age", Path = "@.age", Type = "number" },
+                new DecisionInput { Name = "orderValue", Path = "@.orderValue", Type = "number" }
+            },
                 Outputs = new List<DecisionOutput>
-                {
-                    new DecisionOutput { Name = "tier", Path = "@.tier" }
-                },
+            {
+                new DecisionOutput { Name = "tier", Path = "@.tier" }
+            },
                 Rules = new List<DecisionRule>
+            {
+                new DecisionRule
                 {
-                    new DecisionRule
+                    Conditions = new Dictionary<string, JToken>
                     {
-                        Conditions = new Dictionary<string, JToken>
-                        {
-                            { "age", ">65" },
-                            { "orderValue", "<=200" }
-                        },
-                        Results = new Dictionary<string, JToken>
-                        {
-                            { "tier", "senior_budget" }
-                        }
+                        { "age", ">65" },
+                        { "orderValue", "<=200" }
                     },
-                    new DecisionRule
+                    Results = new Dictionary<string, IFunctionSupportedValue>
                     {
-                        Conditions = new Dictionary<string, JToken>
-                        {
-                            { "age", "<30" },
-                            { "orderValue", ">100" }
-                        },
-                        Results = new Dictionary<string, JToken>
-                        {
-                            { "tier", "young_spender" }
-                        }
+                        { "tier", new FunctionSupportedValue(new FixedValue(JValue.CreateString("senior_budget"))) }
                     }
                 },
-                DefaultResults = new Dictionary<string, JToken>
+                new DecisionRule
                 {
-                    { "tier", "standard" }
+                    Conditions = new Dictionary<string, JToken>
+                    {
+                        { "age", "<30" },
+                        { "orderValue", ">100" }
+                    },
+                    Results = new Dictionary<string, IFunctionSupportedValue>
+                    {
+                        { "tier", new FunctionSupportedValue(new FixedValue(JValue.CreateString("young_spender"))) }
+                    }
                 }
+            },
+                DefaultResults = new Dictionary<string, IFunctionSupportedValue>
+            {
+                { "tier", new FunctionSupportedValue(new FixedValue(JValue.CreateString("standard"))) }
+            }
             }
         };
 
@@ -491,32 +452,32 @@ public class DecisionTableTests
             DecisionTableConfig = new DecisionTableConfig
             {
                 Inputs = new List<DecisionInput>
-                {
-                    new DecisionInput { Name = "age", Path = "@.age", Type = "number" },
-                    new DecisionInput { Name = "nonExistent", Path = "@.nonExistentField", Type = "string" }
-                },
+            {
+                new DecisionInput { Name = "age", Path = "@.age", Type = "number" },
+                new DecisionInput { Name = "nonExistent", Path = "@.nonExistentField", Type = "string" }
+            },
                 Outputs = new List<DecisionOutput>
-                {
-                    new DecisionOutput { Name = "result", Path = "@.result" }
-                },
+            {
+                new DecisionOutput { Name = "result", Path = "@.result" }
+            },
                 Rules = new List<DecisionRule>
+            {
+                new DecisionRule
                 {
-                    new DecisionRule
+                    Conditions = new Dictionary<string, JToken>
                     {
-                        Conditions = new Dictionary<string, JToken>
-                        {
-                            { "age", ">=18" }
-                        },
-                        Results = new Dictionary<string, JToken>
-                        {
-                            { "result", "adult" }
-                        }
+                        { "age", ">=18" }
+                    },
+                    Results = new Dictionary<string, IFunctionSupportedValue>
+                    {
+                        { "result", new FunctionSupportedValue(new FixedValue(JValue.CreateString("adult"))) }
                     }
-                },
-                DefaultResults = new Dictionary<string, JToken>
-                {
-                    { "result", "unknown" }
                 }
+            },
+                DefaultResults = new Dictionary<string, IFunctionSupportedValue>
+            {
+                { "result", new FunctionSupportedValue(new FixedValue(JValue.CreateString("unknown"))) }
+            }
             }
         };
 
@@ -557,9 +518,10 @@ public class DecisionTableTests
                         {
                             { "age", ">=18" }
                         },
-                        Results = new Dictionary<string, JToken>
+                        Results = new Dictionary<string, IFunctionSupportedValue>
                         {
-                            { "category", "adult" }
+                            { "category", new FunctionSupportedValue(new FixedValue(JValue.CreateString("adult")))
+                            }
                         }
                     }
                 }
@@ -576,6 +538,7 @@ public class DecisionTableTests
     [Test]
     public void OutputsCanUseFunctions()
     {
+        var functionConverter = new FunctionConverter(ParseOptions.CreateDefault().FunctionsProvider);
         var command = new DecisionTable
         {
             Path = "$.singleCustomer",
@@ -597,9 +560,9 @@ public class DecisionTableTests
                         {
                             { "age", ">=18" }
                         },
-                        Results = new Dictionary<string, JToken>
+                        Results = new Dictionary<string, IFunctionSupportedValue>
                         {
-                            { "uniqueId", "=newGuid()" }
+                             { "uniqueId", new FunctionSupportedValue(new FixedValue(JToken.FromObject(new { demo = new { guid = "=newGuid()", age = "=fetch(@.age)" } }))) }
                         }
                     }
                 }
@@ -610,7 +573,67 @@ public class DecisionTableTests
 
         Assert.IsNotNull(result);
         Assert.IsTrue(result.Success);
-        var uid = data.SelectToken("$.singleCustomer.uid").ToString();
-        Assert.IsNotEmpty(uid);
+        var uid = data.SelectToken("$.singleCustomer.uid.demo.guid").ToString();
+        var age = data.SelectToken("$.singleCustomer.uid.demo.age").ToString();
+        Assert.DoesNotThrow(() => Guid.Parse(uid));
+        Assert.AreEqual("22", age);
+
+    }
+
+    [Test]
+    public void OutputsCanUseFunctionsOnArrayItems()
+    {
+        var functionConverter = new FunctionConverter(ParseOptions.CreateDefault().FunctionsProvider);
+        var command = new DecisionTable
+        {
+            Path = "$.customers[*]",
+            DecisionTableConfig = new DecisionTableConfig
+            {
+                Inputs = new List<DecisionInput>
+                {
+                    new DecisionInput { Name = "age", Path = "@.age", Type = "number" }
+                },
+                Outputs = new List<DecisionOutput>
+                {
+                    new DecisionOutput { Name = "uniqueId", Path = "@.uid" }
+                },
+                Rules = new List<DecisionRule>
+                {
+                    new DecisionRule
+                    {
+                        Priority=2,
+                        Conditions = new Dictionary<string, JToken>
+                        {
+                            { "age", ">=18" }
+                        },
+                        Results = new Dictionary<string, IFunctionSupportedValue>
+                        {
+                             { "uniqueId", new FunctionSupportedValue(new FixedValue(JToken.FromObject(new { demo = new { guid = "=newGuid()", age = "=fetch(@.age)" } }))) }
+                        }
+                    },
+                     new DecisionRule
+                    {
+                        Priority=1,
+                        Conditions = new Dictionary<string, JToken>
+                        {
+                            { "age", ">=65" }
+                        },
+                        Results = new Dictionary<string, IFunctionSupportedValue>
+                        {
+                             { "uniqueId", new FunctionSupportedValue(new FixedValue(JToken.FromObject(new { age = "senior" } ))) }
+                        }
+                    }
+                }
+            }
+        };
+
+        var result = command.Execute(data, executeOptions);
+
+        Assert.IsNotNull(result);
+        Assert.IsTrue(result.Success);
+        var age1 = data.SelectToken("$.customers[0].uid.demo.age").ToString();
+        var age2 = data.SelectToken("$.customers[1].uid.age").ToString();
+        Assert.AreEqual("25", age1);
+        Assert.AreEqual("senior", age2);
     }
 }

@@ -1,3 +1,4 @@
+using JLio.Commands.Models;
 using JLio.Core.Models;
 
 namespace JLio.Commands.Builders;

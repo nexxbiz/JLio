@@ -1,12 +1,15 @@
-﻿using System;
+﻿using JLio.Commands;
+using JLio.Commands.Models;
+using JLio.Core;
+using JLio.Core.Contracts;
+using JLio.Core.Models;
+using JLio.Functions;
+using Newtonsoft.Json.Linq;
+using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using JLio.Commands;
-using JLio.Core.Contracts;
-using JLio.Core.Models;
-using Newtonsoft.Json.Linq;
-using NUnit.Framework;
 
 namespace JLio.UnitTests.CommandsTests.DecisionTableTesting;
 
@@ -105,12 +108,12 @@ public class DecisionTablePerformanceTests
                             { "orderValue", ">=500" },
                             { "creditScore", ">=750" }
                         },
-                        Results = new Dictionary<string, JToken>
+                        Results = new Dictionary<string, IFunctionSupportedValue>
                         {
-                            { "discountRate", 0.25 },
-                            { "riskLevel", "low" },
-                            { "tier", "premium_senior" },
-                            { "offers", new JArray("senior_discount", "premium_shipping") }
+                            { "discountRate", new FunctionSupportedValue(new FixedValue(JToken.FromObject(0.25))) },
+                            { "riskLevel", new FunctionSupportedValue(new FixedValue(JValue.CreateString("low"))) },
+                            { "tier", new FunctionSupportedValue(new FixedValue(JValue.CreateString("premium_senior"))) },
+                            { "offers", new FunctionSupportedValue(new FixedValue(new JArray("senior_discount", "premium_shipping"))) }
                         }
                     },
                     // Complex condition with AND/OR
@@ -124,12 +127,12 @@ public class DecisionTablePerformanceTests
                             { "orderValue", ">=200" },
                             { "country", new JArray("US", "CA", "UK") }
                         },
-                        Results = new Dictionary<string, JToken>
+                        Results = new Dictionary<string, IFunctionSupportedValue>
                         {
-                            { "discountRate", 0.20 },
-                            { "riskLevel", "low" },
-                            { "tier", "platinum_prime" },
-                            { "offers", new JArray("fast_shipping", "loyalty_bonus") }
+                            { "discountRate", new FunctionSupportedValue(new FixedValue(JToken.FromObject(0.20))) },
+                            { "riskLevel", new FunctionSupportedValue(new FixedValue(JValue.CreateString("low"))) },
+                            { "tier", new FunctionSupportedValue(new FixedValue(JValue.CreateString("platinum_prime"))) },
+                            { "offers", new FunctionSupportedValue(new FixedValue(new JArray("fast_shipping", "loyalty_bonus"))) }
                         }
                     },
                     // Range conditions
@@ -142,12 +145,12 @@ public class DecisionTablePerformanceTests
                             { "yearsActive", ">=2" },
                             { "orderValue", ">100" }
                         },
-                        Results = new Dictionary<string, JToken>
+                        Results = new Dictionary<string, IFunctionSupportedValue>
                         {
-                            { "discountRate", 0.15 },
-                            { "riskLevel", "medium" },
-                            { "tier", "trusted" },
-                            { "offers", new JArray("credit_offer") }
+                            { "discountRate", new FunctionSupportedValue(new FixedValue(JToken.FromObject(0.15))) },
+                            { "riskLevel", new FunctionSupportedValue(new FixedValue(JValue.CreateString("medium"))) },
+                            { "tier", new FunctionSupportedValue(new FixedValue(JValue.CreateString("trusted"))) },
+                            { "offers", new FunctionSupportedValue(new FixedValue(new JArray("credit_offer"))) }
                         }
                     },
                     // OR conditions
@@ -160,12 +163,12 @@ public class DecisionTablePerformanceTests
                             { "orderValue", ">=300 || <=50 && >=500" }, // Complex OR with AND
                             { "yearsActive", ">=1" }
                         },
-                        Results = new Dictionary<string, JToken>
+                        Results = new Dictionary<string, IFunctionSupportedValue>
                         {
-                            { "discountRate", 0.10 },
-                            { "riskLevel", "medium" },
-                            { "tier", "gold_member" },
-                            { "offers", new JArray("gold_benefits") }
+                            { "discountRate", new FunctionSupportedValue(new FixedValue(JToken.FromObject(0.10))) },
+                            { "riskLevel", new FunctionSupportedValue(new FixedValue(JValue.CreateString("medium"))) },
+                            { "tier", new FunctionSupportedValue(new FixedValue(JValue.CreateString("gold_member"))) },
+                            { "offers", new FunctionSupportedValue(new FixedValue(new JArray("gold_benefits"))) }
                         }
                     },
                     // High volume rule
@@ -176,12 +179,12 @@ public class DecisionTablePerformanceTests
                         {
                             { "orderValue", ">=1000" }
                         },
-                        Results = new Dictionary<string, JToken>
+                        Results = new Dictionary<string, IFunctionSupportedValue>
                         {
-                            { "discountRate", 0.30 },
-                            { "riskLevel", "low" },
-                            { "tier", "high_value" },
-                            { "offers", new JArray("vip_treatment") }
+                            { "discountRate", new FunctionSupportedValue(new FixedValue(JToken.FromObject(0.30))) },
+                            { "riskLevel", new FunctionSupportedValue(new FixedValue(JValue.CreateString("low"))) },
+                            { "tier", new FunctionSupportedValue(new FixedValue(JValue.CreateString("high_value"))) },
+                            { "offers", new FunctionSupportedValue(new FixedValue(new JArray("vip_treatment"))) }
                         }
                     },
                     // Catch-all rule
@@ -192,21 +195,21 @@ public class DecisionTablePerformanceTests
                         {
                             { "age", ">=18" }
                         },
-                        Results = new Dictionary<string, JToken>
+                        Results = new Dictionary<string, IFunctionSupportedValue>
                         {
-                            { "discountRate", 0.05 },
-                            { "riskLevel", "standard" },
-                            { "tier", "standard" },
-                            { "offers", new JArray("welcome_offer") }
+                            { "discountRate", new FunctionSupportedValue(new FixedValue(JToken.FromObject(0.05))) },
+                            { "riskLevel", new FunctionSupportedValue(new FixedValue(JValue.CreateString("standard"))) },
+                            { "tier", new FunctionSupportedValue(new FixedValue(JValue.CreateString("standard"))) },
+                            { "offers", new FunctionSupportedValue(new FixedValue(new JArray("welcome_offer"))) }
                         }
                     }
                 },
-                DefaultResults = new Dictionary<string, JToken>
+                DefaultResults = new Dictionary<string, IFunctionSupportedValue>
                 {
-                    { "discountRate", 0.0 },
-                    { "riskLevel", "unknown" },
-                    { "tier", "unclassified" },
-                    { "offers", new JArray() }
+                    { "discountRate", new FunctionSupportedValue(new FixedValue(JToken.FromObject(0.0))) },
+                    { "riskLevel", new FunctionSupportedValue(new FixedValue(JValue.CreateString("unknown"))) },
+                    { "tier", new FunctionSupportedValue(new FixedValue(JValue.CreateString("unclassified"))) },
+                    { "offers", new FunctionSupportedValue(new FixedValue(new JArray())) }
                 }
             }
         };
@@ -315,15 +318,15 @@ public class DecisionTablePerformanceTests
                             { "orderValue", ">=100 && <=500 || >=1000 && <=2000" },
                             { "creditScore", ">=300 && <=600 || >=750 && <=850" }
                         },
-                        Results = new Dictionary<string, JToken>
+                        Results = new Dictionary<string, IFunctionSupportedValue>
                         {
-                            { "result", "complex_match" }
+                            { "result", new FunctionSupportedValue(new FixedValue(JValue.CreateString("complex_match"))) }
                         }
                     }
                 },
-                DefaultResults = new Dictionary<string, JToken>
+                DefaultResults = new Dictionary<string, IFunctionSupportedValue>
                 {
-                    { "result", "no_match" }
+                    { "result", new FunctionSupportedValue(new FixedValue(JValue.CreateString("no_match"))) }
                 },
                 ExecutionStrategy = new ExecutionStrategy
                 {
@@ -459,9 +462,9 @@ public class DecisionTablePerformanceTests
                     { "age", $">={random.Next(18, 70)}" },
                     { "orderValue", $">={random.Next(50, 1000)}" }
                 },
-                Results = new Dictionary<string, JToken>
+                Results = new Dictionary<string, IFunctionSupportedValue>
                 {
-                    { "tier", $"tier_{i}" }
+                    { "tier", new FunctionSupportedValue(new FixedValue(JValue.CreateString($"tier_{i}"))) }
                 }
             });
         }
@@ -481,9 +484,9 @@ public class DecisionTablePerformanceTests
                     new DecisionOutput { Name = "tier", Path = "@.tier" }
                 },
                 Rules = rules,
-                DefaultResults = new Dictionary<string, JToken>
+                DefaultResults = new Dictionary<string, IFunctionSupportedValue>
                 {
-                    { "tier", "default" }
+                    { "tier", new FunctionSupportedValue(new FixedValue(JValue.CreateString("default"))) }
                 },
                 ExecutionStrategy = new ExecutionStrategy
                 {
@@ -541,6 +544,7 @@ public class DecisionTablePerformanceTests
         Assert.IsTrue(result.Success);
         LogPerformanceResults("Single record processing", stopwatch, 1);
     }
+
     public void TearDown()
     {
         // Reset data for next test

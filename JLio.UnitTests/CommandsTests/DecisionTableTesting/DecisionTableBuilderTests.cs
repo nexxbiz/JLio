@@ -1,10 +1,12 @@
-using System.Collections.Generic;
-using JLio.Commands;
 using JLio.Commands.Builders;
+using JLio.Commands.Models;
+using JLio.Core;
+using JLio.Core.Contracts;
 using JLio.Core.Models;
-using JLio.Commands;
+using JLio.Functions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using System.Collections.Generic;
 
 namespace JLio.UnitTests.CommandsTests.DecisionTableTesting;
 
@@ -28,7 +30,10 @@ public class DecisionTableBuilderTests
                 new DecisionRule
                 {
                     Conditions = new Dictionary<string, JToken> { { "age", ">=18" } },
-                    Results = new Dictionary<string, JToken> { { "category", "adult" } }
+                    Results = new Dictionary<string, IFunctionSupportedValue>
+                    {
+                        { "category", new FunctionSupportedValue(new FixedValue(JValue.CreateString("adult"))) }
+                    }
                 }
             }
         };
@@ -44,4 +49,3 @@ public class DecisionTableBuilderTests
         Assert.AreEqual("adult", result.Data.SelectToken("$.person.category")?.ToString());
     }
 }
-
