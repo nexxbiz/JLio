@@ -1,4 +1,5 @@
-﻿using JLio.Core;
+﻿using JLio.Commands.Models;
+using JLio.Core;
 using JLio.Core.Contracts;
 using JLio.Core.Extensions;
 using JLio.Core.Models;
@@ -134,21 +135,22 @@ public class DecisionTable : CommandBase
 
     private void ApplyMergedResults(List<DecisionRule> rules, JToken targetToken, JToken dataContext)
     {
-        var mergedResults = new Dictionary<string, object>();
+        var mergedResults = new Dictionary<string, JToken>();
 
         // Collect all results from all matching rules
         foreach (var rule in rules)
         {
             foreach (var result in rule.Results)
             {
+                var valueToken = EvaluateResultValue(result.Value.GetValue(targetToken,dataContext, executionContext).Data.GetJTokenValue(), targetToken, dataContext);
                 if (!mergedResults.ContainsKey(result.Key))
                 {
-                    mergedResults[result.Key] = result.Value;
+                    mergedResults[result.Key] = valueToken;
                 }
                 else
                 {
                     // Handle merge conflicts
-                    mergedResults[result.Key] = MergeValues(mergedResults[result.Key], result.Value);
+                    mergedResults[result.Key] = MergeValues(mergedResults[result.Key], valueToken);
                 }
             }
         }
@@ -164,7 +166,7 @@ public class DecisionTable : CommandBase
         }
     }
 
-    private object MergeValues(object existing, object newValue)
+    private JToken MergeValues(JToken existing, JToken newValue)
     {
         // If both are arrays, concatenate them
         if (existing is JArray existingArray && newValue is JArray newArray)
@@ -180,13 +182,13 @@ public class DecisionTable : CommandBase
         // If one is array and other isn't, convert to array
         if (existing is JArray existingArr)
         {
-            existingArr.Add(JToken.FromObject(newValue));
+            existingArr.Add(newValue);
             return existingArr;
         }
 
         if (newValue is JArray newArr)
         {
-            var merged = new JArray { JToken.FromObject(existing) };
+            var merged = new JArray { existing };
             foreach (var item in newArr)
             {
                 merged.Add(item);
@@ -198,11 +200,18 @@ public class DecisionTable : CommandBase
         if (decimal.TryParse(existing?.ToString(), out var existingDecimal) &&
             decimal.TryParse(newValue?.ToString(), out var newDecimal))
         {
-            return Math.Max(existingDecimal, newDecimal);
+            return new JValue(Math.Max(existingDecimal, newDecimal));
         }
 
         // For other types, create an array
-        return new JArray { JToken.FromObject(existing), JToken.FromObject(newValue) };
+        return new JArray { existing, newValue };
+    }
+
+    private JToken EvaluateResultValue(JToken resultValue, JToken currentToken, JToken dataContext)
+    {
+        var functionValue = new FunctionSupportedValue(new FixedValue(resultValue));
+        var functionResult = functionValue.GetValue(currentToken, dataContext, executionContext);
+        return functionResult.Data.GetJTokenValue();
     }
 
     private Dictionary<string, object> EvaluateInputs(JToken targetToken, JToken dataContext)
@@ -350,7 +359,7 @@ public class DecisionTable : CommandBase
         // 1. Number of conditions matched (specificity)
         // 2. Priority value
         var conditionsMatched = rule.Conditions.Count(c => inputValues.ContainsKey(c.Key));
-        return (conditionsMatched * 100) + rule.Priority;
+        return conditionsMatched * 100 + rule.Priority;
     }
 
     private bool EvaluateRuleConditions(DecisionRule rule, Dictionary<string, object> inputValues)
@@ -587,7 +596,8 @@ public class DecisionTable : CommandBase
             var output = DecisionTableConfig.Outputs.FirstOrDefault(o => o.Name == result.Key);
             if (output != null)
             {
-                ApplyOutput(output, result.Value, targetToken, dataContext);
+                var valueToken = EvaluateResultValue(result.Value.GetValue(targetToken, dataContext, executionContext).Data.GetJTokenValue(), targetToken, dataContext);
+                ApplyOutput(output, valueToken, targetToken, dataContext);
             }
         }
     }
@@ -599,17 +609,18 @@ public class DecisionTable : CommandBase
             var output = DecisionTableConfig.Outputs.FirstOrDefault(o => o.Name == result.Key);
             if (output != null)
             {
-                ApplyOutput(output, result.Value, targetToken, dataContext);
+                var valueToken = EvaluateResultValue(result.Value.GetValue(targetToken, dataContext, executionContext).Data.GetJTokenValue(), targetToken, dataContext);
+                ApplyOutput(output, valueToken, targetToken, dataContext);
             }
         }
     }
 
-    private void ApplyOutput(DecisionOutput output, object value, JToken targetToken, JToken dataContext)
+    private void ApplyOutput(DecisionOutput output, JToken value, JToken targetToken, JToken dataContext)
     {
         try
         {
             var outputPath = output.Path;
-            JToken valueToken = JToken.FromObject(value);
+            JToken valueToken = value;
 
             // Handle relative vs absolute paths for output
             if (outputPath.StartsWith("@."))
@@ -660,75 +671,4 @@ public class DecisionTable : CommandBase
                 $"Failed to apply output '{output.Name}': {ex.Message}");
         }
     }
-}
-
-// Supporting classes for JSON deserialization
-public class DecisionTableConfig
-{
-    [JsonProperty("inputs")]
-    public List<DecisionInput> Inputs { get; set; }
-
-    [JsonProperty("outputs")]
-    public List<DecisionOutput> Outputs { get; set; }
-
-    [JsonProperty("rules")]
-    public List<DecisionRule> Rules { get; set; }
-
-    [JsonProperty("defaultResults")]
-    public Dictionary<string, JToken> DefaultResults { get; set; }
-
-    [JsonProperty("executionStrategy")]
-    public ExecutionStrategy ExecutionStrategy { get; set; }
-}
-
-public class DecisionInput
-{
-    [JsonProperty("name")]
-    public string Name { get; set; }
-
-    [JsonProperty("path")]
-    public string Path { get; set; }
-
-    [JsonProperty("type")]
-    public string Type { get; set; }
-
-    [JsonProperty("transform")]
-    public string Transform { get; set; }
-}
-
-public class DecisionOutput
-{
-    [JsonProperty("name")]
-    public string Name { get; set; }
-
-    [JsonProperty("path")]
-    public string Path { get; set; }
-
-    [JsonProperty("type")]
-    public string Type { get; set; }
-}
-
-public class DecisionRule
-{
-    [JsonProperty("conditions")]
-
-    public Dictionary<string, JToken> Conditions { get; set; }
-
-    [JsonProperty("results")]
-    public Dictionary<string, JToken> Results { get; set; }
-
-    [JsonProperty("priority")]
-    public int Priority { get; set; }
-}
-
-public class ExecutionStrategy
-{
-    [JsonProperty("mode")]
-    public string Mode { get; set; } // "firstMatch", "allMatches", "bestMatch"
-
-    [JsonProperty("conflictResolution")]
-    public string ConflictResolution { get; set; } // "priority", "lastWins", "merge"
-
-    [JsonProperty("stopOnError")]
-    public bool StopOnError { get; set; }
 }

@@ -94,7 +94,24 @@ Jsonpath is used to select the items in the data objects. It uses a simple notat
 See: JSONPath expressions - https://goessner.net/
 
 ## Commands
-Jlio comes with a set of command to transformer. see documentation for details about how to write your own commands. 
+Jlio comes with a set of command to transformer. see documentation for details about how to write your own commands.
+
+### Function support in commands
+
+Some commands allow their value parameters to be evaluated as JLio functions. The table below lists the current support status.
+
+| Command      | Supports functions |
+|--------------|-------------------|
+| `add`        | yes |
+| `set`        | yes |
+| `put`        | yes |
+| `decisionTable` (outputs) | yes |
+| `copy`       | no |
+| `move`       | no |
+| `remove`     | no |
+| `compare`    | no |
+| `merge`      | no |
+
 
 ### Add
 

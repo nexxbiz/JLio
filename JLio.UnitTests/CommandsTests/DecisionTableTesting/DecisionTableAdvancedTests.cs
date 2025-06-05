@@ -1,10 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using JLio.Commands;
+﻿using JLio.Commands;
+using JLio.Commands.Models;
+using JLio.Core;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
+using JLio.Functions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using System.Collections.Generic;
+using System.Linq;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace JLio.UnitTests.CommandsTests.DecisionTableTesting;
 
@@ -51,64 +55,33 @@ public class DecisionTableAdvancedTests
     }
 
     [Test]
-    public void CanExecuteFirstMatchStrategy()
+    public void CanValidateExecutionStrategy()
     {
         var command = new DecisionTable
         {
-            Path = "$.products[*]",
+            Path = "$.testProduct",
             DecisionTableConfig = new DecisionTableConfig
             {
                 Inputs = new List<DecisionInput>
                 {
-                    new DecisionInput { Name = "price", Path = "@.price", Type = "number" },
-                    new DecisionInput { Name = "category", Path = "@.category", Type = "string" }
+                    new DecisionInput { Name = "price", Path = "@.price", Type = "number" }
                 },
                 Outputs = new List<DecisionOutput>
                 {
-                    new DecisionOutput { Name = "discount", Path = "@.discount" },
-                    new DecisionOutput { Name = "promotion", Path = "@.promotion" }
+                    new DecisionOutput { Name = "result", Path = "@.result" }
                 },
                 Rules = new List<DecisionRule>
                 {
                     new DecisionRule
                     {
-                        Priority = 1,
-                        Conditions = new Dictionary<string, JToken>
+                        Conditions = new Dictionary<string, JToken> { { "price", ">0" } },
+                        Results = new Dictionary<string, IFunctionSupportedValue>
                         {
-                            { "category", "electronics" },
-                            { "price", ">=100" }
-                        },
-                        Results = new Dictionary<string, JToken>
-                        {
-                            { "discount", 0.15 },
-                            { "promotion", "premium_electronics" }
-                        }
-                    },
-                    new DecisionRule
-                    {
-                        Priority = 2,
-                        Conditions = new Dictionary<string, JToken>
-                        {
-                            { "category", "electronics" }
-                        },
-                        Results = new Dictionary<string, JToken>
-                        {
-                            { "discount", 0.05 },
-                            { "promotion", "basic_electronics" }
+                            { "result", new FunctionSupportedValue(new FixedValue(JValue.CreateString("positive"))) }
                         }
                     }
                 },
-                ExecutionStrategy = new ExecutionStrategy
-                {
-                    Mode = "firstMatch",
-                    ConflictResolution = "priority",
-                    StopOnError = false
-                },
-                DefaultResults = new Dictionary<string, JToken>
-                {
-                    { "discount", 0.0 },
-                    { "promotion", "none" }
-                }
+                ExecutionStrategy = null // Should use defaults
             }
         };
 
@@ -117,16 +90,11 @@ public class DecisionTableAdvancedTests
         Assert.IsNotNull(result);
         Assert.IsTrue(result.Success);
 
-        // Product 1: electronics, price=25.50 -> should get basic_electronics (first rule doesn't match price)
-        var product1 = data.SelectToken("$.products[0]");
-        Assert.AreEqual(0.05, product1.SelectToken("$.discount").ToObject<decimal>());
-        Assert.AreEqual("basic_electronics", product1.SelectToken("$.promotion").ToString());
-
-        // Product 3: electronics, price=150.00 -> should get premium_electronics (first rule matches)
-        var product3 = data.SelectToken("$.products[2]");
-        Assert.AreEqual(0.15, product3.SelectToken("$.discount").ToObject<decimal>());
-        Assert.AreEqual("premium_electronics", product3.SelectToken("$.promotion").ToString());
+        // Should work with default execution strategy
+        var product = data.SelectToken("$.testProduct");
+        Assert.AreEqual("positive", product.SelectToken("$.result").ToString());
     }
+
 
     [Test]
     public void CanExecuteAllMatchesStrategy()
@@ -156,10 +124,10 @@ public class DecisionTableAdvancedTests
                         {
                             { "price", ">=50" }
                         },
-                        Results = new Dictionary<string, JToken>
+                        Results = new Dictionary<string, IFunctionSupportedValue>
                         {
-                            { "tags", new JArray("premium") },
-                            { "bonusPoints", 50 }
+                            { "tags", new FunctionSupportedValue(new FixedValue(new JArray("premium"))) },
+                            { "bonusPoints", new FunctionSupportedValue(new FixedValue(JToken.FromObject(50))) }
                         }
                     },
                     new DecisionRule
@@ -169,10 +137,10 @@ public class DecisionTableAdvancedTests
                         {
                             { "rating", ">=4.0" }
                         },
-                        Results = new Dictionary<string, JToken>
+                        Results = new Dictionary<string, IFunctionSupportedValue>
                         {
-                            { "tags", new JArray("high_rated") },
-                            { "bonusPoints", 25 }
+                            { "tags", new FunctionSupportedValue(new FixedValue(new JArray("high_rated"))) },
+                            { "bonusPoints", new FunctionSupportedValue(new FixedValue(JToken.FromObject(25))) }
                         }
                     },
                     new DecisionRule
@@ -182,10 +150,10 @@ public class DecisionTableAdvancedTests
                         {
                             { "stock", "<=10" }
                         },
-                        Results = new Dictionary<string, JToken>
+                        Results = new Dictionary<string, IFunctionSupportedValue>
                         {
-                            { "tags", new JArray("limited") },
-                            { "bonusPoints", 10 }
+                            { "tags", new FunctionSupportedValue(new FixedValue(new JArray("limited"))) },
+                            { "bonusPoints", new FunctionSupportedValue(new FixedValue(JToken.FromObject(10))) }
                         }
                     }
                 },
@@ -242,9 +210,9 @@ public class DecisionTableAdvancedTests
                             { "price", ">=40" },
                             { "rating", ">=4.0" }
                         },
-                        Results = new Dictionary<string, JToken>
+                        Results = new Dictionary<string, IFunctionSupportedValue>
                         {
-                            { "recommendation", "good_value" }
+                            { "recommendation", new FunctionSupportedValue(new FixedValue(JValue.CreateString("good_value"))) }
                         }
                     },
                     new DecisionRule
@@ -256,9 +224,9 @@ public class DecisionTableAdvancedTests
                             { "price", ">=30" },
                             { "rating", ">=4.0" }
                         },
-                        Results = new Dictionary<string, JToken>
+                        Results = new Dictionary<string, IFunctionSupportedValue>
                         {
-                            { "recommendation", "excellent_book" }
+                            { "recommendation", new FunctionSupportedValue(new FixedValue(JValue.CreateString("excellent_book"))) }
                         }
                     },
                     new DecisionRule
@@ -268,9 +236,9 @@ public class DecisionTableAdvancedTests
                         {
                             { "rating", ">=4.0" }
                         },
-                        Results = new Dictionary<string, JToken>
+                        Results = new Dictionary<string, IFunctionSupportedValue>
                         {
-                            { "recommendation", "highly_rated" }
+                            { "recommendation", new FunctionSupportedValue(new FixedValue(JValue.CreateString("highly_rated"))) }
                         }
                     }
                 },
@@ -319,9 +287,9 @@ public class DecisionTableAdvancedTests
                         {
                             { "category", "electronics" }
                         },
-                        Results = new Dictionary<string, JToken>
+                        Results = new Dictionary<string, IFunctionSupportedValue>
                         {
-                            { "status", "tech_product" }
+                            { "status", new FunctionSupportedValue(new FixedValue(JValue.CreateString("tech_product"))) }
                         }
                     },
                     new DecisionRule
@@ -330,9 +298,9 @@ public class DecisionTableAdvancedTests
                         {
                             { "rating", ">=4.0" }
                         },
-                        Results = new Dictionary<string, JToken>
+                        Results = new Dictionary<string, IFunctionSupportedValue>
                         {
-                            { "status", "quality_product" }
+                            { "status", new FunctionSupportedValue(new FixedValue(JValue.CreateString("quality_product"))) }
                         }
                     }
                 },
@@ -382,9 +350,9 @@ public class DecisionTableAdvancedTests
                             { "price", ">=50 && <=100" }, // Complex AND condition
                             { "rating", ">4.0" }
                         },
-                        Results = new Dictionary<string, JToken>
+                        Results = new Dictionary<string, IFunctionSupportedValue>
                         {
-                            { "tier", "sweet_spot" }
+                            { "tier", new FunctionSupportedValue(new FixedValue(JValue.CreateString("sweet_spot"))) }
                         }
                     },
                     new DecisionRule
@@ -394,9 +362,9 @@ public class DecisionTableAdvancedTests
                             { "stock", "<=10 || >=100" }, // Complex OR condition
                             { "price", "<30" }
                         },
-                        Results = new Dictionary<string, JToken>
+                        Results = new Dictionary<string, IFunctionSupportedValue>
                         {
-                            { "tier", "budget_special" }
+                            { "tier", new FunctionSupportedValue(new FixedValue(JValue.CreateString("budget_special"))) }
                         }
                     },
                     new DecisionRule
@@ -406,15 +374,15 @@ public class DecisionTableAdvancedTests
                             { "price", ">100" },
                             { "rating", ">=4.5 && <=5.0" }
                         },
-                        Results = new Dictionary<string, JToken>
+                        Results = new Dictionary<string, IFunctionSupportedValue>
                         {
-                            { "tier", "premium" }
+                            { "tier", new FunctionSupportedValue(new FixedValue(JValue.CreateString("premium"))) }
                         }
                     }
                 },
-                DefaultResults = new Dictionary<string, JToken>
+                DefaultResults = new Dictionary<string, IFunctionSupportedValue>
                 {
-                    { "tier", "standard" }
+                    { "tier", new FunctionSupportedValue(new FixedValue(JValue.CreateString("standard"))) }
                 }
             }
         };
@@ -463,9 +431,9 @@ public class DecisionTableAdvancedTests
                             { "price", ">=40 && <=50" },
                             { "stock", ">=20 && <=30" }
                         },
-                        Results = new Dictionary<string, JToken>
+                        Results = new Dictionary<string, IFunctionSupportedValue>
                         {
-                            { "action", "perfect_match" }
+                            { "action", new FunctionSupportedValue(new FixedValue(JValue.CreateString("perfect_match"))) }
                         }
                     },
                     new DecisionRule
@@ -475,15 +443,15 @@ public class DecisionTableAdvancedTests
                             { "price", "<20 || >100" },
                             { "stock", "<=5 || >=100" }
                         },
-                        Results = new Dictionary<string, JToken>
+                        Results = new Dictionary<string, IFunctionSupportedValue>
                         {
-                            { "action", "extreme_case" }
+                            { "action", new FunctionSupportedValue(new FixedValue(JValue.CreateString("extreme_case"))) }
                         }
                     }
                 },
-                DefaultResults = new Dictionary<string, JToken>
+                DefaultResults = new Dictionary<string, IFunctionSupportedValue>
                 {
-                    { "action", "no_match" }
+                    { "action", new FunctionSupportedValue(new FixedValue(JValue.CreateString("no_match"))) }
                 }
             }
         };
@@ -519,7 +487,10 @@ public class DecisionTableAdvancedTests
                     new DecisionRule
                     {
                         Conditions = new Dictionary<string, JToken> { { "test", "value" } },
-                        Results = new Dictionary<string, JToken> { { "result", "success" } }
+                        Results = new Dictionary<string, IFunctionSupportedValue>
+                        {
+                            { "result", new FunctionSupportedValue(new FixedValue(JValue.CreateString("success"))) }
+                        }
                     }
                 },
                 ExecutionStrategy = new ExecutionStrategy
@@ -562,10 +533,10 @@ public class DecisionTableAdvancedTests
                         {
                             { "price", ">=100" }
                         },
-                        Results = new Dictionary<string, JToken>
+                        Results = new Dictionary<string, IFunctionSupportedValue>
                         {
-                            { "benefits", new JArray("premium_shipping", "extended_warranty") },
-                            { "score", 75 }
+                            { "benefits", new FunctionSupportedValue(new FixedValue(new JArray("premium_shipping", "extended_warranty"))) },
+                            { "score", new FunctionSupportedValue(new FixedValue(JToken.FromObject(75))) }
                         }
                     },
                     new DecisionRule
@@ -574,10 +545,10 @@ public class DecisionTableAdvancedTests
                         {
                             { "category", "electronics" }
                         },
-                        Results = new Dictionary<string, JToken>
+                        Results = new Dictionary<string, IFunctionSupportedValue>
                         {
-                            { "benefits", new JArray("tech_support", "software_bundle") },
-                            { "score", 85 }
+                            { "benefits", new FunctionSupportedValue(new FixedValue(new JArray("tech_support", "software_bundle"))) },
+                            { "score", new FunctionSupportedValue(new FixedValue(JToken.FromObject(85))) }
                         }
                     },
                     new DecisionRule
@@ -586,10 +557,10 @@ public class DecisionTableAdvancedTests
                         {
                             { "rating", ">=4.5" }
                         },
-                        Results = new Dictionary<string, JToken>
+                        Results = new Dictionary<string, IFunctionSupportedValue>
                         {
-                            { "benefits", new JArray("priority_support") },
-                            { "score", 90 }
+                            { "benefits", new FunctionSupportedValue(new FixedValue(new JArray("priority_support"))) },
+                            { "score", new FunctionSupportedValue(new FixedValue(JToken.FromObject(90))) }
                         }
                     }
                 },
@@ -646,9 +617,9 @@ public class DecisionTableAdvancedTests
                         {
                             { "category", "books" }
                         },
-                        Results = new Dictionary<string, JToken>
+                        Results = new Dictionary<string, IFunctionSupportedValue>
                         {
-                            { "handler", "general_books" }
+                            { "handler", new FunctionSupportedValue(new FixedValue(JValue.CreateString("general_books"))) }
                         }
                     },
                     new DecisionRule
@@ -658,9 +629,9 @@ public class DecisionTableAdvancedTests
                         {
                             { "category", "books" }
                         },
-                        Results = new Dictionary<string, JToken>
+                        Results = new Dictionary<string, IFunctionSupportedValue>
                         {
-                            { "handler", "premium_books" }
+                            { "handler", new FunctionSupportedValue(new FixedValue(JValue.CreateString("premium_books"))) }
                         }
                     },
                     new DecisionRule
@@ -670,9 +641,9 @@ public class DecisionTableAdvancedTests
                         {
                             { "category", "books" }
                         },
-                        Results = new Dictionary<string, JToken>
+                        Results = new Dictionary<string, IFunctionSupportedValue>
                         {
-                            { "handler", "standard_books" }
+                            { "handler", new FunctionSupportedValue(new FixedValue(JValue.CreateString("standard_books"))) }
                         }
                     }
                 },
@@ -690,7 +661,7 @@ public class DecisionTableAdvancedTests
         Assert.IsNotNull(result);
         Assert.IsTrue(result.Success);
 
-        // Should choose highest priority rule (priority = 10)
+        // Should choose highest priority rule (priority = 1, lowest number = highest priority)
         var product = data.SelectToken("$.testProduct");
         Assert.AreEqual("premium_books", product.SelectToken("$.handler").ToString());
     }
@@ -723,15 +694,15 @@ public class DecisionTableAdvancedTests
                             { "price", ">=20 && <=30 || >=70 && <=80" },
                             { "rating", ">3.5" }
                         },
-                        Results = new Dictionary<string, JToken>
+                        Results = new Dictionary<string, IFunctionSupportedValue>
                         {
-                            { "status", "target_range" }
+                            { "status", new FunctionSupportedValue(new FixedValue(JValue.CreateString("target_range"))) }
                         }
                     }
                 },
-                DefaultResults = new Dictionary<string, JToken>
+                DefaultResults = new Dictionary<string, IFunctionSupportedValue>
                 {
-                    { "status", "outside_range" }
+                    { "status", new FunctionSupportedValue(new FixedValue(JValue.CreateString("outside_range"))) }
                 }
             }
         };
@@ -755,6 +726,84 @@ public class DecisionTableAdvancedTests
     }
 
     [Test]
+    public void CanExecuteFirstMatchStrategy()
+    {
+        var command = new DecisionTable
+        {
+            Path = "$.products[*]",
+            DecisionTableConfig = new DecisionTableConfig
+            {
+                Inputs = new List<DecisionInput>
+            {
+                new DecisionInput { Name = "price", Path = "@.price", Type = "number" },
+                new DecisionInput { Name = "category", Path = "@.category", Type = "string" }
+            },
+                Outputs = new List<DecisionOutput>
+            {
+                new DecisionOutput { Name = "discount", Path = "@.discount" },
+                new DecisionOutput { Name = "promotion", Path = "@.promotion" }
+            },
+                Rules = new List<DecisionRule>
+            {
+                new DecisionRule
+                {
+                    Priority = 1,
+                    Conditions = new Dictionary<string, JToken>
+                    {
+                        { "category", "electronics" },
+                        { "price", ">=100" }
+                    },
+                    Results = new Dictionary<string, IFunctionSupportedValue>
+                    {
+                        { "discount", new FunctionSupportedValue(new FixedValue(JToken.FromObject(0.15))) },
+                        { "promotion", new FunctionSupportedValue(new FixedValue(JValue.CreateString("premium_electronics"))) }
+                    }
+                },
+                new DecisionRule
+                {
+                    Priority = 2,
+                    Conditions = new Dictionary<string, JToken>
+                    {
+                        { "category", "electronics" }
+                    },
+                    Results = new Dictionary<string, IFunctionSupportedValue>
+                    {
+                        { "discount", new FunctionSupportedValue(new FixedValue(JToken.FromObject(0.05))) },
+                        { "promotion", new FunctionSupportedValue(new FixedValue(JValue.CreateString("basic_electronics"))) }
+                    }
+                }
+            },
+                ExecutionStrategy = new ExecutionStrategy
+                {
+                    Mode = "firstMatch",
+                    ConflictResolution = "priority",
+                    StopOnError = false
+                },
+                DefaultResults = new Dictionary<string, IFunctionSupportedValue>
+            {
+                { "discount", new FunctionSupportedValue(new FixedValue(JToken.FromObject(0.0))) },
+                { "promotion", new FunctionSupportedValue(new FixedValue(JValue.CreateString("none"))) }
+            }
+            }
+        };
+
+        var result = command.Execute(data, executeOptions);
+
+        Assert.IsNotNull(result);
+        Assert.IsTrue(result.Success);
+
+        // Product 1: electronics, price=25.50 -> should get basic_electronics (first rule doesn't match price)
+        var product1 = data.SelectToken("$.products[0]");
+        Assert.AreEqual(0.05, product1.SelectToken("$.discount").ToObject<decimal>());
+        Assert.AreEqual("basic_electronics", product1.SelectToken("$.promotion").ToString());
+
+        // Product 3: electronics, price=150.00 -> should get premium_electronics (first rule matches)
+        var product3 = data.SelectToken("$.products[2]");
+        Assert.AreEqual(0.15, product3.SelectToken("$.discount").ToObject<decimal>());
+        Assert.AreEqual("premium_electronics", product3.SelectToken("$.promotion").ToString());
+    }
+
+    [Test]
     public void CanHandleNotEqualConditions()
     {
         var command = new DecisionTable
@@ -763,33 +812,33 @@ public class DecisionTableAdvancedTests
             DecisionTableConfig = new DecisionTableConfig
             {
                 Inputs = new List<DecisionInput>
-                {
-                    new DecisionInput { Name = "category", Path = "@.category", Type = "string" },
-                    new DecisionInput { Name = "price", Path = "@.price", Type = "number" }
-                },
+            {
+                new DecisionInput { Name = "category", Path = "@.category", Type = "string" },
+                new DecisionInput { Name = "price", Path = "@.price", Type = "number" }
+            },
                 Outputs = new List<DecisionOutput>
-                {
-                    new DecisionOutput { Name = "eligible", Path = "@.eligible" }
-                },
+            {
+                new DecisionOutput { Name = "eligible", Path = "@.eligible" }
+            },
                 Rules = new List<DecisionRule>
+            {
+                new DecisionRule
                 {
-                    new DecisionRule
+                    Conditions = new Dictionary<string, JToken>
                     {
-                        Conditions = new Dictionary<string, JToken>
-                        {
-                            { "category", "!=clothing" },
-                            { "price", "!=75.00" }
-                        },
-                        Results = new Dictionary<string, JToken>
-                        {
-                            { "eligible", true }
-                        }
+                        { "category", "!=clothing" },
+                        { "price", "!=75.00" }
+                    },
+                    Results = new Dictionary<string, IFunctionSupportedValue>
+                    {
+                        { "eligible", new FunctionSupportedValue(new FixedValue(JToken.FromObject(true))) }
                     }
-                },
-                DefaultResults = new Dictionary<string, JToken>
-                {
-                    { "eligible", false }
                 }
+            },
+                DefaultResults = new Dictionary<string, IFunctionSupportedValue>
+            {
+                { "eligible", new FunctionSupportedValue(new FixedValue(JToken.FromObject(false))) }
+            }
             }
         };
 
@@ -809,43 +858,5 @@ public class DecisionTableAdvancedTests
         // Product 3: electronics, 150.00 -> eligible (not clothing, not 75.00)
         var product3 = data.SelectToken("$.products[2]");
         Assert.AreEqual(true, product3.SelectToken("$.eligible").ToObject<bool>());
-    }
-
-    [Test]
-    public void CanValidateExecutionStrategy()
-    {
-        var command = new DecisionTable
-        {
-            Path = "$.testProduct",
-            DecisionTableConfig = new DecisionTableConfig
-            {
-                Inputs = new List<DecisionInput>
-                {
-                    new DecisionInput { Name = "price", Path = "@.price", Type = "number" }
-                },
-                Outputs = new List<DecisionOutput>
-                {
-                    new DecisionOutput { Name = "result", Path = "@.result" }
-                },
-                Rules = new List<DecisionRule>
-                {
-                    new DecisionRule
-                    {
-                        Conditions = new Dictionary<string, JToken> { { "price", ">0" } },
-                        Results = new Dictionary<string, JToken> { { "result", "positive" } }
-                    }
-                },
-                ExecutionStrategy = null // Should use defaults
-            }
-        };
-
-        var result = command.Execute(data, executeOptions);
-
-        Assert.IsNotNull(result);
-        Assert.IsTrue(result.Success);
-
-        // Should work with default execution strategy
-        var product = data.SelectToken("$.testProduct");
-        Assert.AreEqual("positive", product.SelectToken("$.result").ToString());
     }
 }
