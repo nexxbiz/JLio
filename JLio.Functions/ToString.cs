@@ -15,7 +15,7 @@ public class ToString : FunctionBase
 
     public ToString(string path)
     {
-        Arguments.Add(new FunctionSupportedValue(new FixedValue(path, null)));
+        Arguments.Add(new FunctionSupportedValue(new FixedValue(path)));
     }
 
     public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)

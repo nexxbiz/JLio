@@ -13,13 +13,13 @@ public class Promote : FunctionBase
 
     public Promote(string newPropertyName)
     {
-        Arguments.Add(new FunctionSupportedValue(new FixedValue(newPropertyName, null)));
+        Arguments.Add(new FunctionSupportedValue(new FixedValue(newPropertyName)));
     }
 
     public Promote(string path, string newPropertyName)
     {
-        Arguments.Add(new FunctionSupportedValue(new FixedValue(JToken.Parse($"\"{path}\""),null)));
-        Arguments.Add(new FunctionSupportedValue(new FixedValue(JToken.Parse($"\"{newPropertyName}\""),null)));
+        Arguments.Add(new FunctionSupportedValue(new FixedValue(JToken.Parse($"\"{path}\""))));
+        Arguments.Add(new FunctionSupportedValue(new FixedValue(JToken.Parse($"\"{newPropertyName}\""))));
     }
 
     public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)

@@ -9,7 +9,7 @@ public static class PutBuilders
 {
     public static JLioScript OnPath(this PutValueContainer source, string path)
     {
-        source.Script.AddLine(new Put(path, new FunctionSupportedValue(new FixedValue(source.Value,null))));
+        source.Script.AddLine(new Put(path, new FunctionSupportedValue(new FixedValue(source.Value))));
         return source.Script;
     }
 
