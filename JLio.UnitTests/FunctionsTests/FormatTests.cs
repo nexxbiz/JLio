@@ -52,7 +52,7 @@ public class FormatTests
     public void CanBeUsedInFluentApi()
     {
         var script = new JLioScript()
-                .Set(FormatBuilders.Format("$.demo2").UsingFormat("dd-MM"))
+                .Set(FormatBuilders.FormatPath("$.demo2").UsingFormat("dd-MM"))
                 .OnPath("$.id")
                 .Set(FormatBuilders.Format("dd-MM-yyyy"))
                 .OnPath("$.demo")

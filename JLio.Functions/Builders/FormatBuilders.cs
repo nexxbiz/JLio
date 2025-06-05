@@ -9,7 +9,7 @@ public static class FormatBuilders
         return new Format(formatString);
     }
 
-    public static FormatPathContainer Format(string path)
+    public static FormatPathContainer FormatPath(string path)
     {
         return new FormatPathContainer(path);
     }
