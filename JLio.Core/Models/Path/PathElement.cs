@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace JLio.Core.Models.Path;
+﻿namespace JLio.Core.Models.Path;
 
 public class PathElement
 {

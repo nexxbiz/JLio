@@ -1,10 +1,8 @@
-using Newtonsoft.Json.Schema;
-
 namespace JLio.Extensions.JSchema;
 
 public static class FilterBySchemaBuilders
 {
-    public static FilterBySchema FilterBySchema(JSchema schema)
+    public static FilterBySchema FilterBySchema(Newtonsoft.Json.Schema.JSchema schema)
     {
         return new FilterBySchema(schema);
     }

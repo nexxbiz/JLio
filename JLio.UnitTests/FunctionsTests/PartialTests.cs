@@ -3,7 +3,6 @@ using JLio.Client;
 using JLio.Commands.Builders;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
-using JLio.Functions;
 using JLio.Functions.Builders;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
