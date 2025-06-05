@@ -5,7 +5,7 @@ using JLio.Commands.Builders;
 using JLio.Core;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
-using JLio.Functions;
+using JLio.Functions.Builders;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 
@@ -136,7 +136,7 @@ public class AddTests
         var script = new JLioScript()
                 .Add(new JValue("new Value"))
                 .OnPath("$.demo")
-                .Add(new Datetime())
+                .Add(DatetimeBuilders.Datetime())
                 .OnPath("$.this.is.a.long.path.with.a.date")
             ;
         var result = script.Execute(new JObject());

@@ -2,7 +2,7 @@
 using JLio.Commands.Builders;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
-using JLio.Functions;
+using JLio.Functions.Builders;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -51,9 +51,9 @@ public class FormatTests
     public void CanBeUsedInFluentApi()
     {
         var script = new JLioScript()
-                .Set(new Format("$.demo2", "dd-MM"))
+                .Set(FormatBuilders.FormatPath("$.demo2").UsingFormat("dd-MM"))
                 .OnPath("$.id")
-                .Set(new Format("dd-MM-yyyy"))
+                .Set(FormatBuilders.Format("dd-MM-yyyy"))
                 .OnPath("$.demo")
             ;
         var result =

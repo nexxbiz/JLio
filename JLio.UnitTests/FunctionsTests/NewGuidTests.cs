@@ -3,7 +3,7 @@ using JLio.Client;
 using JLio.Commands.Builders;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
-using JLio.Functions;
+using JLio.Functions.Builders;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -39,7 +39,7 @@ public class NewGuidTests
     public void CanbeUsedInFluentApi()
     {
         var script = new JLioScript()
-                .Add(new NewGuid())
+                .Add(NewGuidBuilders.NewGuid())
                 .OnPath("$.id")
             ;
         var result = script.Execute(new JObject());

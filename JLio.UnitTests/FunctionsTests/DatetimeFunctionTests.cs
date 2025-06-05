@@ -2,7 +2,7 @@
 using JLio.Commands.Builders;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
-using JLio.Functions;
+using JLio.Functions.Builders;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -44,9 +44,9 @@ public class DatetimeFunctionTests
     public void CanbeUsedInFluentApi()
     {
         var script = new JLioScript()
-                .Add(new Datetime("UTC", "'dd-MM-yyyy HH:mm:ss'"))
+                .Add(DatetimeBuilders.Datetime("UTC", "'dd-MM-yyyy HH:mm:ss'"))
                 .OnPath("$.date")
-                .Add(new Datetime("'HH:mm:ss'"))
+                .Add(DatetimeBuilders.Datetime("'HH:mm:ss'"))
                 .OnPath("$.now")
             ;
         var result = script.Execute(new JObject());
