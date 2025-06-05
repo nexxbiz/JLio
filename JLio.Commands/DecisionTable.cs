@@ -134,21 +134,22 @@ public class DecisionTable : CommandBase
 
     private void ApplyMergedResults(List<DecisionRule> rules, JToken targetToken, JToken dataContext)
     {
-        var mergedResults = new Dictionary<string, object>();
+        var mergedResults = new Dictionary<string, JToken>();
 
         // Collect all results from all matching rules
         foreach (var rule in rules)
         {
             foreach (var result in rule.Results)
             {
+                var valueToken = EvaluateResultValue(result.Value, targetToken, dataContext);
                 if (!mergedResults.ContainsKey(result.Key))
                 {
-                    mergedResults[result.Key] = result.Value;
+                    mergedResults[result.Key] = valueToken;
                 }
                 else
                 {
                     // Handle merge conflicts
-                    mergedResults[result.Key] = MergeValues(mergedResults[result.Key], result.Value);
+                    mergedResults[result.Key] = MergeValues(mergedResults[result.Key], valueToken);
                 }
             }
         }
@@ -164,7 +165,7 @@ public class DecisionTable : CommandBase
         }
     }
 
-    private object MergeValues(object existing, object newValue)
+    private JToken MergeValues(JToken existing, JToken newValue)
     {
         // If both are arrays, concatenate them
         if (existing is JArray existingArray && newValue is JArray newArray)
@@ -180,13 +181,13 @@ public class DecisionTable : CommandBase
         // If one is array and other isn't, convert to array
         if (existing is JArray existingArr)
         {
-            existingArr.Add(JToken.FromObject(newValue));
+            existingArr.Add(newValue);
             return existingArr;
         }
 
         if (newValue is JArray newArr)
         {
-            var merged = new JArray { JToken.FromObject(existing) };
+            var merged = new JArray { existing };
             foreach (var item in newArr)
             {
                 merged.Add(item);
@@ -198,11 +199,18 @@ public class DecisionTable : CommandBase
         if (decimal.TryParse(existing?.ToString(), out var existingDecimal) &&
             decimal.TryParse(newValue?.ToString(), out var newDecimal))
         {
-            return Math.Max(existingDecimal, newDecimal);
+            return new JValue(Math.Max(existingDecimal, newDecimal));
         }
 
         // For other types, create an array
-        return new JArray { JToken.FromObject(existing), JToken.FromObject(newValue) };
+        return new JArray { existing, newValue };
+    }
+
+    private JToken EvaluateResultValue(JToken resultValue, JToken currentToken, JToken dataContext)
+    {
+        var functionValue = new FunctionSupportedValue(new FixedValue(resultValue));
+        var functionResult = functionValue.GetValue(currentToken, dataContext, executionContext);
+        return functionResult.Data.GetJTokenValue();
     }
 
     private Dictionary<string, object> EvaluateInputs(JToken targetToken, JToken dataContext)
@@ -587,7 +595,8 @@ public class DecisionTable : CommandBase
             var output = DecisionTableConfig.Outputs.FirstOrDefault(o => o.Name == result.Key);
             if (output != null)
             {
-                ApplyOutput(output, result.Value, targetToken, dataContext);
+                var valueToken = EvaluateResultValue(result.Value, targetToken, dataContext);
+                ApplyOutput(output, valueToken, targetToken, dataContext);
             }
         }
     }
@@ -599,17 +608,18 @@ public class DecisionTable : CommandBase
             var output = DecisionTableConfig.Outputs.FirstOrDefault(o => o.Name == result.Key);
             if (output != null)
             {
-                ApplyOutput(output, result.Value, targetToken, dataContext);
+                var valueToken = EvaluateResultValue(result.Value, targetToken, dataContext);
+                ApplyOutput(output, valueToken, targetToken, dataContext);
             }
         }
     }
 
-    private void ApplyOutput(DecisionOutput output, object value, JToken targetToken, JToken dataContext)
+    private void ApplyOutput(DecisionOutput output, JToken value, JToken targetToken, JToken dataContext)
     {
         try
         {
             var outputPath = output.Path;
-            JToken valueToken = JToken.FromObject(value);
+            JToken valueToken = value;
 
             // Handle relative vs absolute paths for output
             if (outputPath.StartsWith("@."))

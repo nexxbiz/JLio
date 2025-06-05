@@ -572,4 +572,45 @@ public class DecisionTableTests
         Assert.IsTrue(result.Success);
         Assert.AreEqual("adult", data.SelectToken("$.singleCustomer.category").ToString());
     }
+
+    [Test]
+    public void OutputsCanUseFunctions()
+    {
+        var command = new DecisionTable
+        {
+            Path = "$.singleCustomer",
+            DecisionTableConfig = new DecisionTableConfig
+            {
+                Inputs = new List<DecisionInput>
+                {
+                    new DecisionInput { Name = "age", Path = "@.age", Type = "number" }
+                },
+                Outputs = new List<DecisionOutput>
+                {
+                    new DecisionOutput { Name = "uniqueId", Path = "@.uid" }
+                },
+                Rules = new List<DecisionRule>
+                {
+                    new DecisionRule
+                    {
+                        Conditions = new Dictionary<string, JToken>
+                        {
+                            { "age", ">=18" }
+                        },
+                        Results = new Dictionary<string, JToken>
+                        {
+                            { "uniqueId", "=newGuid()" }
+                        }
+                    }
+                }
+            }
+        };
+
+        var result = command.Execute(data, executeOptions);
+
+        Assert.IsNotNull(result);
+        Assert.IsTrue(result.Success);
+        var uid = data.SelectToken("$.singleCustomer.uid").ToString();
+        Assert.IsNotEmpty(uid);
+    }
 }
