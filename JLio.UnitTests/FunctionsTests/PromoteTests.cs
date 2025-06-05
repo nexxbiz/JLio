@@ -4,6 +4,7 @@ using JLio.Commands.Builders;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
 using JLio.Functions;
+using JLio.Functions.Builders;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -71,9 +72,9 @@ public class PromoteTests
     public void CanBeUsedInFluentApi()
     {
         var script = new JLioScript()
-                .Set(new Promote("$.demo", "new"))
+                .Set(PromoteBuilders.Promote("$.demo", "new"))
                 .OnPath("$.id")
-                .Set(new Promote("newer"))
+                .Set(PromoteBuilders.Promote("newer"))
                 .OnPath("$.demo")
             ;
         var result = script.Execute(JToken.Parse("{\"demo\" : 1}"));

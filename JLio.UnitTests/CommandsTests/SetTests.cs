@@ -5,6 +5,7 @@ using JLio.Core;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
 using JLio.Functions;
+using JLio.Functions.Builders;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using System.Linq;
@@ -94,7 +95,7 @@ public class SetTests
         var script = new JLioScript()
                 .Set(new JValue("new Value"))
                 .OnPath("$.demo")
-                .Set(new Datetime())
+                .Set(DatetimeBuilders.Datetime())
                 .OnPath("$.demo2")
             ;
         var result = script.Execute(data);

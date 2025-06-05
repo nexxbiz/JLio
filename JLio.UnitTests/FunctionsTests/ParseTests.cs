@@ -5,6 +5,7 @@ using JLio.Core.Contracts;
 using JLio.Core.Models;
 using JLio.Extensions.JSchema;
 using JLio.Functions;
+using JLio.Functions.Builders;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -78,9 +79,9 @@ public class ParseTests
     public void CanbeUsedInFluentApi()
     {
         var script = new JLioScript()
-                .Set(new Parse())
+                .Set(ParseBuilders.Parse())
                 .OnPath("$.id")
-                .Add(new Parse("$.id"))
+                .Add(ParseBuilders.Parse("$.id"))
                 .OnPath("$.result")
             ;
         var result = script.Execute(JObject.Parse("{\"id\" : \"3\" }"));

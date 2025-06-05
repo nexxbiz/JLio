@@ -3,6 +3,7 @@ using JLio.Commands.Builders;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
 using JLio.Functions;
+using JLio.Functions.Builders;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -54,9 +55,9 @@ public class ToStringTests
     public void CanbeUsedInFluentApi()
     {
         var script = new JLioScript()
-                .Set(new ToString())
+                .Set(ToStringBuilders.ToString())
                 .OnPath("$.id")
-                .Set(new ToString("$.result"))
+                .Set(ToStringBuilders.ToString("$.result"))
                 .OnPath("$.resultDemo")
             ;
         var result = script.Execute(JObject.Parse("{\"result\" : 3 }"));

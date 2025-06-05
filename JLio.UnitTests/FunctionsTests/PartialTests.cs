@@ -4,6 +4,7 @@ using JLio.Commands.Builders;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
 using JLio.Functions;
+using JLio.Functions.Builders;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -123,7 +124,7 @@ public class PartialTests
     public void CanBeUsedInFluentApi()
     {
         var script = new JLioScript()
-            .Set(new Partial("@.a", "@.c.d"))
+            .Set(PartialBuilders.Partial("@.a", "@.c.d"))
             .OnPath("$.result");
         var result =
             script.Execute(JToken.Parse("{\"result\":{\"a\":1,\"b\":[1,2,3],\"c\":{\"d\":5,\"e\":[4,5,6]}}}"));
