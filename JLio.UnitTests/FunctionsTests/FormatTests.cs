@@ -1,4 +1,5 @@
 ﻿using JLio.Client;
+using System.Linq;
 using JLio.Commands.Builders;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
@@ -63,5 +64,24 @@ public class FormatTests
 
         Assert.IsNotNull(result);
         Assert.IsTrue(result.Success);
+    }
+    [Test]
+    public void FormatHandlesDateToken()
+    {
+        var token = new JObject { ["source"] = new JValue(new System.DateTime(2024,1,1,8,0,0, System.DateTimeKind.Utc)) };
+        var function = "=format($.source,'yyyy-MM-dd')";
+        var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"add\"}}]";
+        var result = JLioConvert.Parse(script, parseOptions).Execute(token, executeContext);
+        Assert.IsTrue(result.Success);
+        Assert.IsTrue(JToken.DeepEquals(JToken.Parse("\"2024-01-01\""), result.Data.SelectToken("$.result")));
+    }
+
+    [Test]
+    public void FormatWithInvalidArgumentsFails()
+    {
+        var script = "[{'path':'$.result','value':'=format()','command':'add'}]".Replace("'","\"");
+        var result = JLioConvert.Parse(script, parseOptions).Execute(new JObject(), executeContext);
+        Assert.IsFalse(result.Success);
+        Assert.IsTrue(executeContext.Logger.LogEntries.Any(i => i.Level == LogLevel.Error));
     }
 }
