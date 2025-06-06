@@ -38,7 +38,8 @@ public class ParseOptions : IParseOptions
            .Register<Move>()
            .Register<Compare>()
            .Register<Merge>()
-           .Register<DecisionTable>();
+           .Register<DecisionTable>()
+           .Register<IfElse>();
 
         var functionsProvider = new FunctionsProvider();
         functionsProvider
