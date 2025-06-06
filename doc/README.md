@@ -6,3 +6,5 @@ Welcome to the JLio documentation. This section contains detailed information ab
 - [Commands](commands.md)
 - [Functions](functions.md)
 - [Advanced Scenarios](advanced.md)
+
+Detailed files for every command are in [commands/](commands) and each function in [functions/](functions).

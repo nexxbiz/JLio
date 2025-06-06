@@ -28,3 +28,16 @@ The table below lists the available commands and their main arguments.
 | **compare** | `path`, `value` | Compare two values according to settings. |
 
 Arguments can reference JSONPath locations and may use functions in the `value` field.
+
+## Command details
+
+- [add](commands/add.md)
+- [set](commands/set.md)
+- [copy](commands/copy.md)
+- [move](commands/move.md)
+- [put](commands/put.md)
+- [remove](commands/remove.md)
+- [decisionTable](commands/decisionTable.md)
+- [ifElse](commands/ifElse.md)
+- [merge](commands/merge.md)
+- [compare](commands/compare.md)
