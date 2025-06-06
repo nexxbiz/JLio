@@ -25,3 +25,19 @@ Example usage inside a command:
   "command": "set"
 }
 ```
+
+## Function details
+
+- [concat](functions/concat.md)
+- [datetime](functions/datetime.md)
+- [fetch](functions/fetch.md)
+- [format](functions/format.md)
+- [newGuid](functions/newGuid.md)
+- [parse](functions/parse.md)
+- [partial](functions/partial.md)
+- [promote](functions/promote.md)
+- [toString](functions/toString.md)
+- [avg](functions/avg.md)
+- [count](functions/count.md)
+- [sum](functions/sum.md)
+- [filterBySchema](functions/filterBySchema.md)
