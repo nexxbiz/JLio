@@ -84,4 +84,26 @@ public class FormatTests
         Assert.IsFalse(result.Success);
         Assert.IsTrue(executeContext.Logger.LogEntries.Any(i => i.Level == LogLevel.Error));
     }
+
+    [Test]
+    public void FormatLeavesNonDateStringUnchanged()
+    {
+        var token = JObject.Parse("{\"source\":\"not a date\"}");
+        var function = "=format($.source,'dd-MM-yyyy')";
+        var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"add\"}}]";
+        var result = JLioConvert.Parse(script, parseOptions).Execute(token, executeContext);
+        Assert.IsTrue(result.Success);
+        Assert.AreEqual("not a date", result.Data.SelectToken("$.result")?.Value<string>());
+    }
+
+    [Test]
+    public void FormatLeavesNumericValueUnchanged()
+    {
+        var token = JObject.Parse("{\"source\":123}");
+        var function = "=format($.source,'dd-MM-yyyy')";
+        var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"add\"}}]";
+        var result = JLioConvert.Parse(script, parseOptions).Execute(token, executeContext);
+        Assert.IsTrue(result.Success);
+        Assert.AreEqual(123, result.Data.SelectToken("$.result")?.Value<int>());
+    }
 }
