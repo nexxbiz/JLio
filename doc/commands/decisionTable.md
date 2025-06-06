@@ -319,4 +319,261 @@ Only the last matching rule's results are applied:
     ],
     "outputs": [
       {"name": "shippingCost", "path": "@.shipping.cost"},
-      {"name": "processingTime", "path
+      {"name": "processingTime", "path": "@.processing.time"}
+    ],
+    "rules": [
+      {
+        "priority": 1,
+        "conditions": {
+          "total": ">=50",
+          "customerType": "premium"
+        },
+        "results": {
+          "shippingCost": 0,
+          "processingTime": "1 day"
+        }
+      },
+      {
+        "priority": 2,
+        "conditions": {
+          "total": ">=100"
+        },
+        "results": {
+          "shippingCost": 0,
+          "processingTime": "2 days"
+        }
+      },
+      {
+        "priority": 3,
+        "conditions": {
+          "itemCount": ">10"
+        },
+        "results": {
+          "shippingCost": 5,
+          "processingTime": "3 days"
+        }
+      }
+    ],
+    "defaultResults": {
+      "shippingCost": 10,
+      "processingTime": "5 days"
+    },
+    "executionStrategy": {
+      "mode": "firstMatch",
+      "conflictResolution": "priority",
+      "stopOnError": false
+    }
+  }
+}
+```
+
+### Merge Strategy Example
+```json
+{
+  "command": "decisionTable",
+  "path": "$.user",
+  "decisionTable": {
+    "inputs": [
+      {"name": "score", "path": "@.score", "type": "number"},
+      {"name": "level", "path": "@.level", "type": "string"}
+    ],
+    "outputs": [
+      {"name": "badges", "path": "@.badges"},
+      {"name": "points", "path": "@.bonusPoints"}
+    ],
+    "rules": [
+      {
+        "conditions": {"score": ">1000"},
+        "results": {
+          "badges": ["high_scorer"],
+          "points": 100
+        }
+      },
+      {
+        "conditions": {"level": "premium"},
+        "results": {
+          "badges": ["premium_member"],
+          "points": 50
+        }
+      }
+    ],
+    "executionStrategy": {
+      "mode": "allMatches",
+      "conflictResolution": "merge"
+    }
+  }
+}
+```
+
+## Function Integration
+
+Decision tables support function expressions in results:
+
+```json
+{
+  "rules": [
+    {
+      "conditions": {"status": "new"},
+      "results": {
+        "id": "=newGuid()",
+        "timestamp": "=datetime(UTC)",
+        "welcomeMessage": "=concat('Welcome ', @.name, '!')"
+      }
+    }
+  ]
+}
+```
+
+## Validation and Error Handling
+
+### Required Configuration Validation
+```csharp
+// Missing path
+// Log: "Path property for decisionTable command is missing"
+
+// Missing decision table config
+// Log: "DecisionTable property for decisionTable command is missing"
+
+// Missing inputs
+// Log: "DecisionTable inputs are required"
+
+// Missing outputs  
+// Log: "DecisionTable outputs are required"
+
+// Missing rules
+// Log: "DecisionTable rules are required"
+```
+
+### Runtime Error Handling
+```csharp
+// Input evaluation errors are logged as warnings
+// Output application errors are logged as errors
+// Execution can continue or stop based on stopOnError setting
+```
+
+### Execution Context Logging
+```csharp
+// Input evaluation: "Input 'age' evaluated to: 25"
+// Rule matching: "Best matching rule selected with score: 150 (Priority: 1)"
+// Output application: "Output 'category' set to: adult at path: @.category"
+// Completion: "DecisionTable executed for path: $.customer"
+```
+
+## Performance Considerations
+
+### Rule Evaluation Order
+- **Priority Sorting**: Rules sorted by priority for firstMatch mode
+- **Document Order**: Used as secondary sort criteria
+- **Best Match Scoring**: Requires evaluation of all matching rules
+
+### Condition Complexity
+- **Simple Conditions**: Fast equality and comparison checks
+- **Complex Expressions**: AND/OR logic requires more processing
+- **Array Membership**: Efficient for reasonable array sizes
+
+### Input Path Evaluation
+- **Relative Paths**: Generally faster than absolute paths
+- **Complex JSONPath**: May require full tree traversal
+- **Missing Inputs**: Handled gracefully with null values
+
+## Advanced Features
+
+### Custom Type Conversion
+Input types are automatically converted:
+
+```csharp
+// Supported types: string, number, boolean, array, object
+// Automatic conversion from JToken values
+// Resilient decimal parsing for numbers
+```
+
+### Cultural Number Parsing
+Handles different decimal separators and number formats:
+
+```csharp
+// Supports both comma and dot decimal separators
+// Culture-aware parsing with fallback strategies
+// Graceful handling of malformed numbers
+```
+
+### Best Match Scoring Algorithm
+Calculates rule specificity:
+
+```csharp
+// Score = (conditions matched * 100) + priority
+// Higher scores indicate more specific matches
+// Used in bestMatch execution mode
+```
+
+## Fluent API Examples
+
+### Simple Decision Table
+```csharp
+var config = new DecisionTableConfig
+{
+    Inputs = new List<DecisionInput>
+    {
+        new DecisionInput { Name = "age", Path = "@.age", Type = "number" }
+    },
+    Outputs = new List<DecisionOutput>
+    {
+        new DecisionOutput { Name = "category", Path = "@.category" }
+    },
+    Rules = new List<DecisionRule>
+    {
+        new DecisionRule
+        {
+            Conditions = new Dictionary<string, JToken> { {"age", ">=18"} },
+            Results = new Dictionary<string, IFunctionSupportedValue> { {"category", "adult"} }
+        }
+    }
+};
+
+var script = new JLioScript()
+    .DecisionTable("$.users[*]")
+    .With(config);
+```
+
+### Combined with Other Commands
+```csharp
+var script = new JLioScript()
+    .Add(new JValue("pending"))
+    .OnPath("$.status")
+    .DecisionTable("$.order")
+    .With(orderProcessingRules)
+    .Set(new JValue("=datetime()"))
+    .OnPath("$.processedAt");
+```
+
+## Use Cases
+
+### Business Rule Engine
+- Customer categorization based on purchase history
+- Pricing tier determination
+- Discount calculation rules
+- Approval workflow logic
+
+### Data Validation and Enrichment
+- Adding calculated fields based on existing data
+- Standardizing data formats
+- Applying business logic transformations
+- Conditional data population
+
+### Workflow Automation
+- Status transitions based on conditions
+- Task assignment rules
+- Notification trigger logic
+- Process routing decisions
+
+## Best Practices
+
+1. **Design Rules Carefully**: Ensure rules are mutually exclusive when using firstMatch
+2. **Use Appropriate Priorities**: Lower numbers = higher priority for clear precedence
+3. **Test Edge Cases**: Verify behavior with missing inputs and boundary conditions
+4. **Choose Right Execution Mode**: Consider data requirements when selecting strategy
+5. **Validate Inputs**: Ensure input paths exist and contain expected data types
+6. **Handle Defaults**: Provide defaultResults for unmatched cases
+7. **Monitor Performance**: Complex conditions and large rule sets may impact performance
+8. **Log Appropriately**: Use execution context logging for debugging and monitoring
+9. **Document Rules**: Maintain clear documentation of business logic in rules
+10. **Version Control**: Track changes to decision table configurations over time
