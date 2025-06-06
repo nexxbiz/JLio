@@ -44,3 +44,5 @@ JLio uses [JSONPath](https://goessner.net/articles/JsonPath/) to select elements
 | `?()` | filter expression |
 
 JSONPath expressions can be combined to select nodes and filter results.
+
+take a look at the alternatives : 
