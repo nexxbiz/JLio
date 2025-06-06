@@ -22,23 +22,50 @@ public class Sum : FunctionBase
     {
         var values = GetArguments(Arguments, currentToken, dataContext, context);
         double result = 0;
+
         foreach (var token in values)
         {
-            if (token.Type == JTokenType.Integer || token.Type == JTokenType.Float)
+            if (!TryAddTokenValue(token, ref result, context))
             {
-                result += token.Value<double>();
-            }
-            else if (token.Type == JTokenType.String && double.TryParse(token.Value<string>(), out var numeric))
-            {
-                result += numeric;
-            }
-            else
-            {
-                context.LogError(CoreConstants.FunctionExecution,
-                    $"{FunctionName} can only handle numeric values. Current type = {token.Type}");
                 return JLioFunctionResult.Failed(currentToken);
             }
         }
+
         return new JLioFunctionResult(true, new JValue(result));
+    }
+
+    private bool TryAddTokenValue(JToken token, ref double result, IExecutionContext context)
+    {
+        switch (token.Type)
+        {
+            case JTokenType.Integer:
+            case JTokenType.Float:
+                result += token.Value<double>();
+                return true;
+
+            case JTokenType.String when double.TryParse(token.Value<string>(), out var numeric):
+                result += numeric;
+                return true;
+
+            case JTokenType.Array:
+                return TryAddArrayValues((JArray)token, ref result, context);
+
+            default:
+                context.LogError(CoreConstants.FunctionExecution,
+                    $"{FunctionName} can only handle numeric values or arrays. Current type = {token.Type}");
+                return false;
+        }
+    }
+
+    private bool TryAddArrayValues(JArray array, ref double result, IExecutionContext context)
+    {
+        foreach (var item in array)
+        {
+            if (!TryAddTokenValue(item, ref result, context))
+            {
+                return false;
+            }
+        }
+        return true;
     }
 }
