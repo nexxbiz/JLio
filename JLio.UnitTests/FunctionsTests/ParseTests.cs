@@ -14,7 +14,7 @@ namespace JLio.UnitTests.FunctionsTests;
 public class ParseTests
 {
     private IExecutionContext executeContext;
-    private ParseOptions parseOptions;
+    private IParseOptions parseOptions;
 
     [SetUp]
     public void Setup()

@@ -15,13 +15,13 @@ public class ParseOptions : IParseOptions
     public JsonConverter JLioFunctionConverter { get; set; }
     public JsonConverter JLioCommandConverter { get; set; }
 
-    public ParseOptions RegisterFunction<F>() where F : IFunction
+    public IParseOptions RegisterFunction<F>() where F : IFunction
     {
         FunctionsProvider.Register<F>();
         return this;
     }
 
-    public ParseOptions RegisterCommand<C>() where C : ICommand
+    public IParseOptions RegisterCommand<C>() where C : ICommand
     {
         CommandsProvider.Register<C>();
         return this;

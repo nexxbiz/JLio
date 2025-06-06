@@ -2,7 +2,7 @@ namespace JLio.Functions.Builders;
 
 public static class ToStringBuilders
 {
-    public static ToString ToString()
+    public static new ToString ToString() 
     {
         return new ToString();
     }
