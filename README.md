@@ -2,6 +2,8 @@
 
 JLio (jay-lio) is a structured language definition for transforming JSON objects using a transformation script with a JSON notation. 
 
+For detailed documentation see [doc/README.md](doc/README.md).
+
 JLio can create and alter JSON data objects. It allows the transformation of objects, without having the need to code or develop logic. Simply writing the desired commands as a JSON object. Executing the script on a data object will transform the data object following the script commands.
 
 Designed with extensibility in mind, commands, and functions can be added to support the desired functionality. 
