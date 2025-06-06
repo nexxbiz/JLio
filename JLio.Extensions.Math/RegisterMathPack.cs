@@ -12,6 +12,8 @@ namespace JLio.Extensions.Math
         public static IParseOptions RegisterMath(this IParseOptions parseOptions)
         {
             parseOptions.RegisterFunction<Sum>();
+            parseOptions.RegisterFunction<Avg>();
+            parseOptions.RegisterFunction<Count>();
             return parseOptions;
         }
     }
