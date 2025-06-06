@@ -2,6 +2,8 @@ using JLio.Client;
 using JLio.Commands.Builders;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
+using JLio.Extensions.Math;
+using JLio.Extensions.Math.Builders;
 using JLio.Functions.Builders;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -13,12 +15,12 @@ namespace JLio.UnitTests.FunctionsTests;
 public class SumTests
 {
     private IExecutionContext executionContext;
-    private ParseOptions parseOptions;
+    private IParseOptions parseOptions;
 
     [SetUp]
     public void Setup()
     {
-        parseOptions = ParseOptions.CreateDefault();
+        parseOptions = ParseOptions.CreateDefault().RegisterMath();
         executionContext = ExecutionContext.CreateDefault();
     }
 

@@ -4,7 +4,7 @@ using JLio.Core.Contracts;
 using JLio.Core.Models;
 using Newtonsoft.Json.Linq;
 
-namespace JLio.Functions;
+namespace JLio.Extensions.Math;
 
 public class Sum : FunctionBase
 {

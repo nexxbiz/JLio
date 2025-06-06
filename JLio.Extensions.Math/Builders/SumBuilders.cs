@@ -1,4 +1,4 @@
-namespace JLio.Functions.Builders;
+namespace JLio.Extensions.Math.Builders;
 
 public static class SumBuilders
 {
