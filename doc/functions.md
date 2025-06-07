@@ -41,3 +41,4 @@ Example usage inside a command:
 - [count](functions/count.md)
 - [sum](functions/sum.md)
 - [filterBySchema](functions/filterBySchema.md)
+- [calculate](functions/calculate.md)
