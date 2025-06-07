@@ -14,6 +14,7 @@ namespace JLio.Extensions.Math
             parseOptions.RegisterFunction<Sum>();
             parseOptions.RegisterFunction<Avg>();
             parseOptions.RegisterFunction<Count>();
+            parseOptions.RegisterFunction<Calculate>();
             return parseOptions;
         }
     }
