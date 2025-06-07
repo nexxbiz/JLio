@@ -92,4 +92,58 @@ public class IfElseTests
         Assert.IsTrue(result.Success);
         Assert.AreEqual("if", data.SelectToken("$.result")?.ToString());
     }
+
+    [Test]
+    public void ExecutesWithConditionArgumentTrue()
+    {
+        var data = JObject.Parse("{\"value\": true, \"result\": 0}");
+        var ifScript = new JLioScript()
+            .Set(new JValue(1))
+            .OnPath("$.result");
+        var elseScript = new JLioScript()
+            .Set(new JValue(-1))
+            .OnPath("$.result");
+
+        var command = new IfElse
+        {
+            Condition = Val(new JValue("$.value")),
+            IfScript = ifScript,
+            ElseScript = elseScript
+        };
+
+        var script = new JLioScript();
+        script.AddLine(command);
+
+        var result = script.Execute(data, executeOptions);
+
+        Assert.IsTrue(result.Success);
+        Assert.AreEqual(1, data.SelectToken("$.result")?.Value<int>());
+    }
+
+    [Test]
+    public void ExecutesWithConditionArgumentFalse()
+    {
+        var data = JObject.Parse("{\"value\": false, \"result\": 0}");
+        var ifScript = new JLioScript()
+            .Set(new JValue(1))
+            .OnPath("$.result");
+        var elseScript = new JLioScript()
+            .Set(new JValue(-1))
+            .OnPath("$.result");
+
+        var command = new IfElse
+        {
+            Condition = Val(new JValue("$.value")),
+            IfScript = ifScript,
+            ElseScript = elseScript
+        };
+
+        var script = new JLioScript();
+        script.AddLine(command);
+
+        var result = script.Execute(data, executeOptions);
+
+        Assert.IsTrue(result.Success);
+        Assert.AreEqual(-1, data.SelectToken("$.result")?.Value<int>());
+    }
 }
