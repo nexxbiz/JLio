@@ -1,8 +1,10 @@
 # IfElse Command Documentation
 
 ## Overview
-
-The `IfElse` command provides conditional execution logic by comparing two values and executing different script branches based on the comparison result. When the values are equal, the "if" script executes; otherwise, the "else" script executes. This enables dynamic, data-driven transformation workflows.
+The `IfElse` command provides conditional execution logic. It operates in two modes:
+1. **Comparison Mode** – compare two values (`first` and `second`). If they are equal the `ifScript` executes, otherwise the `elseScript` runs.
+2. **Condition Mode** – evaluate a boolean expression (`condition`). If it resolves to `true` the `ifScript` executes; otherwise the `elseScript` runs.
+This flexibility enables dynamic, data-driven transformation workflows.
 
 ## Syntax
 
@@ -29,11 +31,26 @@ The `IfElse` command provides conditional execution logic by comparing two value
 }
 ```
 
+```json
+{
+  "condition": "$.flag",
+  "ifScript": [
+    { "path": "$.result", "value": "true path", "command": "add" }
+  ],
+  "elseScript": [
+    { "path": "$.result", "value": "false path", "command": "add" }
+  ],
+  "command": "ifElse"
+}
+```
+
 ### Required Properties
-- **first**: First value for comparison (can be literal value, JSONPath, or function expression)
-- **second**: Second value for comparison (can be literal value, JSONPath, or function expression)
-- **ifScript**: Script to execute when first equals second
+- **ifScript**: Script to execute when the condition is met
 - **command**: Must be "ifElse"
+
+You must provide either:
+- **first** and **second**: values to compare (literal value, JSONPath, or function expression)
+- **condition**: a boolean expression resolving to `true` or `false`.
 
 ### Optional Properties
 - **elseScript**: Script to execute when first does not equal second (optional)
