@@ -24,7 +24,7 @@ public class CalculateTests
     }
 
     [TestCase("=calculate('2+3')", "{}", 5)]
-    [TestCase("=calculate('2+[$.v]')", "{\"v\":3}", 5)]
+    [TestCase("=calculate('2+{{$.v}}')", "{\"v\":3}", 5)]
     public void calculateTests(string function, string data, double resultValue)
     {
         var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"add\"}}]";
@@ -37,7 +37,13 @@ public class CalculateTests
     [Test]
     public void calculateFailsOnMultiToken()
     {
-        var script = "[{'path':'$.result','value':'=calculate(\'1+[ $.arr[*] ]\')','command':'add'}]".Replace("'","\"");
+        var script = @"[
+        {
+            ""path"": ""$.result"",
+            ""value"": ""=calculate('1+{{ $.arr[*] }}')"",
+            ""command"": ""add""
+        }
+    ]";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JObject.Parse("{\"arr\":[1,2]}"), executionContext);
         Assert.IsFalse(result.Success);
         Assert.IsTrue(executionContext.GetLogEntries().Any(i => i.Level == LogLevel.Error));
@@ -47,7 +53,7 @@ public class CalculateTests
     public void CanBeUsedInFluentApi()
     {
         var script = new JLioScript()
-                .Add(CalculateBuilders.Calculate("1+[$.v]"))
+                .Add(CalculateBuilders.Calculate("1+{{$.v}}"))
                 .OnPath("$.result");
         var token = JToken.Parse("{\"v\":2}");
         var result = script.Execute(token);

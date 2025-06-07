@@ -41,7 +41,7 @@ public class Calculate : FunctionBase
 
         try
         {
-            expression = ReplaceTokens(expression, currentToken, dataContext, context);
+            expression = ReplaceTokens(expression, currentToken, dataContext, context).Trim('\'');
         }
         catch
         {
@@ -65,7 +65,7 @@ public class Calculate : FunctionBase
 
     private string ReplaceTokens(string expression, JToken currentToken, JToken dataContext, IExecutionContext context)
     {
-        var pattern = @"\[(.*?)\]";
+        var pattern = @"\{\{(.*?)\}\}";
         var matches = Regex.Matches(expression, pattern);
         foreach (Match match in matches.Cast<Match>().Reverse())
         {
@@ -82,7 +82,7 @@ public class Calculate : FunctionBase
                     .Insert(match.Index, token.Value<double>().ToString(System.Globalization.CultureInfo.InvariantCulture));
             }
             else if (token.Type == JTokenType.String &&
-                     double.TryParse(token.Value<string>(), out var numeric))
+                    double.TryParse(token.Value<string>(), out var numeric))
             {
                 expression = expression.Remove(match.Index, match.Length)
                     .Insert(match.Index, numeric.ToString(System.Globalization.CultureInfo.InvariantCulture));
@@ -95,5 +95,6 @@ public class Calculate : FunctionBase
 
         return expression;
     }
+
 }
 
