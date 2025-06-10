@@ -44,7 +44,7 @@ public static class SplitText
         char[] delimiterCharacters)
     {
         var resultText = GetTextBetweenDelimiters(text, previousDelimiterIndex, delimiterIndex);
-        if (delimiterCharacters.Any(c => c == resultText.ToCharArray().Last()))
+        if (!string.IsNullOrEmpty(resultText) &&   delimiterCharacters.Any(c => c == resultText.ToCharArray().Last()))
             return new ChoppedElement(resultText.Substring(0, resultText.Length - 1));
         return new ChoppedElement(resultText);
     }
@@ -77,7 +77,7 @@ public static class SplitText
     private static void HandleLevels(List<LevelPair> levels, char character, LevelPair levelIndicator)
     {
         //when characters are not the same and it is a close character then level should be removed
-        if (!levelIndicator.OpenCloseAreSameCharacter && character == levelIndicator.CloseCharacter)
+        if (!levelIndicator.OpenCloseAreSameCharacter && character == levelIndicator.CloseCharacter && levels.Any() && levels.Last().SubLevelsPossible)
         {
             if (levels.Count > 0) levels.RemoveAt(levels.Count - 1);
         }
