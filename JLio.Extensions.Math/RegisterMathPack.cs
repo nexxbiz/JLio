@@ -2,14 +2,18 @@
 
 namespace JLio.Extensions.Math;
 
-public static class RegisterMathPack
+namespace JLio.Extensions.Math
 {
-    public static IParseOptions RegisterMath(this IParseOptions parseOptions)
+    public static class RegisterMathPack
     {
-        parseOptions.RegisterFunction<Sum>();
-        parseOptions.RegisterFunction<Avg>();
-        parseOptions.RegisterFunction<Count>();
-        parseOptions.RegisterFunction<Calculate>();
-        return parseOptions;
+        public static IParseOptions RegisterMath(this IParseOptions parseOptions)
+        {
+            parseOptions.RegisterFunction<Sum>();
+            parseOptions.RegisterFunction<Avg>();
+            parseOptions.RegisterFunction<Count>();
+            parseOptions.RegisterFunction<Calculate>();
+            parseOptions.RegisterFunction<Subtract>();
+            return parseOptions;
+        }
     }
 }
