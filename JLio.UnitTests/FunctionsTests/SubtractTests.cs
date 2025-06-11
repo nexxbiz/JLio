@@ -4,6 +4,7 @@ using JLio.Core.Contracts;
 using JLio.Core.Models;
 using JLio.Extensions.Math;
 using JLio.Extensions.Math.Builders;
+using JLio.Extensions.Text;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -19,7 +20,7 @@ public class SubtractTests
     [SetUp]
     public void Setup()
     {
-        parseOptions = ParseOptions.CreateDefault().RegisterMath();
+        parseOptions = ParseOptions.CreateDefault().RegisterMath().RegisterText();
         executionContext = ExecutionContext.CreateDefault();
     }
 
