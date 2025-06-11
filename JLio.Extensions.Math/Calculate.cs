@@ -5,14 +5,20 @@ using JLio.Core;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
 using Newtonsoft.Json.Linq;
+using System.Text;
 
 namespace JLio.Extensions.Math;
 
 public class Calculate : FunctionBase
 {
-    public Calculate()
-    {
-    }
+    private static readonly Regex TokenPattern = new(@"\{\{(.*?)\}\}", RegexOptions.Compiled);
+    private static readonly Regex CommaPattern = new(@"(?<=\d),(?=\d)", RegexOptions.Compiled);
+    private static readonly Regex[] ZeroPatterns = { new(@"/\s*0(?!\d)", RegexOptions.Compiled), new(@"/\s*0\.0+(?!\d)", RegexOptions.Compiled), new(@"/\s*\(\s*0\s*\)", RegexOptions.Compiled) };
+    private static readonly ThreadLocal<DataTable> Table = new(() => new DataTable());
+    private static readonly CultureInfo Invariant = CultureInfo.InvariantCulture;
+    private static readonly CultureInfo German = CultureInfo.GetCultureInfo("de-DE");
+
+    public Calculate() { }
 
     public Calculate(string expression)
     {
@@ -21,180 +27,94 @@ public class Calculate : FunctionBase
 
     public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)
     {
-        if (Arguments.Count != 1)
-        {
-            context.LogError(CoreConstants.FunctionExecution,
-                $"failed: {FunctionName} requires 1 argument (expression)");
-            return JLioFunctionResult.Failed(currentToken);
-        }
+        if (!ValidateArguments(context)) return JLioFunctionResult.Failed(currentToken);
+        var expression = GetExpression(currentToken, dataContext, context);
+        if (expression == null) return JLioFunctionResult.Failed(currentToken);
+        return ComputeResult(expression, context, currentToken);
+    }
 
+    private bool ValidateArguments(IExecutionContext context)
+    {
+        if (Arguments.Count == 1) return true;
+        context.LogError(CoreConstants.FunctionExecution, $"failed: {FunctionName} requires 1 argument (expression)");
+        return false;
+    }
+
+    private string GetExpression(JToken currentToken, JToken dataContext, IExecutionContext context)
+    {
         var argument = GetArguments(Arguments, currentToken, dataContext, context).FirstOrDefault();
-        if (argument == null || argument.Type != JTokenType.String)
-        {
-            context.LogError(CoreConstants.FunctionExecution,
-                $"failed: {FunctionName} requires a string argument");
-            return JLioFunctionResult.Failed(currentToken);
-        }
+        if (argument?.Type != JTokenType.String) { LogError(context, "requires a string argument"); return null; }
+        try { return ProcessExpression(argument.Value<string>(), currentToken, dataContext, context); }
+        catch (Exception ex) { LogError(context, $"token replacement failed: {ex.Message}"); return null; }
+    }
 
-        var expression = argument.Value<string>();
+    private string ProcessExpression(string expression, JToken currentToken, JToken dataContext, IExecutionContext context)
+    {
+        expression = ReplaceTokens(expression, currentToken, dataContext, context).Trim('\'');
+        if (string.IsNullOrWhiteSpace(expression)) throw new Exception("expression is empty");
+        expression = CommaPattern.Replace(expression, ".");
+        if (HasDivisionByZero(expression)) throw new Exception("division by zero detected");
+        return expression;
+    }
 
-        try
-        {
-            expression = ReplaceTokens(expression, currentToken, dataContext, context).Trim('\'');
-        }
-        catch (Exception ex)
-        {
-            context.LogError(CoreConstants.FunctionExecution,
-                $"{FunctionName} token replacement failed: {ex.Message}");
-            return JLioFunctionResult.Failed(currentToken);
-        }
+    private JLioFunctionResult ComputeResult(string expression, IExecutionContext context, JToken currentToken)
+    {
+        try { var result = Convert.ToDouble(Table.Value.Compute(expression, null)); return ValidateResult(result, context, currentToken); }
+        catch (EvaluateException) { LogError(context, "invalid mathematical expression"); return JLioFunctionResult.Failed(currentToken); }
+        catch (SyntaxErrorException) { LogError(context, "syntax error in expression"); return JLioFunctionResult.Failed(currentToken); }
+        catch (Exception ex) { LogError(context, $"computation failed: {ex.Message}"); return JLioFunctionResult.Failed(currentToken); }
+    }
 
-        // Handle European decimal notation (comma as decimal separator)
-        expression = NormalizeDecimalNotation(expression);
-
-        try
-        {
-            // Validate expression before computation
-            if (string.IsNullOrWhiteSpace(expression))
-            {
-                context.LogError(CoreConstants.FunctionExecution,
-                    $"{FunctionName} expression is empty");
-                return JLioFunctionResult.Failed(currentToken);
-            }
-
-            // Check for division by zero before computation
-            if (ContainsDivisionByZero(expression))
-            {
-                context.LogError(CoreConstants.FunctionExecution,
-                    $"{FunctionName} division by zero detected");
-                return JLioFunctionResult.Failed(currentToken);
-            }
-
-            var table = new DataTable();
-            var computeResult = table.Compute(expression, null);
-
-            if (computeResult == null || computeResult == DBNull.Value)
-            {
-                context.LogError(CoreConstants.FunctionExecution,
-                    $"{FunctionName} computation returned null result");
-                return JLioFunctionResult.Failed(currentToken);
-            }
-
-            var value = Convert.ToDouble(computeResult);
-
-            // Check for invalid results (NaN, Infinity)
-            if (double.IsNaN(value) || double.IsInfinity(value))
-            {
-                context.LogError(CoreConstants.FunctionExecution,
-                    $"{FunctionName} computation resulted in invalid number");
-                return JLioFunctionResult.Failed(currentToken);
-            }
-
-            return new JLioFunctionResult(true, new JValue(value));
-        }
-        catch (EvaluateException)
-        {
-            context.LogError(CoreConstants.FunctionExecution,
-                $"{FunctionName} invalid mathematical expression");
-            return JLioFunctionResult.Failed(currentToken);
-        }
-        catch (SyntaxErrorException)
-        {
-            context.LogError(CoreConstants.FunctionExecution,
-                $"{FunctionName} syntax error in expression");
-            return JLioFunctionResult.Failed(currentToken);
-        }
-        catch (Exception ex)
-        {
-            context.LogError(CoreConstants.FunctionExecution,
-                $"{FunctionName} computation failed: {ex.Message}");
-            return JLioFunctionResult.Failed(currentToken);
-        }
+    private JLioFunctionResult ValidateResult(double value, IExecutionContext context, JToken currentToken)
+    {
+        if (double.IsNaN(value) || double.IsInfinity(value)) { LogError(context, "computation resulted in invalid number"); return JLioFunctionResult.Failed(currentToken); }
+        return new JLioFunctionResult(true, new JValue(value));
     }
 
     private string ReplaceTokens(string expression, JToken currentToken, JToken dataContext, IExecutionContext context)
     {
-        var pattern = @"\{\{(.*?)\}\}";
-        var matches = Regex.Matches(expression, pattern);
-
-        foreach (Match match in matches.Cast<Match>().Reverse())
-        {
-            var inner = match.Groups[1].Value.Trim();
-            var valueProvider = FixedValue.DefaultFunctionConverter.ParseString(inner);
-            var result = valueProvider.GetValue(currentToken, dataContext, context);
-
-            if (!result.Success)
-            {
-                throw new Exception($"Failed to resolve token: {inner}");
-            }
-
-            if (result.Data.Count != 1)
-            {
-                throw new Exception($"Token resolution returned multiple values for: {inner}. Expected single value.");
-            }
-
-            var token = result.Data.First();
-
-            // Handle different token types
-            if (token.Type == JTokenType.Integer || token.Type == JTokenType.Float)
-            {
-                var numericValue = token.Value<double>();
-                expression = expression.Remove(match.Index, match.Length)
-                    .Insert(match.Index, numericValue.ToString(CultureInfo.InvariantCulture));
-            }
-            else if (token.Type == JTokenType.String)
-            {
-                var stringValue = token.Value<string>();
-                if (double.TryParse(stringValue, NumberStyles.Float, CultureInfo.InvariantCulture, out var numericFromString))
-                {
-                    expression = expression.Remove(match.Index, match.Length)
-                        .Insert(match.Index, numericFromString.ToString(CultureInfo.InvariantCulture));
-                }
-                else if (double.TryParse(stringValue, NumberStyles.Float, CultureInfo.GetCultureInfo("de-DE"), out var numericFromStringComma))
-                {
-                    // Handle European decimal notation in string values
-                    expression = expression.Remove(match.Index, match.Length)
-                        .Insert(match.Index, numericFromStringComma.ToString(CultureInfo.InvariantCulture));
-                }
-                else
-                {
-                    throw new Exception($"Token value is not numeric: {stringValue}");
-                }
-            }
-            else if (token.Type == JTokenType.Null)
-            {
-                throw new Exception($"Token resolved to null: {inner}");
-            }
-            else
-            {
-                throw new Exception($"Token type not supported for calculation: {token.Type}");
-            }
-        }
-
-        return expression;
+        var matches = TokenPattern.Matches(expression);
+        if (matches.Count == 0) return expression;
+        var sb = new StringBuilder(expression);
+        for (int i = matches.Count - 1; i >= 0; i--) ReplaceToken(sb, matches[i], currentToken, dataContext, context);
+        return sb.ToString();
     }
 
-    private string NormalizeDecimalNotation(string expression)
+    private void ReplaceToken(StringBuilder sb, Match match, JToken currentToken, JToken dataContext, IExecutionContext context)
     {
-        // Replace European decimal notation (comma as decimal separator) with period
-        // This regex matches numbers with comma as decimal separator
-        // Positive lookbehind and lookahead to ensure we're dealing with decimal numbers
-        var commaDecimalPattern = @"(?<=\d),(?=\d)";
-        return Regex.Replace(expression, commaDecimalPattern, ".");
+        var inner = match.Groups[1].Value.Trim();
+        var result = FixedValue.DefaultFunctionConverter.ParseString(inner).GetValue(currentToken, dataContext, context);
+        if (!result.Success || result.Data.Count != 1) throw new Exception($"Failed to resolve token: {inner}");
+        var replacement = ConvertToNumeric(result.Data.First(), inner);
+        sb.Remove(match.Index, match.Length).Insert(match.Index, replacement);
     }
 
-    private bool ContainsDivisionByZero(string expression)
+    private string ConvertToNumeric(JToken token, string name)
     {
-        // Simple check for obvious division by zero cases
-        // This won't catch all cases (like variables that evaluate to zero), 
-        // but will catch literal zero divisions
-        var divisionByZeroPatterns = new[]
+        return token.Type switch
         {
-            @"/\s*0(?!\d)",  // "/0" not followed by another digit
-            @"/\s*0\.0+(?!\d)",  // "/0.0" or "/0.00" etc.
-            @"/\s*\(\s*0\s*\)"  // "/(0)"
+            JTokenType.Integer or JTokenType.Float => token.Value<double>().ToString(Invariant),
+            JTokenType.String => ParseStringToNumeric(token.Value<string>()),
+            JTokenType.Null => throw new Exception($"Token resolved to null: {name}"),
+            _ => throw new Exception($"Token type not supported: {token.Type}")
         };
+    }
 
-        return divisionByZeroPatterns.Any(pattern => Regex.IsMatch(expression, pattern));
+    private string ParseStringToNumeric(string value)
+    {
+        if (double.TryParse(value, NumberStyles.Float, Invariant, out var result)) return result.ToString(Invariant);
+        if (double.TryParse(value, NumberStyles.Float, German, out result)) return result.ToString(Invariant);
+        throw new Exception($"Token value is not numeric: {value}");
+    }
+
+    private bool HasDivisionByZero(string expression)
+    {
+        foreach (var pattern in ZeroPatterns) if (pattern.IsMatch(expression)) return true;
+        return false;
+    }
+
+    private void LogError(IExecutionContext context, string message)
+    {
+        context.LogError(CoreConstants.FunctionExecution, $"{FunctionName} {message}");
     }
 }
