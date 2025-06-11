@@ -24,7 +24,7 @@ public class SubtractTests
     }
 
     [TestCase("=subtract(10,3)", "{}", 7)]
-    [TestCase("=subtract('10','3')", "{}", 7)]
+    [TestCase("=subtract(parse('10'),parse('3'))", "{}", 7)]
     [TestCase("=subtract($.a,$.b)", "{\"a\":5,\"b\":2}", 3)]
     [TestCase("=subtract($.a,$.b)", "{\"a\":null,\"b\":2}", -2)]
     [TestCase("=subtract($.values[*],$.subs[*])", "{\"values\":[5,3],\"subs\":[2,1]}", 5)]
