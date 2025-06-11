@@ -2,6 +2,8 @@
 using JLio.Commands.Builders;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
+using JLio.Extensions.Text;
+using JLio.Extensions.Text.Builders;
 using JLio.Functions.Builders;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -18,6 +20,7 @@ public class ConcatTests
     public void Setup()
     {
         parseOptions = ParseOptions.CreateDefault();
+        parseOptions.RegisterText();
         executeOptions = ExecutionContext.CreateDefault();
     }
 
@@ -65,7 +68,7 @@ public class ConcatTests
         Assert.AreNotEqual(result.Data.SelectToken("$.result").Type, JTokenType.Null);
         Assert.AreEqual("ab", result.Data.SelectToken("$.result").ToString());
     }
-    
+
     [Test]
     public void CanbeUsedInFluentApi_Set()
     {

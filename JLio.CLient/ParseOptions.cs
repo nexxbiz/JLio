@@ -44,13 +44,8 @@ public class ParseOptions : IParseOptions
         var functionsProvider = new FunctionsProvider();
         functionsProvider
            .Register<Datetime>()
-           .Register<NewGuid>()
-           .Register<Concat>()
-           .Register<Parse>()
            .Register<Partial>()
-           .Register<ToString>()
            .Register<Promote>()
-           .Register<Format>()
            .Register<Fetch>();
 
 

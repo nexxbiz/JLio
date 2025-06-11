@@ -7,7 +7,8 @@ using JLio.Commands.Models;
 using JLio.Core;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
-using JLio.Functions;
+using JLio.Extensions.Math;
+using JLio.Extensions.Text;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 
@@ -538,7 +539,9 @@ public class DecisionTableTests
     [Test]
     public void OutputsCanUseFunctions()
     {
-        var functionConverter = new FunctionConverter(ParseOptions.CreateDefault().FunctionsProvider);
+        var options = ParseOptions.CreateDefault();
+        options.RegisterMath().RegisterText();
+        var functionConverter = new FunctionConverter(options.FunctionsProvider);
         var command = new DecisionTable
         {
             Path = "$.singleCustomer",

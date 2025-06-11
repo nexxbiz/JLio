@@ -1,11 +1,10 @@
-﻿using System.Linq;
-using JLio.Core;
+﻿using JLio.Core;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace JLio.Functions;
+namespace JLio.Extensions.Text;
 
 public class Concat : FunctionBase
 {

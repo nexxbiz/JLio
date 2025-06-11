@@ -1,7 +1,5 @@
-using System;
 using System.Data;
 using System.Globalization;
-using System.Linq;
 using System.Text.RegularExpressions;
 using JLio.Core;
 using JLio.Core.Contracts;

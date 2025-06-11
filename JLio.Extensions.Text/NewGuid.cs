@@ -1,9 +1,8 @@
-﻿using System;
-using JLio.Core.Contracts;
+﻿using JLio.Core.Contracts;
 using JLio.Core.Models;
 using Newtonsoft.Json.Linq;
 
-namespace JLio.Functions;
+namespace JLio.Extensions.Text;
 
 public class NewGuid : FunctionBase
 {

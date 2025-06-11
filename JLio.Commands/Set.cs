@@ -10,7 +10,7 @@ namespace JLio.Commands;
 
 public class Set : PropertyChangeCommand
 {
- 
+
 
     public Set()
     {

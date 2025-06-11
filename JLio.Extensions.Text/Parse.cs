@@ -1,12 +1,10 @@
-﻿using System;
-using System.Linq;
-using JLio.Core;
+﻿using JLio.Core;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
-namespace JLio.Functions;
+namespace JLio.Extensions.Text;
 
 public class Parse : FunctionBase
 {

@@ -3,7 +3,6 @@ using JLio.Commands.Models;
 using JLio.Core;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
-using JLio.Functions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using System;

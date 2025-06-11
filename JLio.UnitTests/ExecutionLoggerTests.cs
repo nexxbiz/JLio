@@ -1,7 +1,6 @@
 using JLio.Core.Models;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
-using System.Text.RegularExpressions;
 
 namespace JLio.UnitTests;
 
