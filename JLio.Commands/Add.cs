@@ -32,7 +32,7 @@ public class Add : PropertyChangeCommand
             case JObject o:
                 if (JsonMethods.IsPropertyOfTypeArray(propertyName, o))
                 {
-                
+            
                         AddToArray((JArray)o[propertyName], dataContext);
                     return;
                 }
@@ -46,7 +46,7 @@ public class Add : PropertyChangeCommand
                 AddProperty(propertyName, o, dataContext);
                 break;
             case JArray a:
-              
+          
                     AddToArray(a, dataContext);
                 break;
         }

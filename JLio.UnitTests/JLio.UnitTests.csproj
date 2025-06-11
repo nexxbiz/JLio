@@ -16,6 +16,7 @@
     <ProjectReference Include="..\JLio.Core\JLio.Core.csproj" />
     <ProjectReference Include="..\JLio.Extensions.JSchema\JLio.Extensions.JSchema.csproj" />
     <ProjectReference Include="..\JLio.Extensions.Math\JLio.Extensions.Math.csproj" />
+    <ProjectReference Include="..\JLio.Extensions.Text\JLio.Extensions.Text.csproj" />
   </ItemGroup>
 
 </Project>

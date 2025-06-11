@@ -3,12 +3,10 @@ using JLio.Commands.Models;
 using JLio.Core;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
-using JLio.Functions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace JLio.UnitTests.CommandsTests.DecisionTableTesting;
 

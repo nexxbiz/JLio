@@ -102,7 +102,7 @@ public static class JsonMethods
         item.Children().Where(filter).ToList().ForEach(c => result.AddRange(c.GetAllElements(filter)));
         return result;
     }
-    
+
     public static List<JToken> GetAllElements(this JToken item)
     {
         var result = new List<JToken> {item};

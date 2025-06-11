@@ -4,6 +4,9 @@ using JLio.Commands.Builders;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
 using JLio.Extensions.JSchema;
+using JLio.Extensions.Math;
+using JLio.Extensions.Text;
+using JLio.Extensions.Text.Builders;
 using JLio.Functions.Builders;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -19,8 +22,9 @@ public class ParseTests
     [SetUp]
     public void Setup()
     {
-        parseOptions = ParseOptions.CreateDefault()
-            .RegisterFunction<FilterBySchema>();
+        parseOptions = ParseOptions.CreateDefault();
+        parseOptions.RegisterText().RegisterMath();
+        parseOptions.RegisterFunction<FilterBySchema>();
         executeContext = ExecutionContext.CreateDefault();
     }
 

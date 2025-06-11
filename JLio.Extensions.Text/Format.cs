@@ -1,11 +1,10 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using JLio.Core;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
 using Newtonsoft.Json.Linq;
 
-namespace JLio.Functions;
+namespace JLio.Extensions.Text;
 
 public class Format : FunctionBase
 {
@@ -45,7 +44,7 @@ public class Format : FunctionBase
         if (value.Type == JTokenType.String)
         {
             DateTime datetimeValue; 
-            if(DateTime.TryParse(value.Value<String>().ToString(), CultureInfo.InvariantCulture, DateTimeStyles.None, out datetimeValue)){
+            if(DateTime.TryParse(value.Value<string>().ToString(), CultureInfo.InvariantCulture, DateTimeStyles.None, out datetimeValue)){
                 return JLioFunctionResult.SuccessFul(new JValue(datetimeValue.ToString(formatString)));
             }
             return JLioFunctionResult.SuccessFul(value);

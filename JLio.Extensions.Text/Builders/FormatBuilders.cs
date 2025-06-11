@@ -1,4 +1,4 @@
-namespace JLio.Functions.Builders;
+namespace JLio.Extensions.Text.Builders;
 
 public static class FormatBuilders
 {
