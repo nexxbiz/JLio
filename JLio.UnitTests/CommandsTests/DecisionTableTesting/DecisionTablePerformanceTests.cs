@@ -23,17 +23,17 @@ public class DecisionTablePerformanceTests
     public void OneTimeSetup()
     {
         executeOptions = ExecutionContext.CreateDefault();
-        GenerateLargeDataset();
+        largeDataset = GenerateDataset(10000);
         SetupDecisionTableCommand();
     }
 
-    private void GenerateLargeDataset()
+    private JToken GenerateDataset(int size)
     {
         var customers = new JArray();
         var random = new Random(42); // Fixed seed for reproducible results
 
         // Generate 10,000 customers
-        for (int i = 0; i < 10000; i++)
+        for (int i = 0; i < size; i++)
         {
             var customer = new JObject
             {
@@ -50,7 +50,7 @@ public class DecisionTablePerformanceTests
             customers.Add(customer);
         }
 
-        largeDataset = new JObject { ["customers"] = customers };
+        return new JObject { ["customers"] = customers };
     }
 
     private string GetRandomMembership(Random random)
@@ -367,6 +367,26 @@ public class DecisionTablePerformanceTests
         // Many rules should scale linearly
         Assert.Less(stopwatch.ElapsedMilliseconds, 20000,
             $"Many rules took {stopwatch.ElapsedMilliseconds}ms, expected under 20000ms");
+    }
+
+    [Test]
+    [Category("Performance")]
+    public void PerformanceTest_ManyRules_Scaling_Single_Record()
+    {
+        // Test with many rules to see how rule count affects performance
+        var manyRulesCommand = CreateCommandWithManyRules(5000); 
+
+        var stopwatch = Stopwatch.StartNew();
+        var result = manyRulesCommand.Execute(GenerateDataset(1), executeOptions);
+        stopwatch.Stop();
+
+        Assert.IsTrue(result.Success);
+        Console.WriteLine($"Many Rules (5000) - 1 records: {stopwatch.ElapsedMilliseconds}ms");
+        Console.WriteLine($"Average per record: {(double)stopwatch.ElapsedMilliseconds :F3}ms");
+
+        // Many rules should scale linearly
+        Assert.Less(stopwatch.ElapsedMilliseconds, 1000,
+            $"Many rules took {stopwatch.ElapsedMilliseconds}ms, expected under 1000ms");
     }
 
     [Test]
