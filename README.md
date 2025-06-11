@@ -113,6 +113,7 @@ Some commands allow their value parameters to be evaluated as JLio functions. Th
 | `remove`     | no |
 | `compare`    | no |
 | `merge`      | no |
+| `distinct`   | no |
 
 
 ### Add

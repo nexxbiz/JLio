@@ -26,6 +26,7 @@ The table below lists the available commands and their main arguments.
 | **ifElse** | `condition`, `then`, `else` | Execute nested scripts conditionally. |
 | **merge** | `path`, `value` | Merge objects and arrays. |
 | **compare** | `path`, `value` | Compare two values according to settings. |
+| **distinct** | `path` | Remove duplicate array items. |
 
 Arguments can reference JSONPath locations and may use functions in the `value` field.
 
@@ -41,3 +42,4 @@ Arguments can reference JSONPath locations and may use functions in the `value` 
 - [ifElse](commands/ifElse.md)
 - [merge](commands/merge.md)
 - [compare](commands/compare.md)
+- [distinct](commands/distinct.md)
