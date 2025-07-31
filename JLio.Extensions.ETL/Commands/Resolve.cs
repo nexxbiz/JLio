@@ -13,6 +13,7 @@ namespace JLio.Extensions.ETL.Commands
 {
     public class Resolve : CommandBase
     {
+        private bool foundErrors = false;
         private IExecutionContext executionContext;
 
         [JsonProperty("path")]
@@ -24,6 +25,7 @@ namespace JLio.Extensions.ETL.Commands
         public override JLioExecutionResult Execute(JToken dataContext, IExecutionContext context)
         {
             executionContext = context;
+            foundErrors = false;
             var validationResult = ValidateCommandInstance();
             if (!validationResult.IsValid)
             {
@@ -42,7 +44,7 @@ namespace JLio.Extensions.ETL.Commands
             context.LogInfo(CoreConstants.CommandExecution,
                 $"{CommandName}: completed for {Path}");
 
-            return new JLioExecutionResult(true, dataContext);
+            return new JLioExecutionResult(!foundErrors, dataContext);
         }
 
         public override ValidationResult ValidateCommandInstance()
@@ -83,6 +85,7 @@ namespace JLio.Extensions.ETL.Commands
             }
             catch (Exception ex)
             {
+          
                 executionContext.LogError(CoreConstants.CommandExecution,
                     $"Error executing resolve command: {ex.Message}");
             }
@@ -110,19 +113,12 @@ namespace JLio.Extensions.ETL.Commands
                 executionContext.LogInfo(CoreConstants.CommandExecution,
                     $"Found {matchingReferences.Count} matching references for target");
 
-                if (matchingReferences.Any())
-                {
-                    // Apply values for each matching reference
-                    ApplyResolvedValues(targetToken, dataContext, matchingReferences, resolveSetting.Values, resolveSetting.ResolveKeys);
-                }
-                else
-                {
-                    executionContext.LogWarning(CoreConstants.CommandExecution,
-                        "No matching references found for target token");
-                }
+                // Apply values regardless of whether we have matches - let each ResolveValue handle its own behavior
+                ApplyResolvedValues(targetToken, dataContext, matchingReferences, resolveSetting.Values, resolveSetting.ResolveKeys);
             }
             catch (Exception ex)
             {
+             
                 executionContext.LogWarning(CoreConstants.CommandExecution,
                     $"Error in resolve setting for collection {resolveSetting.ReferencesCollectionPath}: {ex.Message}");
             }
@@ -278,6 +274,7 @@ namespace JLio.Extensions.ETL.Commands
                 }
                 catch (Exception ex)
                 {
+                    foundErrors = true;
                     executionContext.LogWarning(CoreConstants.CommandExecution,
                         $"Error applying resolved value to {resolveValue.TargetPath}: {ex.Message}");
                 }
@@ -286,45 +283,87 @@ namespace JLio.Extensions.ETL.Commands
 
         private void ApplyResolveValue(JToken targetToken, JToken dataContext, List<JToken> matchingReferences, ResolveValue resolveValue, List<ResolveKey> resolveKeys)
         {
-            // Determine if we should return single value or array based on the type of matching being performed
             JToken valueToAssign;
+            
+            // Use the new AsArray behavior property to determine how to format the result
+            switch (resolveValue.ResolveTypeBehavior)
+            {
+                case ResolveTypeBehavior.AlwaysAsArray:
+                    valueToAssign = CreateArrayResult(matchingReferences, dataContext, resolveValue.Value);
+                    break;
+                    
+                case ResolveTypeBehavior.AlwaysAsObject:
+                    valueToAssign = CreateObjectResult(matchingReferences, dataContext, resolveValue.Value);
+                    break;
+                    
+                case ResolveTypeBehavior.DependingOnResult:
+                default:
+                    valueToAssign = CreateDependingOnResultResult(matchingReferences, dataContext, resolveValue.Value, resolveKeys);
+                    break;
+            }
+
+            // Only apply the value if we have something to assign (null means no assignment for some behaviors)
+            if (valueToAssign != null)
+            {
+                SetValueAtPath(targetToken, resolveValue.TargetPath, valueToAssign);
+            }
+        }
+
+        private JToken CreateArrayResult(List<JToken> matchingReferences, JToken dataContext, IFunctionSupportedValue value)
+        {
+            var arrayValues = new JArray();
+            foreach (var matchingRef in matchingReferences)
+            {
+                var resolvedValue = GetResolvedValue(matchingRef, dataContext, value);
+                arrayValues.Add(resolvedValue);
+            }
+            return arrayValues;
+        }
+
+        private JToken CreateObjectResult(List<JToken> matchingReferences, JToken dataContext, IFunctionSupportedValue value)
+        {
+            if (matchingReferences.Count == 0)
+            {
+                return null; // No matches - don't assign anything
+            }
+            else if (matchingReferences.Count == 1)
+            {
+                return GetResolvedValue(matchingReferences[0], dataContext, value);
+            }
+            else
+            {
+                // Multiple matches but user wants object - this is an error condition
+                executionContext.LogError(CoreConstants.CommandExecution,
+                    $"Multiple matches found ({matchingReferences.Count}) but AsArray is set to AlwaysAsObject. This is not supported.");
+                throw new InvalidOperationException($"Multiple matches found ({matchingReferences.Count}) but AsArray is set to AlwaysAsObject");
+            }
+        }
+
+        private JToken CreateDependingOnResultResult(List<JToken> matchingReferences, JToken dataContext, IFunctionSupportedValue value, List<ResolveKey> resolveKeys)
+        {
+            // This is the original logic - maintain backward compatibility
             bool shouldReturnArray = ShouldReturnArray(resolveKeys);
             
             if (shouldReturnArray)
             {
                 // Always return array for array-based matching scenarios
-                var arrayValues = new JArray();
-                foreach (var matchingRef in matchingReferences)
-                {
-                    var resolvedValue = GetResolvedValue(matchingRef, dataContext, resolveValue.Value);
-                    arrayValues.Add(resolvedValue);
-                }
-                valueToAssign = arrayValues;
+                return CreateArrayResult(matchingReferences, dataContext, value);
             }
             else if (matchingReferences.Count == 1)
             {
                 // Single match for simple key matching
-                valueToAssign = GetResolvedValue(matchingReferences[0], dataContext, resolveValue.Value);
+                return GetResolvedValue(matchingReferences[0], dataContext, value);
             }
             else if (matchingReferences.Count > 1)
             {
                 // Multiple matches for simple key matching - return array
-                var arrayValues = new JArray();
-                foreach (var matchingRef in matchingReferences)
-                {
-                    var resolvedValue = GetResolvedValue(matchingRef, dataContext, resolveValue.Value);
-                    arrayValues.Add(resolvedValue);
-                }
-                valueToAssign = arrayValues;
+                return CreateArrayResult(matchingReferences, dataContext, value);
             }
             else
             {
                 // No matches - don't assign anything
-                return;
+                return null;
             }
-
-            // Apply the value to the target path
-            SetValueAtPath(targetToken, resolveValue.TargetPath, valueToAssign);
         }
 
         private bool ShouldReturnArray(List<ResolveKey> resolveKeys)

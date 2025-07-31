@@ -39,6 +39,15 @@
     <None Update="TestData\ResolveTests\array-to-array-intersection-script.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\ResolveTests\asarray-behavior-expected.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\ResolveTests\asarray-behavior-input.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\ResolveTests\asarray-behavior-script.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\ResolveTests\empty-collections-expected.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -82,6 +91,15 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TestData\ResolveTests\multiple-items-array-script.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\ResolveTests\nested-subcollections-expected.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\ResolveTests\nested-subcollections-input.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\ResolveTests\nested-subcollections-script.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TestData\ResolveTests\no-array-matches-expected.json">

@@ -36,7 +36,8 @@ namespace JLio.UnitTests.CommandsTests
             testDataPath = Path.Combine(assemblyDirectory, "TestData", "ResolveTests");
         }
 
-        #region File-Based Test Cases
+
+  
 
         [TestCase("simple-key-to-array", TestName = "Simple Key to Array Matching")]
         [TestCase("multiple-items-array", TestName = "Multiple Items Array Matching")]
@@ -49,6 +50,8 @@ namespace JLio.UnitTests.CommandsTests
         [TestCase("empty-reference-arrays", TestName = "Empty Reference Arrays")]
         [TestCase("empty-collections", TestName = "Empty Collections")]
         [TestCase("partial-matches", TestName = "Partial Matches Across Collections")]
+        [TestCase("nested-subcollections", TestName = "Nested Subcollections Cross-Reference Resolution")]
+        [TestCase("asarray-behavior", TestName = "AsArray Behavior Options")]
         public void ResolveFileBasedTests(string testCaseName)
         {
             // Load test files
@@ -91,9 +94,6 @@ namespace JLio.UnitTests.CommandsTests
             Assert.IsTrue(areEqual, $"Results do not match expected output for test case: {testCaseName}");
         }
 
-        #endregion
-
-        #region Original Individual Test Methods (for compatibility)
 
         [Test]
         public void CanMatchSimpleKeyToArrayValues()
@@ -401,6 +401,289 @@ namespace JLio.UnitTests.CommandsTests
             Assert.IsNotNull(testData.SelectToken("$.items[0].referenceData"));
         }
 
-        #endregion
+
+        [Test]
+        public void CanUseAsArrayBehaviorOptions()
+        {
+            // Test Case: AsArray Behavior Options
+            // This test demonstrates all three AsArray behavior options
+            var testData = JToken.Parse(@"{
+                ""items"": [
+                    {""id"": ""ITEM001"", ""categoryId"": ""CAT001""},
+                    {""id"": ""ITEM002"", ""categoryId"": ""CAT999""},
+                    {""id"": ""ITEM003"", ""categoryIds"": [""CAT001"", ""CAT002""]}
+                ],
+                ""categories"": [
+                    {""id"": ""CAT001"", ""name"": ""Electronics""},
+                    {""id"": ""CAT002"", ""name"": ""Mobile""}
+                ]
+            }");
+
+            // Test AlwaysAsArray - single match should return array with one element
+            var resolveAlwaysArrayCommand = new Resolve
+            {
+                Path = "$.items[0]",
+                ResolveSettings = new List<ResolveSetting>
+                {
+                    new ResolveSetting
+                    {
+                        ResolveKeys = new List<ResolveKey>
+                        {
+                            new ResolveKey { KeyPath = "@.categoryId", ReferenceKeyPath = "@.id" }
+                        },
+                        ReferencesCollectionPath = "$.categories[*]",
+                        Values = new List<ResolveValue>
+                        {
+                            new ResolveValue 
+                            { 
+                                TargetPath = "@.alwaysArrayResult", 
+                                Value = new FunctionSupportedValue(new FixedValue(JToken.Parse("\"@\""))),
+                                ResolveTypeBehavior = ResolveTypeBehavior.AlwaysAsArray
+                            }
+                        }
+                    }
+                }
+            };
+
+            var result1 = resolveAlwaysArrayCommand.Execute(testData, executionContext);
+            Assert.IsTrue(result1.Success);
+
+            var alwaysArrayResult = testData.SelectToken("$.items[0].alwaysArrayResult") as JArray;
+            Assert.IsNotNull(alwaysArrayResult, "AlwaysAsArray should return JArray even for single match");
+            Assert.AreEqual(1, alwaysArrayResult.Count, "AlwaysAsArray should have 1 element for single match");
+            Assert.AreEqual("Electronics", alwaysArrayResult[0].SelectToken("name")?.Value<string>());
+
+            // Test AlwaysAsArray - no matches should return empty array
+            var resolveNoMatchArrayCommand = new Resolve
+            {
+                Path = "$.items[1]",
+                ResolveSettings = new List<ResolveSetting>
+                {
+                    new ResolveSetting
+                    {
+                        ResolveKeys = new List<ResolveKey>
+                        {
+                            new ResolveKey { KeyPath = "@.categoryId", ReferenceKeyPath = "@.id" }
+                        },
+                        ReferencesCollectionPath = "$.categories[*]",
+                        Values = new List<ResolveValue>
+                        {
+                            new ResolveValue 
+                            { 
+                                TargetPath = "@.noMatchArrayResult", 
+                                Value = new FunctionSupportedValue(new FixedValue(JToken.Parse("\"@\""))),
+                                ResolveTypeBehavior = ResolveTypeBehavior.AlwaysAsArray
+                            }
+                        }
+                    }
+                }
+            };
+
+            var result2 = resolveNoMatchArrayCommand.Execute(testData, executionContext);
+            Assert.IsTrue(result2.Success);
+
+            var noMatchArrayResult = testData.SelectToken("$.items[1].noMatchArrayResult") as JArray;
+            Assert.IsNotNull(noMatchArrayResult, "AlwaysAsArray should return empty JArray for no matches");
+            Assert.AreEqual(0, noMatchArrayResult.Count, "AlwaysAsArray should have 0 elements for no matches");
+
+            // Test AlwaysAsObject - single match should return object
+            var resolveAlwaysObjectCommand = new Resolve
+            {
+                Path = "$.items[0]",
+                ResolveSettings = new List<ResolveSetting>
+                {
+                    new ResolveSetting
+                    {
+                        ResolveKeys = new List<ResolveKey>
+                        {
+                            new ResolveKey { KeyPath = "@.categoryId", ReferenceKeyPath = "@.id" }
+                        },
+                        ReferencesCollectionPath = "$.categories[*]",
+                        Values = new List<ResolveValue>
+                        {
+                            new ResolveValue 
+                            { 
+                                TargetPath = "@.alwaysObjectResult", 
+                                Value = new FunctionSupportedValue(new FixedValue(JToken.Parse("\"@\""))),
+                                ResolveTypeBehavior = ResolveTypeBehavior.AlwaysAsObject
+                            }
+                        }
+                    }
+                }
+            };
+
+            var result3 = resolveAlwaysObjectCommand.Execute(testData, executionContext);
+            Assert.IsTrue(result3.Success);
+
+            var alwaysObjectResult = testData.SelectToken("$.items[0].alwaysObjectResult");
+            Assert.IsTrue(alwaysObjectResult is JObject, "AlwaysAsObject should return JObject for single match");
+            Assert.AreEqual("Electronics", alwaysObjectResult.SelectToken("name")?.Value<string>());
+
+            // Test DependingOnResult (default) - single match should return object
+            var resolveDependingCommand = new Resolve
+            {
+                Path = "$.items[0]",
+                ResolveSettings = new List<ResolveSetting>
+                {
+                    new ResolveSetting
+                    {
+                        ResolveKeys = new List<ResolveKey>
+                        {
+                            new ResolveKey { KeyPath = "@.categoryId", ReferenceKeyPath = "@.id" }
+                        },
+                        ReferencesCollectionPath = "$.categories[*]",
+                        Values = new List<ResolveValue>
+                        {
+                            new ResolveValue 
+                            { 
+                                TargetPath = "@.dependingResult", 
+                                Value = new FunctionSupportedValue(new FixedValue(JToken.Parse("\"@\""))),
+                                ResolveTypeBehavior = ResolveTypeBehavior.DependingOnResult
+                            }
+                        }
+                    }
+                }
+            };
+
+            var result4 = resolveDependingCommand.Execute(testData, executionContext);
+            Assert.IsTrue(result4.Success);
+
+            var dependingResult = testData.SelectToken("$.items[0].dependingResult");
+            Assert.IsTrue(dependingResult is JObject, "DependingOnResult should return JObject for single match");
+            Assert.AreEqual("Electronics", dependingResult.SelectToken("name")?.Value<string>());
+
+            // Test multiple matches with DependingOnResult - should return array
+            var resolveMultipleDependingCommand = new Resolve
+            {
+                Path = "$.items[2]",
+                ResolveSettings = new List<ResolveSetting>
+                {
+                    new ResolveSetting
+                    {
+                        ResolveKeys = new List<ResolveKey>
+                        {
+                            new ResolveKey { KeyPath = "@.categoryIds[*]", ReferenceKeyPath = "@.id" }
+                        },
+                        ReferencesCollectionPath = "$.categories[*]",
+                        Values = new List<ResolveValue>
+                        {
+                            new ResolveValue 
+                            { 
+                                TargetPath = "@.multipleDependingResult", 
+                                Value = new FunctionSupportedValue(new FixedValue(JToken.Parse("\"@\""))),
+                                ResolveTypeBehavior = ResolveTypeBehavior.DependingOnResult
+                            }
+                        }
+                    }
+                }
+            };
+
+            var result5 = resolveMultipleDependingCommand.Execute(testData, executionContext);
+            Assert.IsTrue(result5.Success);
+
+            var multipleDependingResult = testData.SelectToken("$.items[2].multipleDependingResult") as JArray;
+            Assert.IsNotNull(multipleDependingResult, "DependingOnResult should return JArray for multiple matches");
+            Assert.AreEqual(2, multipleDependingResult.Count, "DependingOnResult should have 2 elements for multiple matches");
+        }
+
+        [Test]
+        public void CanHandleAlwaysAsObjectWithMultipleMatchesError()
+        {
+            // Test Case: AlwaysAsObject with multiple matches should throw error
+            var testData = JToken.Parse(@"{
+                ""items"": [
+                    {""id"": ""ITEM003"", ""categoryIds"": [""CAT001"", ""CAT002""]}
+                ],
+                ""categories"": [
+                    {""id"": ""CAT001"", ""name"": ""Electronics""},
+                    {""id"": ""CAT002"", ""name"": ""Mobile""}
+                ]
+            }");
+
+            var resolveAlwaysObjectMultipleCommand = new Resolve
+            {
+                Path = "$.items[0]",
+                ResolveSettings = new List<ResolveSetting>
+                {
+                    new ResolveSetting
+                    {
+                        ResolveKeys = new List<ResolveKey>
+                        {
+                            new ResolveKey { KeyPath = "@.categoryIds[*]", ReferenceKeyPath = "@.id" }
+                        },
+                        ReferencesCollectionPath = "$.categories[*]",
+                        Values = new List<ResolveValue>
+                        {
+                            new ResolveValue 
+                            { 
+                                TargetPath = "@.errorResult", 
+                                Value = new FunctionSupportedValue(new FixedValue(JToken.Parse("\"@\""))),
+                                ResolveTypeBehavior = ResolveTypeBehavior.AlwaysAsObject
+                            }
+                        }
+                    }
+                }
+            };
+
+            // Should throw InvalidOperationException for multiple matches with AlwaysAsObject
+
+                var result = resolveAlwaysObjectMultipleCommand.Execute(testData, executionContext);
+            Assert.IsFalse(result.Success);
+        }
+
+        [Test]
+        public void CanTestNewAsArrayBehaviorQuickly()
+        {
+            // Quick test to verify the new AsArray behavior works
+            var testData = JToken.Parse(@"{
+                ""items"": [{""categoryId"": ""CAT001""}],
+                ""categories"": [{""id"": ""CAT001"", ""name"": ""Electronics""}]
+            }");
+
+            var resolveCommand = new Resolve
+            {
+                Path = "$.items[*]",
+                ResolveSettings = new List<ResolveSetting>
+                {
+                    new ResolveSetting
+                    {
+                        ResolveKeys = new List<ResolveKey>
+                        {
+                            new ResolveKey { KeyPath = "@.categoryId", ReferenceKeyPath = "@.id" }
+                        },
+                        ReferencesCollectionPath = "$.categories[*]",
+                        Values = new List<ResolveValue>
+                        {
+                            new ResolveValue 
+                            { 
+                                TargetPath = "@.alwaysArray", 
+                                Value = new FunctionSupportedValue(new FixedValue(JToken.Parse("\"@\""))),
+                                ResolveTypeBehavior = ResolveTypeBehavior.AlwaysAsArray
+                            },
+                            new ResolveValue 
+                            { 
+                                TargetPath = "@.dependingResult", 
+                                Value = new FunctionSupportedValue(new FixedValue(JToken.Parse("\"@\""))),
+                                ResolveTypeBehavior = ResolveTypeBehavior.DependingOnResult
+                            }
+                        }
+                    }
+                }
+            };
+
+            var result = resolveCommand.Execute(testData, executionContext);
+            Assert.IsTrue(result.Success);
+
+            // Check AlwaysAsArray - should be array even for single match
+            var alwaysArrayResult = testData.SelectToken("$.items[0].alwaysArray");
+            Assert.IsTrue(alwaysArrayResult is JArray, "AlwaysAsArray should return JArray");
+            Assert.AreEqual(1, ((JArray)alwaysArrayResult).Count);
+
+            // Check DependingOnResult - should be object for single match
+            var dependingResult = testData.SelectToken("$.items[0].dependingResult");
+            Assert.IsTrue(dependingResult is JObject, "DependingOnResult should return JObject for single match");
+            
+            Console.WriteLine($"Test successful - AlwaysArray type: {alwaysArrayResult.Type}, DependingResult type: {dependingResult.Type}");
+        }
     }
 }

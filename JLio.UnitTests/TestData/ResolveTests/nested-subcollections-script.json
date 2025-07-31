@@ -1,0 +1,66 @@
+[
+  {
+    "path": "$.projects[*].tasks[*]",
+    "command": "resolve",
+    "resolveSettings": [
+      {
+        "resolveKeys": [
+          {
+            "keyPath": "@.assignedTo[*]",
+            "referenceKeyPath": "@.id"
+          }
+        ],
+        "referencesCollectionPath": "$.projects[*].teamMembers[*]",
+        "values": [
+          {
+            "targetPath": "@.assignedMembers",
+            "value": "@",
+            "resolveTypeBehavior": "AlwaysAsArray"
+          },
+          {
+            "targetPath": "@.memberNames",
+            "value": "=fetch(@.name)",
+            "resolveTypeBehavior": "AlwaysAsArray"
+          },
+          {
+            "targetPath": "@.memberRoles",
+            "value": "=fetch(@.role)",
+            "resolveTypeBehavior": "AlwaysAsArray"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "path": "$.projects[*].teamMembers[*]",
+    "command": "resolve",
+    "resolveSettings": [
+      {
+        "resolveKeys": [
+          {
+            "keyPath": "@.taskIds[*]",
+            "referenceKeyPath": "@.id"
+          }
+        ],
+        "referencesCollectionPath": "$.projects[*].tasks[*]",
+        "values": [
+          {
+            "targetPath": "@.assignedTasks",
+            "value": "@",
+            "resolveTypeBehavior": "AlwaysAsArray"
+          },
+          {
+            "targetPath": "@.taskTitles",
+            "value": "=fetch(@.title)",
+            "resolveTypeBehavior": "AlwaysAsArray"
+          },
+          {
+            "targetPath": "@.taskPriorities",
+            "value": "=fetch(@.priority)",
+            "resolveTypeBehavior": "AlwaysAsArray"
+          }
+        ]
+      }
+    ]
+  }
+]

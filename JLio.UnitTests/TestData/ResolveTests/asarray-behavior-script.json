@@ -1,0 +1,27 @@
+[{
+  "path": "$.items[*]",
+  "command": "resolve",
+  "resolveSettings": [
+    {
+      "resolveKeys": [{"keyPath": "@.categoryId", "referenceKeyPath": "@.id"}],
+      "referencesCollectionPath": "$.categories[*]",
+      "values": [
+        {
+          "targetPath": "@.alwaysArrayResult", 
+          "value": "@",
+          "resolveTypeBehavior": "AlwaysAsArray"
+        },
+        {
+          "targetPath": "@.dependingResult", 
+          "value": "@",
+          "resolveTypeBehavior": "DependingOnResult"
+        },
+        {
+          "targetPath": "@.alwaysObjectResult", 
+          "value": "@",
+          "resolveTypeBehavior": "AlwaysAsObject"
+        }
+      ]
+    }
+  ]
+}]
