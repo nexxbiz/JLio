@@ -1,0 +1,14 @@
+[{
+  "path": "$.products[*]",
+  "command": "resolve",
+  "resolveSettings": [
+    {
+      "resolveKeys": [{"keyPath": "@.tags[*]", "referenceKeyPath": "@.keywords[*]"}],
+      "referencesCollectionPath": "$.categories[*]",
+      "values": [
+        {"targetPath": "@.matchingCategories", "value": "@"},
+        {"targetPath": "@.categoryNames", "value": "=fetch(@.name)"}
+      ]
+    }
+  ]
+}]

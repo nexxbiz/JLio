@@ -1,0 +1,7 @@
+{
+  "items": [{"refKey": 99, "name": "Orphaned Item"}],
+  "references": [
+    {"id": "REF001", "keys": [1, 2], "category": "Group A"},
+    {"id": "REF002", "keys": [3, 4], "category": "Group B"}
+  ]
+}

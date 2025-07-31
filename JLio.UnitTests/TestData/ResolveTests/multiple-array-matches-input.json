@@ -1,0 +1,7 @@
+{
+  "items": [{"refKey": 1, "name": "Popular Item"}],
+  "references": [
+    {"id": "REF001", "keys": [1, 2], "category": "Group A"},
+    {"id": "REF002", "keys": [1, 3], "category": "Group B"}
+  ]
+}

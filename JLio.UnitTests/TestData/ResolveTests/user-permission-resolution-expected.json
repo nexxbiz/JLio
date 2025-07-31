@@ -1,0 +1,22 @@
+{
+  "users": [
+    {
+      "id": "USR100", 
+      "name": "Alice",
+      "fullPermission": {"userId": "USR100", "role": "admin", "scope": "global"},
+      "role": "admin",
+      "accessLevel": "admin:global"
+    },
+    {
+      "id": "USR101",
+      "name": "Bob", 
+      "fullPermission": {"userId": "USR101", "role": "viewer", "scope": "limited"},
+      "role": "viewer",
+      "accessLevel": "viewer:limited"
+    }
+  ],
+  "permissions": [
+    {"userId": "USR100", "role": "admin", "scope": "global"},
+    {"userId": "USR101", "role": "viewer", "scope": "limited"}
+  ]
+}

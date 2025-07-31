@@ -1,0 +1,14 @@
+{
+  "users": [
+    {"id": "USR100", "name": "Alice", "departmentId": "DEPT001"},
+    {"id": "USR101", "name": "Bob", "departmentId": "DEPT002"}
+  ],
+  "permissions": [
+    {"userId": "USR100", "role": "admin", "scope": "global"},
+    {"userId": "USR101", "role": "viewer", "scope": "limited"}
+  ],
+  "departments": [
+    {"id": "DEPT001", "name": "Engineering", "budget": 500000},
+    {"id": "DEPT002", "name": "Marketing", "budget": 250000}
+  ]
+}

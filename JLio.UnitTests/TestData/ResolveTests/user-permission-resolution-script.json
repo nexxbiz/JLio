@@ -1,0 +1,15 @@
+[{
+  "path": "$.users[*]",
+  "command": "resolve",
+  "resolveSettings": [
+    {
+      "resolveKeys": [{"keyPath": "@.id", "referenceKeyPath": "@.userId"}],
+      "referencesCollectionPath": "$.permissions[*]",
+      "values": [
+        {"targetPath": "@.fullPermission", "value": "@"},
+        {"targetPath": "@.role", "value": "=fetch(@.role)"},
+        {"targetPath": "@.accessLevel", "value": "=concat(@.role, ':', @.scope)"}
+      ]
+    }
+  ]
+}]

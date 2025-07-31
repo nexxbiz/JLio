@@ -1,0 +1,22 @@
+[{
+  "path": "$.groups[*]",
+  "command": "resolve", 
+  "resolveSettings": [
+    {
+      "resolveKeys": [{"keyPath": "@.members[*]", "referenceKeyPath": "@.id"}],
+      "referencesCollectionPath": "$.users[*]",
+      "values": [
+        {"targetPath": "@.memberDetails", "value": "@"},
+        {"targetPath": "@.memberNames", "value": "=fetch(@.displayName)"}
+      ]
+    },
+    {
+      "resolveKeys": [{"keyPath": "@.managerId", "referenceKeyPath": "@.id"}],
+      "referencesCollectionPath": "$.managers[*]",
+      "values": [
+        {"targetPath": "@.managerInfo", "value": "@"},
+        {"targetPath": "@.managerTitle", "value": "=fetch(@.title)"}
+      ]
+    }
+  ]
+}]

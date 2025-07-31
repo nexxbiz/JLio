@@ -1,0 +1,23 @@
+[{
+  "path": "$.users[*]",
+  "command": "resolve",
+  "resolveSettings": [
+    {
+      "resolveKeys": [{"keyPath": "@.id", "referenceKeyPath": "@.userId"}],
+      "referencesCollectionPath": "$.permissions[*]",
+      "values": [
+        {"targetPath": "@.permissions", "value": "@"},
+        {"targetPath": "@.accessLevel", "value": "=fetch(@.role)"}
+      ]
+    },
+    {
+      "resolveKeys": [{"keyPath": "@.departmentId", "referenceKeyPath": "@.id"}],
+      "referencesCollectionPath": "$.departments[*]",
+      "values": [
+        {"targetPath": "@.department", "value": "@"},
+        {"targetPath": "@.departmentName", "value": "=fetch(@.name)"},
+        {"targetPath": "@.departmentBudget", "value": "=fetch(@.budget)"}
+      ]
+    }
+  ]
+}]

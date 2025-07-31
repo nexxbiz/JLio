@@ -1,0 +1,5 @@
+{
+  "users": [{"id": "USR100", "name": "Alice", "deptId": "DEPT999"}], 
+  "permissions": [{"userId": "USR100", "role": "admin"}],
+  "departments": [{"id": "DEPT001", "name": "IT"}]
+}
