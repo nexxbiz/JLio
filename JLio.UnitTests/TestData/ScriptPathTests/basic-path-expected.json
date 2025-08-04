@@ -1,0 +1,8 @@
+{
+  "sample": {
+    "myArray": [
+      { "myItem": "value1", "currentPath": "$.sample.myArray[0]" },
+      { "myItem": "value2", "currentPath": "$.sample.myArray[1]" }
+    ]
+  }
+}

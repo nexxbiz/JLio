@@ -1,0 +1,60 @@
+{
+  "paths": {
+    "userPath": "$.data.users[0]",
+    "adminPath": "$.data.users[1]", 
+    "allUsersPath": "$.data.users[*]",
+    "emailPath": "$.data.users[0].email",
+    "skillsPath": "$.data.users[*].skills",
+    "invalidPath": "$.nonexistent.path",
+    "emptyPath": "",
+    "numberPath": 123,
+    "configPath": "$.config",
+    "nestedPath": "$.nested.level1.level2",
+    "singlePropertyPath": "$.config.dynamicProperty",
+    "stringValuePath": "$.singleValues.stringValue",
+    "numberValuePath": "$.singleValues.numberValue",
+    "booleanValuePath": "$.singleValues.booleanValue",
+    "nullValuePath": "$.singleValues.nullValue"
+  },
+  "data": {
+    "users": [
+      {
+        "id": 1,
+        "name": "Alice Johnson",
+        "email": "alice@example.com",
+        "role": "user",
+        "skills": ["JavaScript", "Python", "React"]
+      },
+      {
+        "id": 2,
+        "name": "Bob Smith", 
+        "email": "bob@example.com",
+        "role": "admin",
+        "skills": ["Java", "Spring", "AWS"]
+      }
+    ]
+  },
+  "config": {
+    "currentUserPath": "$.data.users[0]",
+    "dynamicProperty": "email",
+    "isEnabled": true,
+    "maxRetries": 3
+  },
+  "nested": {
+    "level1": {
+      "level2": {
+        "targetPath": "$.data.users[1].name",
+        "objectData": {
+          "title": "Manager",
+          "department": "Engineering"
+        }
+      }
+    }
+  },
+  "singleValues": {
+    "stringValue": "simple string",
+    "numberValue": 42,
+    "booleanValue": true,
+    "nullValue": null
+  }
+}

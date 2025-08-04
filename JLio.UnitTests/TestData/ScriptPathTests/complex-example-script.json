@@ -1,0 +1,14 @@
+[
+  {
+    "path": "$.sample.myArray[*].path",
+    "value": "=path(@.myItem)",
+    "command": "add"
+  },
+  {
+    "path": "$.sample.myArray[*].secondPath",
+    "value": {
+      "path": "=path(@.otherProp)"
+    },
+    "command": "add"
+  }
+]

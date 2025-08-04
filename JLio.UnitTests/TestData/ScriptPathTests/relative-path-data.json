@@ -1,0 +1,8 @@
+{
+  "sample": {
+    "myArray": [
+      { "myItem": "value1", "otherProp": "other1" },
+      { "myItem": "value2", "otherProp": "other2" }
+    ]
+  }
+}

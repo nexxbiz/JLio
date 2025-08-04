@@ -1,0 +1,144 @@
+{
+  "store": {
+    "book": [
+      {
+        "category": "reference",
+        "author": "Nigel Rees",
+        "title": "Sayings of the Century",
+        "price": 8.95,
+        "isbn": "978-0544003415"
+      },
+      {
+        "category": "fiction",
+        "author": "Evelyn Waugh",
+        "title": "Sword of Honour",
+        "price": 12.99,
+        "tags": ["classic", "war"]
+      },
+      {
+        "category": "fiction",
+        "author": "Herman Melville",
+        "title": "Moby Dick",
+        "isbn": "0-553-21311-3",
+        "price": 8.99,
+        "tags": ["classic", "adventure", "sea"]
+      },
+      {
+        "category": "fiction",
+        "author": "J. R. R. Tolkien",
+        "title": "The Lord of the Rings",
+        "isbn": "0-395-19395-8",
+        "price": 22.99,
+        "tags": ["fantasy", "epic"]
+      }
+    ],
+    "bicycle": {
+      "color": "red",
+      "price": 19.95,
+      "features": {
+        "gears": 21,
+        "suspension": true,
+        "material": "aluminum"
+      }
+    }
+  },
+  "user": {
+    "name": "John Doe",
+    "age": 30,
+    "email": "john.doe@example.com",
+    "preferences": {
+      "theme": "dark",
+      "language": "en",
+      "notifications": {
+        "email": true,
+        "push": false,
+        "sms": true
+      }
+    },
+    "addresses": [
+      {
+        "type": "home",
+        "street": "123 Main St",
+        "city": "Springfield",
+        "country": "USA",
+        "coordinates": {
+          "lat": 39.7817,
+          "lng": -89.6501
+        }
+      },
+      {
+        "type": "work",
+        "street": "456 Business Ave",
+        "city": "Springfield",
+        "country": "USA"
+      }
+    ]
+  },
+  "company": {
+    "name": "Tech Solutions Inc",
+    "employees": [
+      {
+        "id": 1,
+        "name": "Alice Johnson",
+        "department": "Engineering",
+        "salary": 85000,
+        "skills": ["C#", "JavaScript", "Python"]
+      },
+      {
+        "id": 2,
+        "name": "Bob Smith",
+        "department": "Marketing",
+        "salary": 65000,
+        "skills": ["SEO", "Content Writing", "Analytics"]
+      },
+      {
+        "id": 3,
+        "name": "Carol Brown",
+        "department": "Engineering",
+        "salary": 90000,
+        "skills": ["Java", "React", "AWS"]
+      }
+    ],
+    "departments": {
+      "Engineering": {
+        "budget": 500000,
+        "head": "Alice Johnson",
+        "projects": ["ProjectA", "ProjectB"]
+      },
+      "Marketing": {
+        "budget": 200000,
+        "head": "Bob Smith",
+        "campaigns": ["Summer2024", "BackToSchool"]
+      }
+    }
+  },
+  "metadata": {
+    "version": "1.0",
+    "created": "2024-01-15T10:30:00Z",
+    "tags": ["sample", "test", "jsonpath"],
+    "nested": {
+      "deep": {
+        "deeper": {
+          "deepest": {
+            "value": "found me!"
+          }
+        }
+      }
+    }
+  },
+  "arrays": {
+    "numbers": [1, 2, 3, 4, 5],
+    "strings": ["apple", "banana", "cherry"],
+    "mixed": [1, "two", 3.0, true, null],
+    "objects": [
+      {"id": 1, "active": true},
+      {"id": 2, "active": false},
+      {"id": 3, "active": true}
+    ],
+    "nested": [
+      [1, 2, 3],
+      [4, 5, 6],
+      [7, 8, 9]
+    ]
+  }
+}

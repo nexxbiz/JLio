@@ -1,0 +1,7 @@
+[
+  {
+    "path": "$.rootPath",
+    "value": "=path()",
+    "command": "add"
+  }
+]

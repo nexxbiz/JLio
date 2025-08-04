@@ -351,7 +351,7 @@ public class DecisionTablePerformanceTests
 
     [Test]
     [Category("Performance")]
-    public void PerformanceTest_ManyRules_Scaling()
+       public void PerformanceTest_ManyRules_Scaling()
     {
         // Test with many rules to see how rule count affects performance
         var manyRulesCommand = CreateCommandWithManyRules(50); // 50 rules

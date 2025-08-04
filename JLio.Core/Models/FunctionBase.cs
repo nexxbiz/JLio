@@ -10,7 +10,7 @@ public abstract class FunctionBase : IFunction
 {
     public Arguments Arguments = new Arguments();
 
-    public string FunctionName => GetType().Name.CamelCasing();
+    public virtual string FunctionName => GetType().Name.CamelCasing();
 
     public IFunction SetArguments(Arguments functionArguments)
     {

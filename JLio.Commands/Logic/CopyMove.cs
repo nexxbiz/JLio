@@ -35,6 +35,8 @@ public abstract class CopyMove : CommandBase
         data = dataContext;
         executionContext = context;
         var sourceItems = context.ItemsFetcher.SelectTokens(FromPath, data);
+        var OrgPath = ToPath;
+        ToPath = context.ItemsFetcher.GetPath(ToPath, data);
         if (ToPath == executionContext.ItemsFetcher.RootPathIndicator)
             return HandleRootObject(dataContext, sourceItems);
         var innerArrayIndex = GetInnerArrayIndex();
@@ -42,6 +44,8 @@ public abstract class CopyMove : CommandBase
             HandleActionPerSource(action, sourceItems, innerArrayIndex);
         else
             HandleActionForEachToAll(action, sourceItems);
+
+        ToPath = OrgPath;
         return new JLioExecutionResult(true, dataContext);
     }
 
