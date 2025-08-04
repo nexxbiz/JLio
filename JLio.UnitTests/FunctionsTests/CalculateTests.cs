@@ -37,7 +37,7 @@ public class CalculateExtendedTests
 
         Assert.IsTrue(result.Success);
         Assert.IsTrue(executionContext.GetLogEntries().TrueForAll(i => i.Level != LogLevel.Error));
-        Assert.AreEqual(expected, result.Data.SelectToken("$.result")?.Value<double>());
+        Assert.AreEqual(expected, result.Data.SelectToken("$.result").Value<double>());
     }
     #endregion
 
@@ -56,7 +56,7 @@ public class CalculateExtendedTests
 
         Assert.IsTrue(result.Success);
         Assert.IsTrue(executionContext.GetLogEntries().TrueForAll(i => i.Level != LogLevel.Error));
-        Assert.AreEqual(expected, result.Data.SelectToken("$.result")?.Value<double>(), 0.0001);
+        Assert.AreEqual(expected, result.Data.SelectToken("$.result").Value<double>(), 0.0001);
     }
     #endregion
 
@@ -75,7 +75,7 @@ public class CalculateExtendedTests
 
         Assert.IsTrue(result.Success);
         Assert.IsTrue(executionContext.GetLogEntries().TrueForAll(i => i.Level != LogLevel.Error));
-        Assert.AreEqual(expected, result.Data.SelectToken("$.result")?.Value<double>(), 0.000001);
+        Assert.AreEqual(expected, result.Data.SelectToken("$.result").Value<double>(), 0.000001);
     }
     #endregion
 
@@ -93,7 +93,7 @@ public class CalculateExtendedTests
 
         Assert.IsTrue(result.Success);
         Assert.IsTrue(executionContext.GetLogEntries().TrueForAll(i => i.Level != LogLevel.Error));
-        Assert.AreEqual(expected, result.Data.SelectToken("$.result")?.Value<double>(), 0.000001);
+        Assert.AreEqual(expected, result.Data.SelectToken("$.result").Value<double>(), 0.000001);
     }
     #endregion
 
@@ -109,7 +109,7 @@ public class CalculateExtendedTests
 
         Assert.IsTrue(result.Success);
         Assert.IsTrue(executionContext.GetLogEntries().TrueForAll(i => i.Level != LogLevel.Error));
-        Assert.AreEqual(expected, result.Data.SelectToken("$.result")?.Value<double>());
+        Assert.AreEqual(expected, result.Data.SelectToken("$.result").Value<double>());
     }
     #endregion
 
@@ -126,7 +126,7 @@ public class CalculateExtendedTests
 
         Assert.IsTrue(result.Success);
         Assert.IsTrue(executionContext.GetLogEntries().TrueForAll(i => i.Level != LogLevel.Error));
-        Assert.AreEqual(expected, result.Data.SelectToken("$.result")?.Value<double>(), 0.01);
+        Assert.AreEqual(expected, result.Data.SelectToken("$.result").Value<double>(), 0.01);
     }
     #endregion
 
@@ -142,7 +142,7 @@ public class CalculateExtendedTests
 
         Assert.IsTrue(result.Success);
         Assert.IsTrue(executionContext.GetLogEntries().TrueForAll(i => i.Level != LogLevel.Error));
-        Assert.AreEqual(expected, result.Data.SelectToken("$.result")?.Value<double>());
+        Assert.AreEqual(expected, result.Data.SelectToken("$.result").Value<double>());
     }
     #endregion
 
@@ -166,7 +166,7 @@ public class CalculateExtendedTests
 
         Assert.IsTrue(result.Success);
         Assert.IsTrue(executionContext.GetLogEntries().TrueForAll(i => i.Level != LogLevel.Error));
-        Assert.AreEqual(expected, result.Data.SelectToken("$.result")?.Value<double>(), 0.01);
+        Assert.AreEqual(expected, result.Data.SelectToken("$.result").Value<double>(), 0.01);
     }
     #endregion
 
@@ -184,7 +184,7 @@ public class CalculateExtendedTests
 
         Assert.IsTrue(result.Success);
         Assert.IsTrue(executionContext.GetLogEntries().TrueForAll(i => i.Level != LogLevel.Error));
-        Assert.AreEqual(expected, result.Data.SelectToken("$.result")?.Value<double>());
+        Assert.AreEqual(expected, result.Data.SelectToken("$.result").Value<double>());
     }
     #endregion
 
@@ -304,7 +304,7 @@ public class CalculateExtendedTests
         var result = script.Execute(token);
         Assert.IsNotNull(result);
         Assert.IsTrue(result.Success);
-        Assert.AreEqual(77.97, result.Data.SelectToken("$.total")?.Value<double>(), 0.01);
+        Assert.AreEqual(77.97, result.Data.SelectToken("$.total").Value<double>(), 0.01);
     }
     #endregion
 

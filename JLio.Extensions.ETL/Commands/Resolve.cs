@@ -14,10 +14,10 @@ namespace JLio.Extensions.ETL.Commands
     public class Resolve : CommandBase
     {
         private bool foundErrors = false;
-        private IExecutionContext executionContext;
+        private IExecutionContext? executionContext;
 
         [JsonProperty("path")]
-        public string Path { get; set; }
+        public required string Path { get; set; }
 
         [JsonProperty("resolveSettings")]
         public List<ResolveSetting> ResolveSettings { get; set; } = new List<ResolveSetting>();
@@ -76,6 +76,8 @@ namespace JLio.Extensions.ETL.Commands
 
         private void ExecuteResolve(JToken targetToken, JToken dataContext)
         {
+            if (executionContext == null) return;
+            
             try
             {
                 foreach (var resolveSetting in ResolveSettings)
@@ -93,6 +95,8 @@ namespace JLio.Extensions.ETL.Commands
 
         private void ExecuteResolveSetting(JToken targetToken, JToken dataContext, ResolveSetting resolveSetting)
         {
+            if (executionContext == null) return;
+            
             try
             {
                 // Get reference collection
@@ -154,6 +158,8 @@ namespace JLio.Extensions.ETL.Commands
 
         private bool IsKeyMatch(JToken targetToken, JToken referenceToken, ResolveKey resolveKey)
         {
+            if (executionContext == null) return false;
+            
             try
             {
                 var sourceValues = GetValues(targetToken, resolveKey.KeyPath);
@@ -181,6 +187,8 @@ namespace JLio.Extensions.ETL.Commands
         private List<JToken> GetValues(JToken token, string path)
         {
             var values = new List<JToken>();
+
+            if (executionContext == null) return values;
 
             try
             {
@@ -266,6 +274,8 @@ namespace JLio.Extensions.ETL.Commands
 
         private void ApplyResolvedValues(JToken targetToken, JToken dataContext, List<JToken> matchingReferences, List<ResolveValue> values, List<ResolveKey> resolveKeys)
         {
+            if (executionContext == null) return;
+            
             foreach (var resolveValue in values)
             {
                 try
@@ -283,7 +293,7 @@ namespace JLio.Extensions.ETL.Commands
 
         private void ApplyResolveValue(JToken targetToken, JToken dataContext, List<JToken> matchingReferences, ResolveValue resolveValue, List<ResolveKey> resolveKeys)
         {
-            JToken valueToAssign;
+            JToken? valueToAssign;
             
             // Use the new AsArray behavior property to determine how to format the result
             switch (resolveValue.ResolveTypeBehavior)
@@ -315,12 +325,15 @@ namespace JLio.Extensions.ETL.Commands
             foreach (var matchingRef in matchingReferences)
             {
                 var resolvedValue = GetResolvedValue(matchingRef, dataContext, value);
-                arrayValues.Add(resolvedValue);
+                if (resolvedValue != null)
+                {
+                    arrayValues.Add(resolvedValue);
+                }
             }
             return arrayValues;
         }
 
-        private JToken CreateObjectResult(List<JToken> matchingReferences, JToken dataContext, IFunctionSupportedValue value)
+        private JToken? CreateObjectResult(List<JToken> matchingReferences, JToken dataContext, IFunctionSupportedValue value)
         {
             if (matchingReferences.Count == 0)
             {
@@ -333,13 +346,16 @@ namespace JLio.Extensions.ETL.Commands
             else
             {
                 // Multiple matches but user wants object - this is an error condition
-                executionContext.LogError(CoreConstants.CommandExecution,
-                    $"Multiple matches found ({matchingReferences.Count}) but AsArray is set to AlwaysAsObject. This is not supported.");
+                if (executionContext != null)
+                {
+                    executionContext.LogError(CoreConstants.CommandExecution,
+                        $"Multiple matches found ({matchingReferences.Count}) but AsArray is set to AlwaysAsObject. This is not supported.");
+                }
                 throw new InvalidOperationException($"Multiple matches found ({matchingReferences.Count}) but AsArray is set to AlwaysAsObject");
             }
         }
 
-        private JToken CreateDependingOnResultResult(List<JToken> matchingReferences, JToken dataContext, IFunctionSupportedValue value, List<ResolveKey> resolveKeys)
+        private JToken? CreateDependingOnResultResult(List<JToken> matchingReferences, JToken dataContext, IFunctionSupportedValue value, List<ResolveKey> resolveKeys)
         {
             // This is the original logic - maintain backward compatibility
             bool shouldReturnArray = ShouldReturnArray(resolveKeys);
@@ -380,8 +396,10 @@ namespace JLio.Extensions.ETL.Commands
             return false;
         }
 
-        private JToken GetResolvedValue(JToken matchingReference, JToken dataContext, IFunctionSupportedValue value)
+        private JToken? GetResolvedValue(JToken matchingReference, JToken dataContext, IFunctionSupportedValue value)
         {
+            if (executionContext == null) return JValue.CreateNull();
+            
             try
             {
                 executionContext.LogInfo(CoreConstants.CommandExecution,
@@ -412,6 +430,8 @@ namespace JLio.Extensions.ETL.Commands
 
         private void SetValueAtPath(JToken targetToken, string path, JToken value)
         {
+            if (executionContext == null) return;
+            
             try
             {
                 // Simple implementation for relative paths like @.propertyName

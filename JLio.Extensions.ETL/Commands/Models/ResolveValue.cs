@@ -25,10 +25,10 @@ namespace JLio.Extensions.ETL.Commands.Models
     public class ResolveValue
     {
         [JsonProperty("targetPath")]
-        public string TargetPath { get; set; }
+        public required string TargetPath { get; set; }
 
         [JsonProperty("value")]
-        public IFunctionSupportedValue Value { get; set; }
+        public required IFunctionSupportedValue Value { get; set; }
 
         [JsonProperty("resolveTypeBehavior")]
         public ResolveTypeBehavior ResolveTypeBehavior { get; set; } = ResolveTypeBehavior.DependingOnResult;

@@ -337,7 +337,10 @@ namespace JLio.UnitTests.CommandsTests
         [Test]
         public void CanValidateCommandInstance()
         {
-            var resolveCommand = new Resolve();
+            var resolveCommand = new Resolve
+            {
+                Path = "" // Empty path to trigger validation error
+            };
 
             var validationResult = resolveCommand.ValidateCommandInstance();
 
@@ -356,7 +359,8 @@ namespace JLio.UnitTests.CommandsTests
                 {
                     new ResolveSetting
                     {
-                        // Missing ResolveKeys, ReferencesCollectionPath, and Values
+                        ReferencesCollectionPath = "" // Empty to trigger validation error
+                        // Missing ResolveKeys and Values to trigger those validation errors
                     }
                 }
             };

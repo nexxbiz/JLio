@@ -6,12 +6,12 @@ namespace JLio.Extensions.ETL.Commands.Models
     public class ResolveSetting
     {
         [JsonProperty("resolveKeys")]
-        public List<ResolveKey> ResolveKeys { get; set; } = new List<ResolveKey>();
+        public List<ResolveKey> ResolveKeys { get; set; } = new ();
 
         [JsonProperty("referencesCollectionPath")]
-        public string ReferencesCollectionPath { get; set; }
+        public required string ReferencesCollectionPath { get; set; }
 
         [JsonProperty("values")]
-        public List<ResolveValue> Values { get; set; } = new List<ResolveValue>();
+        public List<ResolveValue> Values { get; set; } = new ();
     }
 }
