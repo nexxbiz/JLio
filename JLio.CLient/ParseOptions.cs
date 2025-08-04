@@ -47,7 +47,8 @@ public class ParseOptions : IParseOptions
            .Register<Partial>()
            .Register<Promote>()
            .Register<Fetch>()
-           .Register<Indirect>();
+           .Register<Indirect>()
+           .Register<ScriptPath>();
 
 
 
