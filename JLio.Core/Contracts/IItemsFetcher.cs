@@ -11,4 +11,5 @@ public interface IItemsFetcher
     string RootPathIndicator { get; }
     SelectedTokens SelectTokens(string path, JToken data);
     JToken SelectToken(string path, JToken data);
+    string GetPath(string toPath, JToken dataContext);
 }

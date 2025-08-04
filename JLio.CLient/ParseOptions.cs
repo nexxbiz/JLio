@@ -46,7 +46,8 @@ public class ParseOptions : IParseOptions
            .Register<Datetime>()
            .Register<Partial>()
            .Register<Promote>()
-           .Register<Fetch>();
+           .Register<Fetch>()
+           .Register<Indirect>();
 
 
 
