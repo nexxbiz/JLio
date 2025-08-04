@@ -1,0 +1,32 @@
+{
+  "projects": [
+    {
+      "id": "PROJ001",
+      "name": "Website Redesign",
+      "tasks": [
+        {"id": "TSK001", "title": "UI Design", "assignedTo": ["MBR001", "MBR002"], "priority": "high"},
+        {"id": "TSK002", "title": "Backend API", "assignedTo": ["MBR003"], "priority": "medium"},
+        {"id": "TSK003", "title": "Testing", "assignedTo": ["MBR002", "MBR004"], "priority": "low"}
+      ],
+      "teamMembers": [
+        {"id": "MBR001", "name": "Alice", "role": "Designer", "skills": ["UI", "UX"], "taskIds": ["TSK001"]},
+        {"id": "MBR002", "name": "Bob", "role": "Developer", "skills": ["Frontend", "Testing"], "taskIds": ["TSK001", "TSK003"]},
+        {"id": "MBR003", "name": "Charlie", "role": "Backend Developer", "skills": ["API", "Database"], "taskIds": ["TSK002"]},
+        {"id": "MBR004", "name": "Diana", "role": "QA Engineer", "skills": ["Testing", "Automation"], "taskIds": ["TSK003"]}
+      ]
+    },
+    {
+      "id": "PROJ002", 
+      "name": "Mobile App",
+      "tasks": [
+        {"id": "TSK004", "title": "Mobile UI", "assignedTo": ["MBR005"], "priority": "high"},
+        {"id": "TSK005", "title": "Authentication", "assignedTo": ["MBR006", "MBR007"], "priority": "medium"}
+      ],
+      "teamMembers": [
+        {"id": "MBR005", "name": "Eve", "role": "Mobile Developer", "skills": ["Flutter", "React Native"], "taskIds": ["TSK004"]},
+        {"id": "MBR006", "name": "Frank", "role": "Backend Developer", "skills": ["Authentication", "Security"], "taskIds": ["TSK005"]},
+        {"id": "MBR007", "name": "Grace", "role": "Security Expert", "skills": ["Security", "Encryption"], "taskIds": ["TSK005"]}
+      ]
+    }
+  ]
+}

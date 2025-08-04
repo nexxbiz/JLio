@@ -1,0 +1,28 @@
+{
+  "products": [
+    {
+      "id": "PROD001", 
+      "tags": ["electronics", "mobile"], 
+      "name": "Smartphone",
+      "matchingCategories": [
+        {"name": "Tech", "keywords": ["electronics", "mobile", "computer"]}
+      ],
+      "categoryNames": ["Tech"]
+    },
+    {
+      "id": "PROD002", 
+      "tags": ["furniture", "office"], 
+      "name": "Desk Chair",
+      "matchingCategories": [
+        {"name": "Office", "keywords": ["furniture", "office", "supplies"]},
+        {"name": "Home", "keywords": ["furniture", "kitchen", "bedroom"]}
+      ],
+      "categoryNames": ["Office", "Home"]
+    }
+  ],
+  "categories": [
+    {"name": "Tech", "keywords": ["electronics", "mobile", "computer"]},
+    {"name": "Office", "keywords": ["furniture", "office", "supplies"]},
+    {"name": "Home", "keywords": ["furniture", "kitchen", "bedroom"]}
+  ]
+}

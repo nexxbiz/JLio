@@ -1,0 +1,16 @@
+[{
+  "path": "$.users[*]",
+  "command": "resolve",
+  "resolveSettings": [
+    {
+      "resolveKeys": [{"keyPath": "@.id", "referenceKeyPath": "@.userId"}],
+      "referencesCollectionPath": "$.permissions[*]",
+      "values": [{"targetPath": "@.permissions", "value": "@"}]
+    },
+    {
+      "resolveKeys": [{"keyPath": "@.deptId", "referenceKeyPath": "@.id"}],
+      "referencesCollectionPath": "$.departments[*]",
+      "values": [{"targetPath": "@.department", "value": "@"}]
+    }
+  ]
+}]

@@ -1,0 +1,381 @@
+{
+  "projects": [
+    {
+      "id": "PROJ001",
+      "name": "Website Redesign",
+      "tasks": [
+        {
+          "id": "TSK001",
+          "title": "UI Design",
+          "assignedTo": [ "MBR001", "MBR002" ],
+          "priority": "high",
+          "assignedMembers": [
+            {
+              "id": "MBR001",
+              "name": "Alice",
+              "role": "Designer",
+              "skills": [ "UI", "UX" ],
+              "taskIds": [ "TSK001" ]
+            },
+            {
+              "id": "MBR002",
+              "name": "Bob",
+              "role": "Developer",
+              "skills": [ "Frontend", "Testing" ],
+              "taskIds": [ "TSK001", "TSK003" ]
+            }
+          ],
+          "memberNames": [ "Alice", "Bob" ],
+          "memberRoles": [ "Designer", "Developer" ]
+        },
+        {
+          "id": "TSK002",
+          "title": "Backend API",
+          "assignedTo": [ "MBR003" ],
+          "priority": "medium",
+          "assignedMembers": [
+            {
+              "id": "MBR003",
+              "name": "Charlie",
+              "role": "Backend Developer",
+              "skills": [ "API", "Database" ],
+              "taskIds": [ "TSK002" ]
+            }
+          ],
+          "memberNames": [ "Charlie" ],
+          "memberRoles": [ "Backend Developer" ]
+        },
+        {
+          "id": "TSK003",
+          "title": "Testing",
+          "assignedTo": [ "MBR002", "MBR004" ],
+          "priority": "low",
+          "assignedMembers": [
+            {
+              "id": "MBR002",
+              "name": "Bob",
+              "role": "Developer",
+              "skills": [ "Frontend", "Testing" ],
+              "taskIds": [ "TSK001", "TSK003" ]
+            },
+            {
+              "id": "MBR004",
+              "name": "Diana",
+              "role": "QA Engineer",
+              "skills": [ "Testing", "Automation" ],
+              "taskIds": [ "TSK003" ]
+            }
+          ],
+          "memberNames": [ "Bob", "Diana" ],
+          "memberRoles": [ "Developer", "QA Engineer" ]
+        }
+      ],
+      "teamMembers": [
+        {
+          "id": "MBR001",
+          "name": "Alice",
+          "role": "Designer",
+          "skills": [ "UI", "UX" ],
+          "taskIds": [ "TSK001" ],
+          "assignedTasks": [
+            {
+              "id": "TSK001",
+              "title": "UI Design",
+              "assignedTo": [ "MBR001", "MBR002" ],
+              "priority": "high",
+              "assignedMembers": [
+                {
+                  "id": "MBR001",
+                  "name": "Alice",
+                  "role": "Designer",
+                  "skills": [ "UI", "UX" ],
+                  "taskIds": [ "TSK001" ]
+                },
+                {
+                  "id": "MBR002",
+                  "name": "Bob",
+                  "role": "Developer",
+                  "skills": [ "Frontend", "Testing" ],
+                  "taskIds": [ "TSK001", "TSK003" ]
+                }
+              ],
+              "memberNames": [ "Alice", "Bob" ],
+              "memberRoles": [ "Designer", "Developer" ]
+            }
+          ],
+          "taskTitles": [ "UI Design" ],
+          "taskPriorities": [ "high" ]
+        },
+        {
+          "id": "MBR002",
+          "name": "Bob",
+          "role": "Developer",
+          "skills": [ "Frontend", "Testing" ],
+          "taskIds": [ "TSK001", "TSK003" ],
+          "assignedTasks": [
+            {
+              "id": "TSK001",
+              "title": "UI Design",
+              "assignedTo": [ "MBR001", "MBR002" ],
+              "priority": "high",
+              "assignedMembers": [
+                {
+                  "id": "MBR001",
+                  "name": "Alice",
+                  "role": "Designer",
+                  "skills": [ "UI", "UX" ],
+                  "taskIds": [ "TSK001" ]
+                },
+                {
+                  "id": "MBR002",
+                  "name": "Bob",
+                  "role": "Developer",
+                  "skills": [ "Frontend", "Testing" ],
+                  "taskIds": [ "TSK001", "TSK003" ]
+                }
+              ],
+              "memberNames": [ "Alice", "Bob" ],
+              "memberRoles": [ "Designer", "Developer" ]
+            },
+            {
+              "id": "TSK003",
+              "title": "Testing",
+              "assignedTo": [ "MBR002", "MBR004" ],
+              "priority": "low",
+              "assignedMembers": [
+                {
+                  "id": "MBR002",
+                  "name": "Bob",
+                  "role": "Developer",
+                  "skills": [ "Frontend", "Testing" ],
+                  "taskIds": [ "TSK001", "TSK003" ]
+                },
+                {
+                  "id": "MBR004",
+                  "name": "Diana",
+                  "role": "QA Engineer",
+                  "skills": [ "Testing", "Automation" ],
+                  "taskIds": [ "TSK003" ]
+                }
+              ],
+              "memberNames": [ "Bob", "Diana" ],
+              "memberRoles": [ "Developer", "QA Engineer" ]
+            }
+          ],
+          "taskTitles": [ "UI Design", "Testing" ],
+          "taskPriorities": [ "high", "low" ]
+        },
+        {
+          "id": "MBR003",
+          "name": "Charlie",
+          "role": "Backend Developer",
+          "skills": [ "API", "Database" ],
+          "taskIds": [ "TSK002" ],
+          "assignedTasks": [
+            {
+              "id": "TSK002",
+              "title": "Backend API",
+              "assignedTo": [ "MBR003" ],
+              "priority": "medium",
+              "assignedMembers": [
+                {
+                  "id": "MBR003",
+                  "name": "Charlie",
+                  "role": "Backend Developer",
+                  "skills": [ "API", "Database" ],
+                  "taskIds": [ "TSK002" ]
+                }
+              ],
+              "memberNames": [ "Charlie" ],
+              "memberRoles": [ "Backend Developer" ]
+            }
+          ],
+          "taskTitles": [ "Backend API" ],
+          "taskPriorities": [ "medium" ]
+        },
+        {
+          "id": "MBR004",
+          "name": "Diana",
+          "role": "QA Engineer",
+          "skills": [ "Testing", "Automation" ],
+          "taskIds": [ "TSK003" ],
+          "assignedTasks": [
+            {
+              "id": "TSK003",
+              "title": "Testing",
+              "assignedTo": [ "MBR002", "MBR004" ],
+              "priority": "low",
+              "assignedMembers": [
+                {
+                  "id": "MBR002",
+                  "name": "Bob",
+                  "role": "Developer",
+                  "skills": [ "Frontend", "Testing" ],
+                  "taskIds": [ "TSK001", "TSK003" ]
+                },
+                {
+                  "id": "MBR004",
+                  "name": "Diana",
+                  "role": "QA Engineer",
+                  "skills": [ "Testing", "Automation" ],
+                  "taskIds": [ "TSK003" ]
+                }
+              ],
+              "memberNames": [ "Bob", "Diana" ],
+              "memberRoles": [ "Developer", "QA Engineer" ]
+            }
+          ],
+          "taskTitles": [ "Testing" ],
+          "taskPriorities": [ "low" ]
+        }
+      ]
+    },
+    {
+      "id": "PROJ002",
+      "name": "Mobile App",
+      "tasks": [
+        {
+          "id": "TSK004",
+          "title": "Mobile UI",
+          "assignedTo": [ "MBR005" ],
+          "priority": "high",
+          "assignedMembers": [
+            {
+              "id": "MBR005",
+              "name": "Eve",
+              "role": "Mobile Developer",
+              "skills": [ "Flutter", "React Native" ],
+              "taskIds": [ "TSK004" ]
+            }
+          ],
+          "memberNames": [ "Eve" ],
+          "memberRoles": [ "Mobile Developer" ]
+        },
+        {
+          "id": "TSK005",
+          "title": "Authentication",
+          "assignedTo": [ "MBR006", "MBR007" ],
+          "priority": "medium",
+          "assignedMembers": [
+            {
+              "id": "MBR006",
+              "name": "Frank",
+              "role": "Backend Developer",
+              "skills": [ "Authentication", "Security" ],
+              "taskIds": [ "TSK005" ]
+            },
+            {
+              "id": "MBR007",
+              "name": "Grace",
+              "role": "Security Expert",
+              "skills": [ "Security", "Encryption" ],
+              "taskIds": [ "TSK005" ]
+            }
+          ],
+          "memberNames": [ "Frank", "Grace" ],
+          "memberRoles": [ "Backend Developer", "Security Expert" ]
+        }
+      ],
+      "teamMembers": [
+        {
+          "id": "MBR005",
+          "name": "Eve",
+          "role": "Mobile Developer",
+          "skills": [ "Flutter", "React Native" ],
+          "taskIds": [ "TSK004" ],
+          "assignedTasks": [
+            {
+              "id": "TSK004",
+              "title": "Mobile UI",
+              "assignedTo": [ "MBR005" ],
+              "priority": "high",
+              "assignedMembers": [
+                {
+                  "id": "MBR005",
+                  "name": "Eve",
+                  "role": "Mobile Developer",
+                  "skills": [ "Flutter", "React Native" ],
+                  "taskIds": [ "TSK004" ]
+                }
+              ],
+              "memberNames": [ "Eve" ],
+              "memberRoles": [ "Mobile Developer" ]
+            }
+          ],
+          "taskTitles": [ "Mobile UI" ],
+          "taskPriorities": [ "high" ]
+        },
+        {
+          "id": "MBR006",
+          "name": "Frank",
+          "role": "Backend Developer",
+          "skills": [ "Authentication", "Security" ],
+          "taskIds": [ "TSK005" ],
+          "assignedTasks": [
+            {
+              "id": "TSK005",
+              "title": "Authentication",
+              "assignedTo": [ "MBR006", "MBR007" ],
+              "priority": "medium",
+              "assignedMembers": [
+                {
+                  "id": "MBR006",
+                  "name": "Frank",
+                  "role": "Backend Developer",
+                  "skills": [ "Authentication", "Security" ],
+                  "taskIds": [ "TSK005" ]
+                },
+                {
+                  "id": "MBR007",
+                  "name": "Grace",
+                  "role": "Security Expert",
+                  "skills": [ "Security", "Encryption" ],
+                  "taskIds": [ "TSK005" ]
+                }
+              ],
+              "memberNames": [ "Frank", "Grace" ],
+              "memberRoles": [ "Backend Developer", "Security Expert" ]
+            }
+          ],
+          "taskTitles": [ "Authentication" ],
+          "taskPriorities": [ "medium" ]
+        },
+        {
+          "id": "MBR007",
+          "name": "Grace",
+          "role": "Security Expert",
+          "skills": [ "Security", "Encryption" ],
+          "taskIds": [ "TSK005" ],
+          "assignedTasks": [
+            {
+              "id": "TSK005",
+              "title": "Authentication",
+              "assignedTo": [ "MBR006", "MBR007" ],
+              "priority": "medium",
+              "assignedMembers": [
+                {
+                  "id": "MBR006",
+                  "name": "Frank",
+                  "role": "Backend Developer",
+                  "skills": [ "Authentication", "Security" ],
+                  "taskIds": [ "TSK005" ]
+                },
+                {
+                  "id": "MBR007",
+                  "name": "Grace",
+                  "role": "Security Expert",
+                  "skills": [ "Security", "Encryption" ],
+                  "taskIds": [ "TSK005" ]
+                }
+              ],
+              "memberNames": [ "Frank", "Grace" ],
+              "memberRoles": [ "Backend Developer", "Security Expert" ]
+            }
+          ],
+          "taskTitles": [ "Authentication" ],
+          "taskPriorities": [ "medium" ]
+        }
+      ]
+    }
+  ]
+}

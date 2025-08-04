@@ -1,0 +1,27 @@
+{
+  "items": [
+    {
+      "id": "ITEM001", 
+      "categoryId": "CAT001",
+      "alwaysArrayResult": [
+        {"id": "CAT001", "name": "Electronics"}
+      ],
+      "dependingResult": {"id": "CAT001", "name": "Electronics"},
+      "alwaysObjectResult": {"id": "CAT001", "name": "Electronics"}
+    },
+    {
+      "id": "ITEM002", 
+      "categoryId": "CAT999",
+      "alwaysArrayResult": []
+    },
+    {
+      "id": "ITEM003",
+      "categoryIds": [ "CAT001", "CAT002" ],
+      "alwaysArrayResult": []
+    }
+  ],
+  "categories": [
+    {"id": "CAT001", "name": "Electronics"},
+    {"id": "CAT002", "name": "Mobile"}
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "items": [
+    {"id": "ITEM001", "categoryId": "CAT001"},
+    {"id": "ITEM002", "categoryId": "CAT999"},
+    {"id": "ITEM003", "categoryIds": ["CAT001", "CAT002"]}
+  ],
+  "categories": [
+    {"id": "CAT001", "name": "Electronics"},
+    {"id": "CAT002", "name": "Mobile"}
+  ]
+}

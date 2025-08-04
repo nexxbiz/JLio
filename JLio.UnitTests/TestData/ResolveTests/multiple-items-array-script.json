@@ -1,0 +1,15 @@
+[{
+  "path": "$.items[*]",
+  "command": "resolve",
+  "resolveSettings": [
+    {
+      "resolveKeys": [{"keyPath": "@.refKey", "referenceKeyPath": "@.keys[*]"}],
+      "referencesCollectionPath": "$.references[*]",
+      "values": [
+        {"targetPath": "@.referenceData", "value": "@"},
+        {"targetPath": "@.category", "value": "=fetch(@.category)"},
+        {"targetPath": "@.referenceId", "value": "=fetch(@.id)"}
+      ]
+    }
+  ]
+}]

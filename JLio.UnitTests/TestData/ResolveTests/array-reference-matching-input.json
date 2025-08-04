@@ -1,0 +1,12 @@
+{
+  "groups": [
+    {"id": "GRP001", "name": "Admins", "members": ["USR100", "USR101"], "managerId": "USR100"}
+  ],
+  "users": [
+    {"id": "USR100", "displayName": "Alice", "email": "alice@test.com"},
+    {"id": "USR101", "displayName": "Bob", "email": "bob@test.com"}
+  ],
+  "managers": [
+    {"id": "USR100", "title": "Senior Manager", "department": "IT"}
+  ]
+}

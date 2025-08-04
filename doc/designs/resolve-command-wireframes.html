@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resolve Command Builder</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal {
+            background: white;
+            border-radius: 8px;
+            width: 90vw;
+            max-width: 1400px;
+            height: 90vh;
+            max-height: 900px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #6c757d;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-body {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+            overflow: hidden;
+        }
+        
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+        
+        .panel {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .left-panel {
+            flex: 0 0 400px;
+        }
+        
+        .right-panel {
+            flex: 1;
+        }
+        
+        .panel-header {
+            background: #ffffff;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e9ecef;
+            font-weight: 600;
+            font-size: 14px;
+            color: #495057;
+        }
+        
+        .panel-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .monaco-container {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            height: 200px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+        
+        .monaco-placeholder {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #6c757d;
+            font-size: 12px;
+            text-align: center;
+        }
+        
+        .path-display {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 4px;
+            padding: 8px 12px;
+            margin-bottom: 16px;
+            font-family: 'SF Mono', 'Monaco', 'Cascadia Code', monospace;
+            font-size: 12px;
+            color: #1565c0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .copy-icon {
+            cursor: pointer;
+            color: #4c84ff;
+            font-size: 14px;
+            padding: 2px;
+        }
+        
+        .copy-icon:hover {
+            background: rgba(76, 132, 255, 0.1);
+            border-radius: 2px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            color: #495057;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: 'SF Mono', 'Monaco', 'Cascadia Code', monospace;
+            transition: border-color 0.15s ease-in-out;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #4c84ff;
+            box-shadow: 0 0 0 3px rgba(76, 132, 255, 0.1);
+        }
+        
+        .json-tree {
+            font-family: 'SF Mono', 'Monaco', 'Cascadia Code', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        
+        .json-node {
+            padding: 4px 8px;
+            cursor: pointer;
+            border-radius: 3px;
+            margin: 1px 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .json-node:hover {
+            background: #e3f2fd;
+        }
+        
+        .json-node.selected {
+            background: #4c84ff;
+            color: white;
+        }
+        
+        .json-node.clickable {
+            color: #4c84ff;
+            font-weight: 500;
+        }
+        
+        .expand-icon {
+            width: 12px;
+            margin-right: 6px;
+            font-size: 10px;
+            color: #6c757d;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease-in-out;
+            background: white;
+            color: #495057;
+        }
+        
+        .btn:hover {
+            background: #f8f9fa;
+        }
+        
+        .btn-primary {
+            background: #4c84ff;
+            color: white;
+            border-color: #4c84ff;
+        }
+        
+        .btn-primary:hover {
+            background: #3d6df7;
+            border-color: #3d6df7;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+            border-color: #218838;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+        
+        .btn-sm {
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+        
+        .resolve-settings {
+            margin-bottom: 24px;
+        }
+        
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .resolve-setting {
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            background: white;
+        }
+        
+        .setting-header {
+            padding: 12px 16px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 6px 6px 0 0;
+        }
+        
+        .setting-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #495057;
+        }
+        
+        .setting-content {
+            padding: 16px;
+        }
+        
+        .collection-path-info {
+            background: #f0f8f0;
+            border: 1px solid #d4edda;
+            border-radius: 4px;
+            padding: 8px 12px;
+            margin-bottom: 16px;
+            font-family: 'SF Mono', 'Monaco', 'Cascadia Code', monospace;
+            font-size: 12px;
+            color: #155724;
+        }
+        
+        .collection-path-arrow {
+            margin: 0 8px;
+            font-weight: bold;
+        }
+        
+        .key-mapping {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .key-mapping-label {
+            font-size: 12px;
+            color: #6c757d;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .mapping-arrow {
+            color: #6c757d;
+            font-weight: bold;
+        }
+        
+        .value-mapping {
+            margin-bottom: 12px;
+            padding: 12px;
+            background: #f0f8f0;
+            border-radius: 4px;
+            border: 1px solid #d4edda;
+        }
+        
+        .value-mapping-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .value-mapping-label {
+            font-weight: 500;
+            font-size: 12px;
+            color: #495057;
+        }
+        
+        .target-path-input {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .monaco-editor-container {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            height: 120px;
+            position: relative;
+        }
+        
+        .monaco-editor-placeholder {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            color: #6c757d;
+            font-size: 12px;
+            font-family: 'SF Mono', 'Monaco', 'Cascadia Code', monospace;
+            pointer-events: none;
+        }
+        
+        .add-btn {
+            border: 1px dashed #ced4da;
+            background: transparent;
+            color: #4c84ff;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            width: 100%;
+            margin-top: 8px;
+        }
+        
+        .add-btn:hover {
+            border-color: #4c84ff;
+            background: #f8f9fa;
+        }
+        
+        .filter-hint {
+            font-size: 11px;
+            color: #6c757d;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Resolve Command</h2>
+                <button class="close-btn">×</button>
+            </div>
+            
+            <div class="modal-body">
+                <!-- Left Panel: JSON Explorer -->
+                <div class="panel left-panel">
+                    <div class="panel-header">JSON Data Explorer</div>
+                    <div class="panel-content">
+                        <!-- Monaco Editor for JSON Data -->
+                        <div class="monaco-container">
+                            <div class="monaco-placeholder">Monaco Editor - JSON Data Input</div>
+                        </div>
+                        
+                        <!-- Selected Path Display -->
+                        <div class="path-display">
+                            <span>$.users[*]</span>
+                            <span class="copy-icon" title="Copy path">📋</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Panel: Configuration -->
+                <div class="panel right-panel">
+                    <div class="panel-header">Resolve Configuration</div>
+                    <div class="panel-content">
+                        <div class="form-group">
+                            <label class="form-label">Target Path</label>
+                            <input class="form-input" value="$.users[*]" placeholder="JSONPath to items to process">
+                            <div class="filter-hint">Supports filtering: [*], [@.type=9], [@.status='active']</div>
+                        </div>
+                        
+                        <div class="resolve-settings">
+                            <div class="settings-header">
+                                <strong>Resolve Settings</strong>
+                                <button class="btn btn-primary btn-sm">+ Add Resolution</button>
+                            </div>
+                            
+                            <!-- Resolution Setting 1 -->
+                            <div class="resolve-setting">
+                                <div class="setting-header">
+                                    <span class="setting-title">Resolution #1 - Permissions</span>
+                                    <div style="display: flex; gap: 8px;">
+                                        <button class="btn btn-sm">Copy</button>
+                                        <button class="btn btn-danger btn-sm">Delete</button>
+                                    </div>
+                                </div>
+                                <div class="setting-content">
+                                    <div class="form-group">
+                                        <label class="form-label">Reference Collection</label>
+                                        <input class="form-input" value="$.permissions[*]" placeholder="Path to reference data with [*] or filtering">
+                                        <div class="filter-hint">Use [*] for all items or [@.active=true] for filtering</div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label">Key Mappings</label>
+                                        <div class="key-mapping">
+                                            <div style="flex: 1;">
+                                                <div class="key-mapping-label">source: $.users[*]</div>
+                                                <input class="form-input" value="@.id" placeholder="Source key path">
+                                            </div>
+                                            <span class="mapping-arrow">→</span>
+                                            <div style="flex: 1;">
+                                                <div class="key-mapping-label">collection: $.permissions[*]</div>
+                                                <input class="form-input" value="@.userId" placeholder="Reference key path">
+                                            </div>
+                                            <button class="btn btn-danger btn-sm">×</button>
+                                        </div>
+                                        <button class="add-btn">+ Add Key Mapping</button>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label">Value Mappings</label>
+                                        
+                                        <div class="value-mapping">
+                                            <div class="value-mapping-header">
+                                                <div class="target-path-input">
+                                                    <span style="font-size: 12px; color: #495057;">Target:</span>
+                                                    <input class="form-input" value="@.permissions" placeholder="Target path" style="flex: 1; padding: 4px 8px; font-size: 12px;">
+                                                </div>
+                                                <div style="display: flex; align-items: center; gap: 8px; margin-left: 12px;">
+                                                    <input type="checkbox" id="fullObject1" checked>
+                                                    <label for="fullObject1" style="font-size: 12px; color: #495057;">Full Object</label>
+                                                </div>
+                                                <button class="btn btn-danger btn-sm">×</button>
+                                            </div>
+                                            <!-- Monaco editor hidden when checkbox is checked -->
+                                        </div>
+                                        
+                                        <div class="value-mapping">
+                                            <div class="value-mapping-header">
+                                                <div class="target-path-input">
+                                                    <span style="font-size: 12px; color: #495057;">Target:</span>
+                                                    <input class="form-input" value="@.enrichedData" placeholder="Target path" style="flex: 1; padding: 4px 8px; font-size: 12px;">
+                                                </div>
+                                                <div style="display: flex; align-items: center; gap: 8px; margin-left: 12px;">
+                                                    <input type="checkbox" id="fullObject2">
+                                                    <label for="fullObject2" style="font-size: 12px; color: #495057;">Full Object</label>
+                                                </div>
+                                                <button class="btn btn-danger btn-sm">×</button>
+                                            </div>
+                                            <div class="monaco-editor-container">
+                                                <div class="monaco-editor-placeholder">{
+  "role": "=fetch(@.role)",
+  "scope": "=fetch(@.scope)",
+  "accessLevel": "=concat(@.role, ':', @.scope)"
+}</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <button class="add-btn">+ Add Value Mapping</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Resolution Setting 2 -->
+                            <div class="resolve-setting">
+                                <div class="setting-header">
+                                    <span class="setting-title">Resolution #2 - Departments</span>
+                                    <div style="display: flex; gap: 8px;">
+                                        <button class="btn btn-sm">Copy</button>
+                                        <button class="btn btn-danger btn-sm">Delete</button>
+                                    </div>
+                                </div>
+                                <div class="setting-content">
+                                    <div class="form-group">
+                                        <label class="form-label">Reference Collection</label>
+                                        <input class="form-input" value="$.departments[@.active=true]" placeholder="Path to reference data with [*] or filtering">
+                                        <div class="filter-hint">Example with filtering for active departments only</div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label">Key Mappings</label>
+                                        <div class="key-mapping">
+                                            <div style="flex: 1;">
+                                                <div class="key-mapping-label">source: $.users[*]</div>
+                                                <input class="form-input" value="@.departmentId" placeholder="Source key path">
+                                            </div>
+                                            <span class="mapping-arrow">→</span>
+                                            <div style="flex: 1;">
+                                                <div class="key-mapping-label">collection: $.departments[@.active=true]</div>
+                                                <input class="form-input" value="@.id" placeholder="Reference key path">
+                                            </div>
+                                            <button class="btn btn-danger btn-sm">×</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label">Value Mappings</label>
+                                        
+                                        <div class="value-mapping">
+                                            <div class="value-mapping-header">
+                                                <div class="target-path-input">
+                                                    <span style="font-size: 12px; color: #495057;">Target:</span>
+                                                    <input class="form-input" value="@.department" placeholder="Target path" style="flex: 1; padding: 4px 8px; font-size: 12px;">
+                                                </div>
+                                                <div style="display: flex; align-items: center; gap: 8px; margin-left: 12px;">
+                                                    <input type="checkbox" id="fullObject3" checked>
+                                                    <label for="fullObject3" style="font-size: 12px; color: #495057;">Full Object</label>
+                                                </div>
+                                                <button class="btn btn-danger btn-sm">×</button>
+                                            </div>
+                                            <!-- Monaco editor hidden when checkbox is checked -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn">Cancel</button>
+                <button class="btn btn-success">Save Resolve Command</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

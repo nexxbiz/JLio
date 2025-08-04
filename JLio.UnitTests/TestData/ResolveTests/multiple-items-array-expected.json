@@ -1,0 +1,30 @@
+{
+  "items": [
+    {
+      "refKey": 1, 
+      "name": "Item One",
+      "referenceData": {"id": "REF001", "keys": [1, 2], "category": "Group A"},
+      "category": "Group A",
+      "referenceId": "REF001"
+    },
+    {
+      "refKey": 3,
+      "name": "Item Three", 
+      "referenceData": {"id": "REF002", "keys": [3, 4], "category": "Group B"},
+      "category": "Group B",
+      "referenceId": "REF002"
+    },
+    {
+      "refKey": 5,
+      "name": "Item Five",
+      "referenceData": {"id": "REF003", "keys": [5, 6, 7], "category": "Group C"},
+      "category": "Group C", 
+      "referenceId": "REF003"
+    }
+  ],
+  "references": [
+    {"id": "REF001", "keys": [1, 2], "category": "Group A"},
+    {"id": "REF002", "keys": [3, 4], "category": "Group B"},
+    {"id": "REF003", "keys": [5, 6, 7], "category": "Group C"}
+  ]
+}

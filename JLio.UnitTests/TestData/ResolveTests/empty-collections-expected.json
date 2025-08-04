@@ -1,0 +1,12 @@
+{
+  "users": [
+    {
+      "id": "USR100", 
+      "name": "Alice", 
+      "deptId": "DEPT001",
+      "department": {"id": "DEPT001", "name": "IT"}
+    }
+  ],
+  "permissions": [],
+  "departments": [{"id": "DEPT001", "name": "IT"}]
+}
