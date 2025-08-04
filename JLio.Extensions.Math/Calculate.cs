@@ -40,26 +40,48 @@ public class Calculate : FunctionBase
         return false;
     }
 
-    private string GetExpression(JToken currentToken, JToken dataContext, IExecutionContext context)
+    private string? GetExpression(JToken currentToken, JToken dataContext, IExecutionContext context)
     {
         var argument = GetArguments(Arguments, currentToken, dataContext, context).FirstOrDefault();
         if (argument?.Type != JTokenType.String) { LogError(context, "requires a string argument"); return null; }
-        try { return ProcessExpression(argument.Value<string>(), currentToken, dataContext, context); }
-        catch (Exception ex) { LogError(context, $"token replacement failed: {ex.Message}"); return null; }
+        
+        var stringValue = argument.Value<string>();
+        if (stringValue == null) { LogError(context, "argument value is null"); return null; }
+        
+        try 
+        { 
+            return ProcessExpression(stringValue, currentToken, dataContext, context); 
+        }
+        catch (Exception ex) 
+        { 
+            LogError(context, $"token replacement failed: {ex.Message}"); 
+            return null; 
+        }
     }
 
     private string ProcessExpression(string expression, JToken currentToken, JToken dataContext, IExecutionContext context)
     {
-        expression = ReplaceTokens(expression, currentToken, dataContext, context).Trim('\'');
-        if (string.IsNullOrWhiteSpace(expression)) throw new Exception("expression is empty");
-        expression = CommaPattern.Replace(expression, ".");
-        if (HasDivisionByZero(expression)) throw new Exception("division by zero detected");
-        return expression;
+        var processedExpression = ReplaceTokens(expression, currentToken, dataContext, context).Trim('\'');
+        if (string.IsNullOrWhiteSpace(processedExpression)) throw new Exception("expression is empty");
+        processedExpression = CommaPattern.Replace(processedExpression, ".");
+        if (HasDivisionByZero(processedExpression)) throw new Exception("division by zero detected");
+        return processedExpression;
     }
 
     private JLioFunctionResult ComputeResult(string expression, IExecutionContext context, JToken currentToken)
     {
-        try { var result = Convert.ToDouble(Table.Value.Compute(expression, null)); return ValidateResult(result, context, currentToken); }
+        try 
+        { 
+            var computeResult = Table.Value?.Compute(expression, null);
+            if (computeResult == null || computeResult == DBNull.Value)
+            {
+                LogError(context, "computation returned null");
+                return JLioFunctionResult.Failed(currentToken);
+            }
+            
+            var result = Convert.ToDouble(computeResult); 
+            return ValidateResult(result, context, currentToken); 
+        }
         catch (EvaluateException) { LogError(context, "invalid mathematical expression"); return JLioFunctionResult.Failed(currentToken); }
         catch (SyntaxErrorException) { LogError(context, "syntax error in expression"); return JLioFunctionResult.Failed(currentToken); }
         catch (Exception ex) { LogError(context, $"computation failed: {ex.Message}"); return JLioFunctionResult.Failed(currentToken); }
@@ -82,7 +104,12 @@ public class Calculate : FunctionBase
 
     private void ReplaceToken(StringBuilder sb, Match match, JToken currentToken, JToken dataContext, IExecutionContext context)
     {
-        var inner = match.Groups[1].Value.Trim();
+        var inner = match.Groups[1].Value?.Trim();
+        if (string.IsNullOrEmpty(inner))
+        {
+            throw new Exception("Empty token found");
+        }
+        
         var result = FixedValue.DefaultFunctionConverter.ParseString(inner).GetValue(currentToken, dataContext, context);
         if (!result.Success || result.Data.Count != 1) throw new Exception($"Failed to resolve token: {inner}");
         var replacement = ConvertToNumeric(result.Data.First(), inner);
@@ -94,7 +121,7 @@ public class Calculate : FunctionBase
         return token.Type switch
         {
             JTokenType.Integer or JTokenType.Float => token.Value<double>().ToString(Invariant),
-            JTokenType.String => ParseStringToNumeric(token.Value<string>()),
+            JTokenType.String => ParseStringToNumeric(token.Value<string>() ?? string.Empty),
             JTokenType.Null => throw new Exception($"Token resolved to null: {name}"),
             _ => throw new Exception($"Token type not supported: {token.Type}")
         };
@@ -102,6 +129,11 @@ public class Calculate : FunctionBase
 
     private string ParseStringToNumeric(string value)
     {
+        if (string.IsNullOrEmpty(value))
+        {
+            throw new Exception("Token value is null or empty");
+        }
+        
         if (double.TryParse(value, NumberStyles.Float, Invariant, out var result)) return result.ToString(Invariant);
         if (double.TryParse(value, NumberStyles.Float, German, out result)) return result.ToString(Invariant);
         throw new Exception($"Token value is not numeric: {value}");

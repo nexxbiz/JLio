@@ -44,7 +44,7 @@ public class Format : FunctionBase
         if (value.Type == JTokenType.String)
         {
             DateTime datetimeValue; 
-            if(DateTime.TryParse(value.Value<string>().ToString(), CultureInfo.InvariantCulture, DateTimeStyles.None, out datetimeValue)){
+            if(DateTime.TryParse(value.Value<string>()?.ToString(), CultureInfo.InvariantCulture, DateTimeStyles.None, out datetimeValue)){
                 return JLioFunctionResult.SuccessFul(new JValue(datetimeValue.ToString(formatString)));
             }
             return JLioFunctionResult.SuccessFul(value);

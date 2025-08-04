@@ -5,9 +5,9 @@ namespace JLio.Extensions.ETL.Commands.Models
     public class ResolveKey
     {
         [JsonProperty("keyPath")]
-        public string KeyPath { get; set; }
+        public required string KeyPath { get; set; }
 
         [JsonProperty("referenceKeyPath")]
-        public string ReferenceKeyPath { get; set; }
+        public required string ReferenceKeyPath { get; set; }
     }
 }
