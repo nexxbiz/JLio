@@ -113,6 +113,27 @@ public class ScriptPathTests
     }
 
     [Test]
+    public void PathFunction_WithParentPathIndicator_ReturnsCurrentItemPath()
+    {
+        // Load test files - this tests @.<-- syntax where each item should get the full path to that item
+        var inputFile = Path.Combine(testDataPath, "parent-path-data.json");
+        var expectedFile = Path.Combine(testDataPath, "parent-path-expected.json");
+        var scriptFile = Path.Combine(testDataPath, "parent-path-script.json");
+
+        var data = JToken.Parse(File.ReadAllText(inputFile));
+        var expected = JToken.Parse(File.ReadAllText(expectedFile));
+        var script = File.ReadAllText(scriptFile);
+
+        // Act
+        var result = JLioConvert.Parse(script, parseOptions).Execute(data, executionContext);
+
+        // Assert
+        Assert.IsTrue(result.Success);
+        Assert.IsTrue(JToken.DeepEquals(expected, result.Data), 
+            $"Expected: {expected}\nActual: {result.Data}");
+    }
+
+    [Test]
     public void PathFunction_WithAtSymbolOnly_ReturnsCurrentPath()
     {
         // Arrange - using inline data for simple @ test

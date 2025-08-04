@@ -29,9 +29,8 @@ public class ScriptPath : FunctionBase
             return new JLioFunctionResult(true, new JValue(currentPath));
         }
 
-
         var targetPath = Arguments.First().GetStringRepresentation();
-        if (string.IsNullOrEmpty(targetPath) || targetPath== "''")
+        if (string.IsNullOrEmpty(targetPath) || targetPath == "''")
         {
             var currentPath = GetTokenPath(currentToken, context);
             return new JLioFunctionResult(true, new JValue(currentPath));
@@ -45,6 +44,13 @@ public class ScriptPath : FunctionBase
 
             if (string.IsNullOrEmpty(relativePath))
             {
+                return new JLioFunctionResult(true, new JValue(currentPath));
+            }
+
+            // Handle parent path indicator @.<--
+            if (relativePath == ".<--")
+            {
+                // @.<-- should return the current item's path (same as @)
                 return new JLioFunctionResult(true, new JValue(currentPath));
             }
 
