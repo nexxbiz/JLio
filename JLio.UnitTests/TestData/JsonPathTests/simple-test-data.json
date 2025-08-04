@@ -1,0 +1,22 @@
+{
+  "simple": {
+    "name": "test",
+    "value": 42
+  },
+  "nested": {
+    "level1": {
+      "level2": {
+        "property": "deep value"
+      }
+    }
+  },
+  "array": [
+    "item1",
+    "item2",
+    "item3"
+  ],
+  "objectArray": [
+    {"id": 1, "name": "first"},
+    {"id": 2, "name": "second"}
+  ]
+}

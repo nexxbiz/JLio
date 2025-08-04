@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 
 namespace JLio.Core.Extensions;
 
-public static class SelectetdTokensExtensions
+public static class SelectedTokensExtensions
 {
     public static JToken GetJTokenValue(this SelectedTokens source)
     {

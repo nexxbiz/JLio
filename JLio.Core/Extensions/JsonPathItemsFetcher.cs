@@ -14,7 +14,8 @@ public class JsonPathItemsFetcher : IItemsFetcher
 
     public SelectedTokens SelectTokens(string path, JToken data)
     {
-        return new SelectedTokens(data.SelectTokens(path));
+        if(data == null) { return new SelectedTokens(JValue.CreateNull()); }
+         return new SelectedTokens(data.SelectTokens(path));
     }
 
     public JToken SelectToken(string path, JToken data)
