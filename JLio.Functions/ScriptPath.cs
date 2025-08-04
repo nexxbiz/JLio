@@ -1,8 +1,9 @@
-﻿using System.Linq;
-using JLio.Core;
+﻿using JLio.Core;
 using JLio.Core.Contracts;
+using JLio.Core.Extensions;
 using JLio.Core.Models;
 using Newtonsoft.Json.Linq;
+using System.Linq;
 
 namespace JLio.Functions;
 
@@ -11,6 +12,8 @@ public class ScriptPath : FunctionBase
     public ScriptPath()
     {
     }
+
+    public override string FunctionName => "path";
 
     public ScriptPath(string path)
     {
@@ -28,7 +31,7 @@ public class ScriptPath : FunctionBase
 
 
         var targetPath = Arguments.First().GetStringRepresentation();
-        if (string.IsNullOrEmpty(targetPath))
+        if (string.IsNullOrEmpty(targetPath) || targetPath== "''")
         {
             var currentPath = GetTokenPath(currentToken, context);
             return new JLioFunctionResult(true, new JValue(currentPath));

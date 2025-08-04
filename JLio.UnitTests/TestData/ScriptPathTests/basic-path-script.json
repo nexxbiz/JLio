@@ -1,0 +1,7 @@
+[
+  {
+    "path": "$.sample.myArray[*].currentPath",
+    "value": "=path()",
+    "command": "add"
+  }
+]

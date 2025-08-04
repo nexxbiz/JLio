@@ -1,0 +1,7 @@
+[
+  {
+    "path": "$.sample.myArray[*].absolutePath",
+    "value": "=path(@.myItem)",
+    "command": "add"
+  }
+]
