@@ -150,7 +150,6 @@ When a key matches multiple reference arrays, the behavior should be:
 
 ### Test Cases and Examples
 
-#### Test Case 1: Simple Key to Array Matching
 ```json
 // Input Data - Exact user scenario
 {
@@ -394,7 +393,6 @@ When a key matches multiple reference arrays, the behavior should be:
   "resolveSettings": [
     {
       "resolveKeys": [{"keyPath": "@.id", "referenceKeyPath": "@.userId"}],
-      "referencesCollectionPath": "$.permissions[*]",
       "values": [
         {"targetPath": "@.fullPermission", "value": "@"},
         {"targetPath": "@.role", "value": "=fetch(@.role)"},
@@ -429,7 +427,6 @@ When a key matches multiple reference arrays, the behavior should be:
 }
 ```
 
-#### Test Case 6: Multiple Collections Resolution
 ```json
 // Input Data
 {
@@ -454,7 +451,6 @@ When a key matches multiple reference arrays, the behavior should be:
   "resolveSettings": [
     {
       "resolveKeys": [{"keyPath": "@.id", "referenceKeyPath": "@.userId"}],
-      "referencesCollectionPath": "$.permissions[*]",
       "values": [
         {"targetPath": "@.permissions", "value": "@"},
         {"targetPath": "@.accessLevel", "value": "=fetch(@.role)"}
@@ -462,7 +458,6 @@ When a key matches multiple reference arrays, the behavior should be:
     },
     {
       "resolveKeys": [{"keyPath": "@.departmentId", "referenceKeyPath": "@.id"}],
-      "referencesCollectionPath": "$.departments[*]",
       "values": [
         {"targetPath": "@.department", "value": "@"},
         {"targetPath": "@.departmentName", "value": "=fetch(@.name)"},
@@ -507,7 +502,86 @@ When a key matches multiple reference arrays, the behavior should be:
 }
 ```
 
-#### Test Case 7: Array Reference Matching with Multiple Collections
+#### Test Case 3: Multiple Key Matching with Multiple Collections
+```json
+// Input Data
+{
+  "orders": [
+    {"customerId": "C001", "productId": "P001", "quantity": 2, "salesRepId": "REP001"},
+    {"customerId": "C002", "productId": "P002", "quantity": 1, "salesRepId": "REP002"}
+  ],
+  "inventory": [
+    {"customerId": "C001", "productId": "P001", "stock": 100, "price": 25.99},
+    {"customerId": "C002", "productId": "P002", "stock": 50, "price": 15.50}
+  ],
+  "salesReps": [
+    {"id": "REP001", "name": "John Smith", "commission": 0.05},
+    {"id": "REP002", "name": "Jane Doe", "commission": 0.03}
+  ]
+}
+
+// Script
+[{
+  "path": "$.orders[*]",
+  "command": "resolve",
+  "resolveSettings": [
+    {
+      "resolveKeys": [
+        {"keyPath": "@.customerId", "referenceKeyPath": "@.customerId"},
+        {"keyPath": "@.productId", "referenceKeyPath": "@.productId"}
+      ],
+      "referencesCollectionPath": "$.inventory",
+      "values": [
+        {"targetPath": "@.inventoryData", "value": "@"},
+        {"targetPath": "@.unitPrice", "value": "=fetch(@.price)"},
+        {"targetPath": "@.totalPrice", "value": "=calculate(@.price * $.current.quantity)"}
+      ]
+    },
+    {
+      "resolveKeys": [{"keyPath": "@.salesRepId", "referenceKeyPath": "@.id"}],
+      "referencesCollectionPath": "$.salesReps",
+      "values": [
+        {"targetPath": "@.salesRep", "value": "@"},
+        {"targetPath": "@.salesRepName", "value": "=fetch(@.name)"},
+        {"targetPath": "@.commission", "value": "=calculate($.current.totalPrice * @.commission)"}
+      ]
+    }
+  ]
+}]
+
+// Expected Output
+{
+  "orders": [
+    {
+      "customerId": "C001", 
+      "productId": "P001", 
+      "quantity": 2,
+      "salesRepId": "REP001",
+      "inventoryData": {"customerId": "C001", "productId": "P001", "stock": 100, "price": 25.99},
+      "unitPrice": 25.99,
+      "totalPrice": 51.98,
+      "salesRep": {"id": "REP001", "name": "John Smith", "commission": 0.05},
+      "salesRepName": "John Smith",
+      "commission": 2.599
+    },
+    {
+      "customerId": "C002", 
+      "productId": "P002", 
+      "quantity": 1,
+      "salesRepId": "REP002",
+      "inventoryData": {"customerId": "C002", "productId": "P002", "stock": 50, "price": 15.50},
+      "unitPrice": 15.50,
+      "totalPrice": 15.50,
+      "salesRep": {"id": "REP002", "name": "Jane Doe", "commission": 0.03},
+      "salesRepName": "Jane Doe",
+      "commission": 0.465
+    }
+  ],
+  "inventory": [...],
+  "salesReps": [...]
+}
+```
+
 ```json
 // Input Data
 {
@@ -530,7 +604,6 @@ When a key matches multiple reference arrays, the behavior should be:
   "resolveSettings": [
     {
       "resolveKeys": [{"keyPath": "@.members[*]", "referenceKeyPath": "@.id"}],
-      "referencesCollectionPath": "$.users[*]",
       "values": [
         {"targetPath": "@.memberDetails", "value": "@"},
         {"targetPath": "@.memberNames", "value": "=fetch(@.displayName)"}
@@ -538,7 +611,6 @@ When a key matches multiple reference arrays, the behavior should be:
     },
     {
       "resolveKeys": [{"keyPath": "@.managerId", "referenceKeyPath": "@.id"}],
-      "referencesCollectionPath": "$.managers[*]",
       "values": [
         {"targetPath": "@.managerInfo", "value": "@"},
         {"targetPath": "@.managerTitle", "value": "=fetch(@.title)"}
@@ -569,72 +641,34 @@ When a key matches multiple reference arrays, the behavior should be:
 }
 ```
 
-#### Test Case 8: Edge Cases with Array Matching
-
-##### No Array Matches
 ```json
-// Input: Items with keys that don't exist in any reference arrays
-{
-  "items": [{"refKey": 99, "name": "Orphaned Item"}],
-  "references": [
-    {"id": "REF001", "keys": [1, 2], "category": "Group A"},
-    {"id": "REF002", "keys": [3, 4], "category": "Group B"}
+    {
   ]
 }
 
 // Script
 [{
-  "path": "$.items[*]",
   "command": "resolve",
   "resolveSettings": [
     {
-      "resolveKeys": [{"keyPath": "@.refKey", "referenceKeyPath": "@.keys[*]"}],
-      "referencesCollectionPath": "$.references[*]",
       "values": [
-        {"targetPath": "@.referenceData", "value": "@"},
-        {"targetPath": "@.category", "value": "=fetch(@.category)"}
+      ]
+    {
+      ]
+    {
       ]
     }
   ]
 }]
 
-// Expected: Items remain unchanged, no reference data added
 {
-  "items": [{"refKey": 99, "name": "Orphaned Item"}],
-  "references": [
-    {"id": "REF001", "keys": [1, 2], "category": "Group A"},
-    {"id": "REF002", "keys": [3, 4], "category": "Group B"}
-  ]
-}
-```
-
-##### Empty Reference Arrays
-```json
-// Input: Reference collections with empty arrays
-{
-  "items": [{"refKey": 1, "name": "Item One"}],
-  "references": [
-    {"id": "REF001", "keys": [], "category": "Empty Group"},
-    {"id": "REF002", "keys": [1], "category": "Valid Group"}
-  ]
-}
-
-// Expected: Only matches against non-empty arrays
-{
-  "items": [
     {
-      "refKey": 1, 
-      "name": "Item One",
-      "referenceData": {"id": "REF002", "keys": [1], "category": "Valid Group"},
-      "category": "Valid Group"
     }
   ],
-  "references": [
-    {"id": "REF001", "keys": [], "category": "Empty Group"},
-    {"id": "REF002", "keys": [1], "category": "Valid Group"}
-  ]
 }
 ```
+
+#### Test Case 6: Edge Cases with Multiple Collections
 
 ##### Empty Collections
 ```json
@@ -652,12 +686,10 @@ When a key matches multiple reference arrays, the behavior should be:
   "resolveSettings": [
     {
       "resolveKeys": [{"keyPath": "@.id", "referenceKeyPath": "@.userId"}],
-      "referencesCollectionPath": "$.permissions[*]",
       "values": [{"targetPath": "@.permissions", "value": "@"}]
     },
     {
       "resolveKeys": [{"keyPath": "@.deptId", "referenceKeyPath": "@.id"}],
-      "referencesCollectionPath": "$.departments[*]",
       "values": [{"targetPath": "@.department", "value": "@"}]
     }
   ]
@@ -706,7 +738,6 @@ When a key matches multiple reference arrays, the behavior should be:
 
 1. **Invalid JSONPath**: Log warning, skip invalid paths
 2. **Missing Reference Collection**: Log error, skip that resolution setting
-3. **Type Mismatches**: Handle gracefully, log warnings for array/non-array mismatches
 4. **Circular References**: Detect and prevent infinite loops
 5. **Memory Limits**: Handle large datasets efficiently
 6. **Resolution Setting Failures**: Continue with other resolution settings if one fails
@@ -714,12 +745,6 @@ When a key matches multiple reference arrays, the behavior should be:
 
 ## Performance Requirements
 
-1. **Indexing**: Build internal indexes for each reference collection, including array elements
-2. **Array Indexing**: Create inverted indexes for array values to enable efficient lookups
-3. **Lazy Evaluation**: Only resolve when target paths are accessed
-4. **Memory Efficiency**: Stream processing for large datasets
-5. **Caching**: Cache resolved references within single execution
-6. **Parallel Processing**: Process multiple resolution settings concurrently when possible
 
 ## Integration Requirements
 
@@ -736,12 +761,10 @@ var script = new JLioScript()
     .WithResolveSettings(settings => settings
         .AddResolution(resolution => resolution
             .WithKeys("@.id", "@.userId")
-            .FromCollection("$.permissions[*]")
             .AddValue("@.permissions", "@")
             .AddValue("@.role", "=fetch(@.role)"))
         .AddResolution(resolution => resolution
             .WithKeys("@.deptId", "@.id") 
-            .FromCollection("$.departments[*]")
             .AddValue("@.department", "@")
             .AddValue("@.deptName", "=fetch(@.name)")));
 ```
@@ -757,60 +780,15 @@ Following the pattern established in `AvgTests.cs`, the resolve command should i
 [TestCase("multiple array matches", "multi-array-input.json", "multi-array-expected.json")]
 [TestCase("basic user-permission resolution", "input.json", "expected.json")]
 [TestCase("multiple collections resolution", "multi-collection-input.json", "multi-collection-expected.json")]
-[TestCase("array reference matching", "array-ref-input.json", "array-ref-expected.json")]
 [TestCase("empty collections", "empty-input.json", "empty-expected.json")]
 [TestCase("partial matches", "partial-input.json", "partial-expected.json")]
+[TestCase("complex multi-collection", "complex-input.json", "complex-expected.json")]
 public void ResolveTests(string scenario, string inputFile, string expectedFile)
 {
     // Test implementation following AvgTests pattern
 }
 
-[Test] 
-public void CanMatchSimpleKeyToArrayValues()
-{
-    var testData = JToken.Parse(@"{
-        ""items"": [{""refKey"": 1, ""name"": ""Item One""}],
-        ""references"": [{""a"": 1, ""keys"": [1, 2], ""category"": ""Group A""}]
-    }");
-
-    var script = new JLioScript()
-        .Resolve("$.items[*]")
-        .WithResolveSettings(settings => settings
-            .AddResolution(resolution => resolution
-                .WithKeys("@.refKey", "@.keys[*]")
-                .FromCollection("$.references[*]")
-                .AddValue("@.category", "=fetch(@.category)")
-                .AddValue("@.a", "=fetch(@.a)")));
-        
-    var result = script.Execute(testData);
-    
-    Assert.AreEqual("Group A", result.Data.SelectToken("$.items[0].category")?.Value<string>());
-    Assert.AreEqual(1, result.Data.SelectToken("$.items[0].a")?.Value<int>());
-}
-
 [Test]
-public void CanMatchArrayToArrayIntersection()
-{
-    var testData = JToken.Parse(@"{
-        ""products"": [{""tags"": [""electronics"", ""mobile""]}],
-        ""categories"": [{""keywords"": [""electronics"", ""computer""]}]
-    }");
-
-    var script = new JLioScript()
-        .Resolve("$.products[*]")
-        .WithResolveSettings(settings => settings
-            .AddResolution(resolution => resolution
-                .WithKeys("@.tags[*]", "@.keywords[*]")
-                .FromCollection("$.categories[*]")
-                .AddValue("@.matchingCategories", "@")));
-        
-    var result = script.Execute(testData);
-    
-    Assert.IsNotNull(result.Data.SelectToken("$.products[0].matchingCategories"));
-}
-
-[Test]
-public void CanHandleMultipleArrayMatches()
 {
     var testData = JToken.Parse(@"{
         ""items"": [{""refKey"": 1, ""name"": ""Popular Item""}],
@@ -821,19 +799,10 @@ public void CanHandleMultipleArrayMatches()
     }");
 
     var script = new JLioScript()
-        .Resolve("$.items[*]")
         .WithResolveSettings(settings => settings
             .AddResolution(resolution => resolution
-                .WithKeys("@.refKey", "@.keys[*]")
-                .FromCollection("$.references[*]")
-                .AddValue("@.referenceData", "@")
-                .AddValue("@.categories", "=fetch(@.category)")));
         
     var result = script.Execute(testData);
-    
-    var referenceData = result.Data.SelectToken("$.items[0].referenceData");
-    Assert.IsTrue(referenceData is JArray, "Should return array for multiple matches");
-    Assert.AreEqual(2, ((JArray)referenceData).Count, "Should have 2 matching references");
 }
 
 [Test]
@@ -844,11 +813,9 @@ public void CanResolveFromMultipleCollections()
         .WithResolveSettings(settings => settings
             .AddResolution(resolution => resolution
                 .WithKeys("@.id", "@.userId")
-                .FromCollection("$.permissions[*]")
                 .AddValue("@.permissions", "@"))
             .AddResolution(resolution => resolution
                 .WithKeys("@.deptId", "@.id")
-                .FromCollection("$.departments[*]")
                 .AddValue("@.department", "@")));
         
     var result = script.Execute(testData);
@@ -859,13 +826,3 @@ public void CanResolveFromMultipleCollections()
 ## Implementation Notes
 
 1. **Command Registration**: The resolve command should be registered as an extension, similar to Math and Text extensions
-2. **Collection Path Selection**: Always use `[*]` notation for `referencesCollectionPath` to select individual items
-3. **Array Indexing**: Build inverted indexes for array elements to optimize array-to-value and array-to-array lookups
-4. **Array Matching Logic**: Implement efficient array intersection and containment algorithms
-5. **Performance Optimization**: For large datasets, consider building hash indexes of reference collections
-6. **Memory Management**: Implement streaming for very large reference collections
-7. **Circular Reference Detection**: Track resolution paths to prevent infinite loops
-8. **Type Safety**: Ensure robust handling of mixed data types in array comparisons
-9. **JSONPath Array Notation**: Support `[*]` notation for array element iteration in both key and reference paths
-10. **Multiple Match Handling**: When arrays contain the same key multiple times, handle appropriately based on configuration
-11. **Error Recovery**: Continue processing other resolution settings even if array processing fails for one setting
