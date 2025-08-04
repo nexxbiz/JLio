@@ -100,6 +100,18 @@ public class FixedValue : IFunction
     {
         var stringValue = Value.ToString();
 
+        // Handle parent item navigation
+        if (stringValue.StartsWith(context.ItemsFetcher.CurrentItemPathIndicator, StringComparison.InvariantCulture))
+        {
+            var pathAfterCurrent = stringValue.Substring(context.ItemsFetcher.CurrentItemPathIndicator.Length);
+            
+            // Check if the path contains parent indicators
+            if (pathAfterCurrent.StartsWith(context.ItemsFetcher.PathDelimiter + context.ItemsFetcher.ParentPathIndicator, StringComparison.InvariantCulture))
+            {
+                return HandleParentNavigation(stringValue, currentToken, dataContext, context);
+            }
+        }
+
         if (stringValue.StartsWith(context.ItemsFetcher.CurrentItemPathIndicator,
             StringComparison.InvariantCulture))
             return new JLioFunctionResult(true,
@@ -109,5 +121,101 @@ public class FixedValue : IFunction
         if (stringValue.StartsWith(context.ItemsFetcher.RootPathIndicator, StringComparison.InvariantCulture))
             return new JLioFunctionResult(true, context.ItemsFetcher.SelectTokens(stringValue, dataContext));
         return new JLioFunctionResult(true, Value);
+    }
+
+    private JLioFunctionResult HandleParentNavigation(string stringValue, JToken currentToken, JToken dataContext, IExecutionContext context)
+    {
+        var pathAfterCurrent = stringValue.Substring(context.ItemsFetcher.CurrentItemPathIndicator.Length);
+        
+        // Remove the leading delimiter if present
+        if (pathAfterCurrent.StartsWith(context.ItemsFetcher.PathDelimiter))
+        {
+            pathAfterCurrent = pathAfterCurrent.Substring(context.ItemsFetcher.PathDelimiter.Length);
+        }
+
+        var parentIndicator = context.ItemsFetcher.ParentPathIndicator;
+        var parentIndicatorWithDelimiter = parentIndicator + context.ItemsFetcher.PathDelimiter;
+        
+        // Count parent levels and extract remainder path
+        var parentLevels = 0;
+        var remainderPath = pathAfterCurrent;
+        
+        while (remainderPath.StartsWith(parentIndicatorWithDelimiter, StringComparison.InvariantCulture))
+        {
+            parentLevels++;
+            remainderPath = remainderPath.Substring(parentIndicatorWithDelimiter.Length);
+        }
+        
+        // Check if the path ends with a parent indicator (no delimiter after)
+        if (remainderPath == parentIndicator)
+        {
+            parentLevels++;
+            remainderPath = "";
+        }
+
+        // Navigate up the parent hierarchy
+        var targetToken = currentToken;
+        for (int i = 0; i < parentLevels && targetToken != null; i++)
+        {
+            var nextParent = NavigateToSemanticParent(targetToken);
+            if (nextParent == null)
+            {
+                // Can't navigate up enough levels, return the original value
+                return new JLioFunctionResult(true, Value);
+            }
+            targetToken = nextParent;
+        }
+
+        // If we couldn't navigate up enough levels, return the original value
+        if (targetToken == null)
+        {
+            return new JLioFunctionResult(true, Value);
+        }
+
+        // If there's a remainder path, apply it to the target token
+        if (!string.IsNullOrEmpty(remainderPath))
+        {
+            var finalPath = $"{context.ItemsFetcher.CurrentItemPathIndicator}{context.ItemsFetcher.PathDelimiter}{remainderPath}";
+            return new JLioFunctionResult(true,
+                context.ItemsFetcher.SelectTokens(
+                    $"{context.ItemsFetcher.RootPathIndicator}{context.ItemsFetcher.PathDelimiter}{remainderPath}",
+                    targetToken));
+        }
+        else
+        {
+            // No remainder path, return the target token itself
+            return new JLioFunctionResult(true, new SelectedTokens(targetToken));
+        }
+    }
+
+    private JToken NavigateToSemanticParent(JToken token)
+    {
+        if (token?.Parent == null)
+            return null;
+
+        var parent = token.Parent;
+        
+        // If we're an array element, the parent is the array
+        // If the array is a property value, we need to go to the object containing the property
+        if (token.Parent is JArray)
+        {
+            // Parent is an array, check if this array is a property value
+            if (parent.Parent is JProperty)
+            {
+                // Skip the JProperty and go to the containing object
+                return parent.Parent.Parent;
+            }
+            // Array is not a property value (root array), return the array itself
+            return parent;
+        }
+        
+        // If we're a property value (object/primitive), the semantic parent is the object containing the property
+        if (token.Parent is JProperty property)
+        {
+            return property.Parent;
+        }
+        
+        // For other cases, just return the direct parent
+        return parent;
     }
 }

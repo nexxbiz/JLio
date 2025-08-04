@@ -13,6 +13,7 @@ public class JsonPathItemsFetcher : IItemsFetcher
     public string CurrentItemPathIndicator { get; } = "@";
     public string PathDelimiter { get; } = ".";
     public string RootPathIndicator { get; } = "$";
+    public string ParentPathIndicator { get; } = "<--";
 
     public SelectedTokens SelectTokens(string path, JToken data)
     {
