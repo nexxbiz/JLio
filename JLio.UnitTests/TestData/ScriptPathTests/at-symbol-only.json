@@ -1,0 +1,17 @@
+{
+  "data": {
+    "sample": {
+      "myArray": [
+        { "myItem": "value1" }
+      ]
+    }
+  },
+  "script": "[{\"path\":\"$.sample.myArray[*].selfPath\",\"value\":\"=path(@)\",\"command\":\"add\"}]",
+  "expected": {
+    "sample": {
+      "myArray": [
+        { "myItem": "value1", "selfPath": "$.sample.myArray[0]" }
+      ]
+    }
+  }
+}

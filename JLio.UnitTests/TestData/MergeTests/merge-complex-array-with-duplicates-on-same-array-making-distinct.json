@@ -1,0 +1,28 @@
+{
+  "data": {
+    "sourceArray": [
+      { "id": 1, "name": "Item1", "data": { "value": "complex1" }, "sourceProperty": "first occurrence" },
+      { "id": 2, "name": "Item2", "data": { "value": "complex2" }, "sourceProperty": "unique item" },
+      { "id": 1, "name": "Item1Updated", "data": { "value": "complex1Updated" }, "anotherProperty": "second occurrence" },
+      { "id": 3, "name": "Item3", "data": { "value": "complex3" }, "sourceProperty": "another unique" },
+      { "id": 2, "name": "Item2Modified", "data": { "value": "complex2Modified" }, "extraProperty": "duplicate of id 2" }
+    ]
+  },
+  "path": "$.sourceArray",
+  "targetPath": "$.sourceArray",
+  "mergeSettings": {
+    "arraySettings": [
+      {
+        "arrayPath": "$.sourceArray",
+        "keyPaths": ["id"]
+      }
+    ]
+  },
+  "expected": {
+    "sourceArray": [
+      { "id": 1, "name": "Item1Updated", "data": { "value": "complex1Updated" }, "sourceProperty": "first occurrence", "anotherProperty": "second occurrence" },
+      { "id": 2, "name": "Item2Modified", "data": { "value": "complex2Modified" }, "sourceProperty": "unique item", "extraProperty": "duplicate of id 2" },
+      { "id": 3, "name": "Item3", "data": { "value": "complex3" }, "sourceProperty": "another unique" }
+    ]
+  }
+}
