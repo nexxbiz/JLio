@@ -1,0 +1,38 @@
+{
+  "data": {
+    "first": [
+      { "item": "1" },
+      { "item": 2 },
+      { "item": 3.1 }
+    ],
+    "second": [
+      { "item": "4" },
+      { "item": 5 },
+      { "item": 3.1 }
+    ]
+  },
+  "path": "$.first",
+  "targetPath": "$.second",
+  "mergeSettings": {
+    "arraySettings": [
+      {
+        "arrayPath": "$.second",
+        "uniqueItemsWithoutKeys": true
+      }
+    ]
+  },
+  "expected": {
+    "first": [
+      { "item": "1" },
+      { "item": 2 },
+      { "item": 3.1 }
+    ],
+    "second": [
+      { "item": "4" },
+      { "item": 5 },
+      { "item": 3.1 },
+      { "item": "1" },
+      { "item": 2 }
+    ]
+  }
+}

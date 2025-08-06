@@ -1,0 +1,28 @@
+{
+  "data": {
+    "first": {
+      "common": 4,
+      "onlyFirst": "first value"
+    },
+    "second": {
+      "common": 5,
+      "onlySecond": "second value"
+    }
+  },
+  "path": "$.first",
+  "targetPath": "$.second",
+  "mergeSettings": {
+    "strategy": "onlyStructure"
+  },
+  "expected": {
+    "first": {
+      "common": 4,
+      "onlyFirst": "first value"
+    },
+    "second": {
+      "common": 5,
+      "onlySecond": "second value",
+      "onlyFirst": "first value"
+    }
+  }
+}

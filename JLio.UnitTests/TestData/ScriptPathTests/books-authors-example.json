@@ -1,0 +1,39 @@
+{
+  "data": {
+    "books": [
+      {
+        "id": 1,
+        "title": "The Great Gatsby",
+        "author": { "id": 101, "name": "F. Scott Fitzgerald" }
+      },
+      {
+        "id": 2,
+        "title": "To Kill a Mockingbird",
+        "author": { "id": 102, "name": "Harper Lee" }
+      }
+    ],
+    "authors": [
+      { "id": 101, "name": "F. Scott Fitzgerald" },
+      { "id": 102, "name": "Harper Lee" }
+    ]
+  },
+  "script": "[{\"path\":\"$.authors[*].bookCount\",\"value\":\"=count($.books[?(@.author.id == 101)])\",\"command\":\"add\"}]",
+  "expected": {
+    "books": [
+      {
+        "id": 1,
+        "title": "The Great Gatsby",
+        "author": { "id": 101, "name": "F. Scott Fitzgerald" }
+      },
+      {
+        "id": 2,
+        "title": "To Kill a Mockingbird",
+        "author": { "id": 102, "name": "Harper Lee" }
+      }
+    ],
+    "authors": [
+      { "id": 101, "name": "F. Scott Fitzgerald", "bookCount": 1 },
+      { "id": 102, "name": "Harper Lee", "bookCount": 1 }
+    ]
+  }
+}

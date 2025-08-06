@@ -1,0 +1,17 @@
+{
+  "data": {
+    "sample": {
+      "myArray": [
+        { "myItem": "value1" }
+      ]
+    }
+  },
+  "script": "[{\"path\":\"$.sample.myArray[*].absolutePath\",\"value\":\"=path($.some.absolute.path)\",\"command\":\"add\"}]",
+  "expected": {
+    "sample": {
+      "myArray": [
+        { "myItem": "value1", "absolutePath": "$.some.absolute.path" }
+      ]
+    }
+  }
+}
