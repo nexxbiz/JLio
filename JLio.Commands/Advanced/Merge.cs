@@ -1,11 +1,12 @@
-﻿using System.Linq;
-using JLio.Commands.Advanced.Settings;
+﻿using JLio.Commands.Advanced.Settings;
 using JLio.Commands.Logic;
 using JLio.Core;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Linq;
 
 namespace JLio.Commands.Advanced;
 
@@ -68,6 +69,10 @@ public class Merge : CommandBase
         if (string.IsNullOrWhiteSpace(TargetPath))
             result.ValidationMessages.Add($"Target Path property for {CommandName} command is missing");
 
+        if (!string.IsNullOrWhiteSpace(Path) && !string.IsNullOrWhiteSpace(TargetPath) &&
+                  string.Equals(Path, TargetPath, StringComparison.OrdinalIgnoreCase))
+            result.ValidationMessages.Add($"Path and TargetPath for {CommandName} command cannot be the same");
+       
         return result;
     }
 
@@ -77,7 +82,7 @@ public class Merge : CommandBase
             HandleDifferentTypes(source, target);
         else if (IsComplexType(source))
             HandleComplexMerge(source, target);
-        else if (IsArrayType(source)) HandleArrayMerge((JArray) source, (JArray) target);
+        else if (IsArrayType(source)) HandleArrayMerge((JArray)source, (JArray)target);
     }
 
     private void HandleArrayMerge(JArray source, JArray target)
@@ -118,7 +123,7 @@ public class Merge : CommandBase
         if (jtoken.Type == JTokenType.Array || jtoken.Type == JTokenType.Object)
             return GetPathFor(jtoken.Parent);
         if (jtoken.Type == JTokenType.Property)
-            return $"{GetPathFor(jtoken.Parent)}.{((JProperty) jtoken).Name}";
+            return $"{GetPathFor(jtoken.Parent)}.{((JProperty)jtoken).Name}";
 
         return string.Empty;
     }
@@ -138,8 +143,8 @@ public class Merge : CommandBase
         var MatchSuccess = ObjectsMatchOnMatchSettings(source, target);
 
         if (MatchSuccess || !Settings.MatchSettings.HasKeys)
-            foreach (var property in ((JObject) source).Properties())
-                MergeProperties(property, (JObject) target);
+            foreach (var property in ((JObject)source).Properties())
+                MergeProperties(property, (JObject)target);
     }
 
     private bool ObjectsMatchOnMatchSettings(JToken source, JToken target)

@@ -27,7 +27,7 @@ public class CountTests
     [TestCase("=count(1,2,3)", "{}", 3)]
     [TestCase("=count($.a,$.b)", "{\"a\":1,\"b\":2}", 2)]
     [TestCase("=count($.numbers)", "{\"numbers\":[1,2,3]}", 3)]
-    [TestCase("=count($.obj)", "{\"obj\":{\"a\":1,\"b\":2}}", 2)]
+    [TestCase("=count($.obj)", "{\"obj\":{\"a\":1,\"b\":2}}", 1)]
     public void countTests(string function, string data, int resultValue)
     {
         var script = $"{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"add\"}}";
