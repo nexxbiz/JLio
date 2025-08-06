@@ -37,9 +37,6 @@ public class Count : FunctionBase
             case JTokenType.Array:
                 count += token.Count();
                 break;
-            case JTokenType.Object:
-                count += ((JObject)token).Properties().Count();
-                break;
             default:
                 count++;
                 break;

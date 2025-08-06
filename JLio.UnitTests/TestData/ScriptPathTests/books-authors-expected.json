@@ -1,0 +1,140 @@
+{
+  "books": [
+    {
+      "id": 1,
+      "title": "The Great Gatsby",
+      "genre": "Classic Literature",
+      "publishedYear": 1925,
+      "author": {
+        "id": 101,
+        "name": "F. Scott Fitzgerald",
+        "birthYear": 1896,
+        "number_of_books": 2
+      }
+    },
+    {
+      "id": 2,
+      "title": "To Kill a Mockingbird",
+      "genre": "Fiction",
+      "publishedYear": 1960,
+      "author": {
+        "id": 102,
+        "name": "Harper Lee",
+        "birthYear": 1926,
+        "number_of_books": 1
+      }
+    },
+    {
+      "id": 3,
+      "title": "1984",
+      "genre": "Dystopian Fiction",
+      "publishedYear": 1949,
+      "author": {
+        "id": 103,
+        "name": "George Orwell",
+        "birthYear": 1903,
+        "number_of_books": 2
+      }
+    },
+    {
+      "id": 4,
+      "title": "Animal Farm",
+      "genre": "Political Satire",
+      "publishedYear": 1945,
+      "author": {
+        "id": 103,
+        "name": "George Orwell",
+        "birthYear": 1903,
+        "number_of_books": 2
+      }
+    },
+    {
+      "id": 5,
+      "title": "This Side of Paradise",
+      "genre": "Coming-of-Age",
+      "publishedYear": 1920,
+      "author": {
+        "id": 101,
+        "name": "F. Scott Fitzgerald",
+        "birthYear": 1896,
+        "number_of_books": 2
+      }
+    }
+  ],
+  "authors": [
+    {
+      "id": 101,
+      "name": "F. Scott Fitzgerald",
+      "birthYear": 1896,
+      "books": [
+        {
+          "id": 1,
+          "title": "The Great Gatsby",
+          "genre": "Classic Literature",
+          "publishedYear": 1925,
+          "author": {
+            "id": 101,
+            "name": "F. Scott Fitzgerald",
+            "birthYear": 1896
+          }
+        },
+        {
+          "id": 5,
+          "title": "This Side of Paradise",
+          "genre": "Coming-of-Age",
+          "publishedYear": 1920,
+          "author": {
+            "id": 101,
+            "name": "F. Scott Fitzgerald",
+            "birthYear": 1896
+          }
+        }
+      ]
+    },
+    {
+      "id": 102,
+      "name": "Harper Lee",
+      "birthYear": 1926,
+      "books": {
+        "id": 2,
+        "title": "To Kill a Mockingbird",
+        "genre": "Fiction",
+        "publishedYear": 1960,
+        "author": {
+          "id": 102,
+          "name": "Harper Lee",
+          "birthYear": 1926
+        }
+      }
+    },
+    {
+      "id": 103,
+      "name": "George Orwell",
+      "birthYear": 1903,
+      "books": [
+        {
+          "id": 3,
+          "title": "1984",
+          "genre": "Dystopian Fiction",
+          "publishedYear": 1949,
+          "author": {
+            "id": 103,
+            "name": "George Orwell",
+            "birthYear": 1903
+          }
+        },
+        {
+          "id": 4,
+          "title": "Animal Farm",
+          "genre": "Political Satire",
+          "publishedYear": 1945,
+          "author": {
+            "id": 103,
+            "name": "George Orwell",
+            "birthYear": 1903
+          }
+        }
+      ]
+    }
+  ]
+}

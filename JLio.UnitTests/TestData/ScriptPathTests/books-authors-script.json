@@ -1,0 +1,90 @@
+[
+  {
+
+    "path": "$.authors",
+    "value": [],
+    "command": "add"
+  },
+  {
+
+    "path": "$.all_authors",
+    "value": [],
+    "command": "add"
+  },
+  {
+    "command": "copy",
+    "fromPath": "$.books[*].author",
+    "toPath": "$.all_authors"
+  },
+  {
+
+    "path": "$.all_authors",
+    "targetPath": "$.authors",
+    "command": "merge",
+    "settings": {
+      "arraySettings": [
+        {
+          "arrayPath": "$.authors",
+          "keyPaths": [ "id" ]
+        }
+      ]
+    }
+  },
+  {
+    "path": "$.authors[*]",
+    "command": "resolve",
+    "resolveSettings": [
+      {
+        "resolveKeys": [
+          {
+            "keyPath": "@.id",
+            "referenceKeyPath": "@.author.id"
+          }
+        ],
+        "referencesCollectionPath": "$.books[*]",
+        "values": [
+          {
+            "targetPath": "@.books",
+            "value": "@"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "path": "$.authors[*].number_of_books",
+    "command": "add",
+    "value" : "=count(@.books)"
+  }
+  ,
+  {
+
+    "path": "$.books[*]",
+    "command": "resolve",
+    "resolveSettings": [
+      {
+        "resolveKeys": [
+          {
+            "keyPath": "@.author.id",
+            "referenceKeyPath": "@.id"
+          }
+        ],
+        "referencesCollectionPath": "$.authors[*]",
+        "values": [
+          {
+            "targetPath": "@.author.number_of_books",
+            "value": "=fetch(@.number_of_books)"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "command": "remove",
+    "path": "$.all_authors"
+  },
+  {
+    "command": "remove",
+    "path": "$.authors[*].number_of_books"
+  }
+]
