@@ -31,130 +31,62 @@ public class ScriptPathTests
     [Test]
     public void PathFunction_WithNoArguments_ReturnsCurrentTokenPath()
     {
-        // Load test files
-        var inputFile = Path.Combine(testDataPath, "basic-path-data.json");
-        var expectedFile = Path.Combine(testDataPath, "basic-path-expected.json");
-        var scriptFile = Path.Combine(testDataPath, "basic-path-script.json");
-
-        var data = JToken.Parse(File.ReadAllText(inputFile));
-        var expected = JToken.Parse(File.ReadAllText(expectedFile));
-        var script = File.ReadAllText(scriptFile);
-
-        // Act
-        var result = JLioConvert.Parse(script, parseOptions).Execute(data, executionContext);
-
-        // Assert
-        Assert.IsTrue(result.Success);
-        Assert.IsTrue(JToken.DeepEquals(expected, result.Data), 
-            $"Expected: {expected}\nActual: {result.Data}");
+        var testCase = LoadTestCase("basic-path.json");
+        ExecuteTestCase(testCase);
     }
 
     [Test]
     public void PathFunction_WithRelativePathArgument_ReturnsAbsolutePath()
     {
-        // Load test files
-        var inputFile = Path.Combine(testDataPath, "relative-path-data.json");
-        var expectedFile = Path.Combine(testDataPath, "relative-path-expected.json");
-        var scriptFile = Path.Combine(testDataPath, "relative-path-script.json");
-
-        var data = JToken.Parse(File.ReadAllText(inputFile));
-        var expected = JToken.Parse(File.ReadAllText(expectedFile));
-        var script = File.ReadAllText(scriptFile);
-
-        // Act
-        var result = JLioConvert.Parse(script, parseOptions).Execute(data, executionContext);
-
-        // Assert
-        Assert.IsTrue(result.Success);
-        Assert.IsTrue(JToken.DeepEquals(expected, result.Data), 
-            $"Expected: {expected}\nActual: {result.Data}");
+        var testCase = LoadTestCase("relative-path.json");
+        ExecuteTestCase(testCase);
     }
 
     [Test]
     public void PathFunction_ComplexExample_WithSecondPath()
     {
-        // Load test files - this matches the user's example
-        var inputFile = Path.Combine(testDataPath, "complex-example-data.json");
-        var expectedFile = Path.Combine(testDataPath, "complex-example-expected.json");
-        var scriptFile = Path.Combine(testDataPath, "complex-example-script.json");
-
-        var data = JToken.Parse(File.ReadAllText(inputFile));
-        var expected = JToken.Parse(File.ReadAllText(expectedFile));
-        var script = File.ReadAllText(scriptFile);
-
-        // Act
-        var result = JLioConvert.Parse(script, parseOptions).Execute(data, executionContext);
-
-        // Assert
-        Assert.IsTrue(result.Success);
-        Assert.IsTrue(JToken.DeepEquals(expected, result.Data), 
-            $"Expected: {expected}\nActual: {result.Data}");
+        var testCase = LoadTestCase("complex-example.json");
+        ExecuteTestCase(testCase);
     }
 
     [Test]
     public void PathFunction_AtRootLevel_ReturnsRootPath()
     {
-        // Load test files
-        var inputFile = Path.Combine(testDataPath, "root-level-data.json");
-        var expectedFile = Path.Combine(testDataPath, "root-level-expected.json");
-        var scriptFile = Path.Combine(testDataPath, "root-level-script.json");
-
-        var data = JToken.Parse(File.ReadAllText(inputFile));
-        var expected = JToken.Parse(File.ReadAllText(expectedFile));
-        var script = File.ReadAllText(scriptFile);
-
-        // Act
-        var result = JLioConvert.Parse(script, parseOptions).Execute(data, executionContext);
-
-        // Assert
-        Assert.IsTrue(result.Success);
-        Assert.IsTrue(JToken.DeepEquals(expected, result.Data), 
-            $"Expected: {expected}\nActual: {result.Data}");
+        var testCase = LoadTestCase("root-level.json");
+        ExecuteTestCase(testCase);
     }
 
     [Test]
     public void PathFunction_WithParentPathIndicator_ReturnsCurrentItemPath()
     {
-        // Load test files - this tests @.<-- syntax where each item should get the full path to that item
-        var inputFile = Path.Combine(testDataPath, "parent-path-data.json");
-        var expectedFile = Path.Combine(testDataPath, "parent-path-expected.json");
-        var scriptFile = Path.Combine(testDataPath, "parent-path-script.json");
-
-        var data = JToken.Parse(File.ReadAllText(inputFile));
-        var expected = JToken.Parse(File.ReadAllText(expectedFile));
-        var script = File.ReadAllText(scriptFile);
-
-        // Act
-        var result = JLioConvert.Parse(script, parseOptions).Execute(data, executionContext);
-
-        // Assert
-        Assert.IsTrue(result.Success);
-        Assert.IsTrue(JToken.DeepEquals(expected, result.Data), 
-            $"Expected: {expected}\nActual: {result.Data}");
+        var testCase = LoadTestCase("parent-path.json");
+        ExecuteTestCase(testCase);
     }
 
     [Test]
     public void PathFunction_WithAtSymbolOnly_ReturnsCurrentPath()
     {
-        // Arrange - using inline data for simple @ test
-        var data = JObject.Parse(@"{
-            ""sample"": {
-                ""myArray"": [
-                    { ""myItem"": ""value1"" }
-                ]
-            }
-        }");
-
-        var script = @"[
-            {
-                ""path"": ""$.sample.myArray[*].selfPath"",
-                ""value"": ""=path(@)"",
-                ""command"": ""add""
-            }
-        ]";
+        // Arrange - using inline test case structure
+        var testCase = new TestCaseData
+        {
+            Data = JObject.Parse(@"{
+                ""sample"": {
+                    ""myArray"": [
+                        { ""myItem"": ""value1"" }
+                    ]
+                }
+            }"),
+            Script = @"[
+                {
+                    ""path"": ""$.sample.myArray[*].selfPath"",
+                    ""value"": ""=path(@)"",
+                    ""command"": ""add""
+                }
+            ]"
+        };
 
         // Act
-        var result = JLioConvert.Parse(script, parseOptions).Execute(data, executionContext);
+        var result = JLioConvert.Parse(testCase.Script, parseOptions).Execute(testCase.Data, executionContext);
 
         // Assert
         Assert.IsTrue(result.Success);
@@ -164,25 +96,27 @@ public class ScriptPathTests
     [Test]
     public void PathFunction_WithAbsolutePath_ReturnsAbsolutePath()
     {
-        // Arrange - using inline data for absolute path test
-        var data = JObject.Parse(@"{
-            ""sample"": {
-                ""myArray"": [
-                    { ""myItem"": ""value1"" }
-                ]
-            }
-        }");
-
-        var script = @"[
-            {
-                ""path"": ""$.sample.myArray[*].absolutePath"",
-                ""value"": ""=path($.some.absolute.path)"",
-                ""command"": ""add""
-            }
-        ]";
+        // Arrange - using inline test case structure
+        var testCase = new TestCaseData
+        {
+            Data = JObject.Parse(@"{
+                ""sample"": {
+                    ""myArray"": [
+                        { ""myItem"": ""value1"" }
+                    ]
+                }
+            }"),
+            Script = @"[
+                {
+                    ""path"": ""$.sample.myArray[*].absolutePath"",
+                    ""value"": ""=path($.some.absolute.path)"",
+                    ""command"": ""add""
+                }
+            ]"
+        };
 
         // Act
-        var result = JLioConvert.Parse(script, parseOptions).Execute(data, executionContext);
+        var result = JLioConvert.Parse(testCase.Script, parseOptions).Execute(testCase.Data, executionContext);
 
         // Assert
         Assert.IsTrue(result.Success);
@@ -192,7 +126,9 @@ public class ScriptPathTests
     [Test]
     public void PathFunction_WithEmptyStringArgument_ReturnsCurrentPath()
     {
-        // Arrange - using inline data for empty string test
+        // Arrange - using proper JSON escaping like other working tests
+        var script = @"[{""path"":""$.sample.myArray[*].currentPath"",""value"":""=path('')"",""command"":""add""}]";
+        
         var data = JObject.Parse(@"{
             ""sample"": {
                 ""myArray"": [
@@ -200,14 +136,6 @@ public class ScriptPathTests
                 ]
             }
         }");
-
-        var script = @"[
-            {
-                ""path"": ""$.sample.myArray[*].currentPath"",
-                ""value"": ""=path('')"",
-                ""command"": ""add""
-            }
-        ]";
 
         // Act
         var result = JLioConvert.Parse(script, parseOptions).Execute(data, executionContext);
@@ -273,5 +201,40 @@ public class ScriptPathTests
 
         // Act & Assert
         Assert.AreEqual("path", pathFunction.FunctionName);
+    }
+
+    private TestCaseData LoadTestCase(string fileName)
+    {
+        var filePath = Path.Combine(testDataPath, fileName);
+        var jsonContent = File.ReadAllText(filePath);
+        var testCaseJson = JObject.Parse(jsonContent);
+
+        return new TestCaseData
+        {
+            Data = testCaseJson["data"]?.DeepClone(),
+            Script = testCaseJson["script"]?.ToString(),
+            Expected = testCaseJson["expected"]?.DeepClone()
+        };
+    }
+
+    private void ExecuteTestCase(TestCaseData testCase)
+    {
+        // Act
+        var result = JLioConvert.Parse(testCase.Script, parseOptions).Execute(testCase.Data, executionContext);
+
+        // Assert
+        Assert.IsTrue(result.Success);
+        if (testCase.Expected != null)
+        {
+            Assert.IsTrue(JToken.DeepEquals(testCase.Expected, result.Data), 
+                $"Expected: {testCase.Expected}\nActual: {result.Data}");
+        }
+    }
+
+    private class TestCaseData
+    {
+        public JToken Data { get; set; }
+        public string Script { get; set; }
+        public JToken Expected { get; set; }
     }
 }

@@ -1,0 +1,33 @@
+{
+  "data": {
+    "sample": {
+      "myArray": [
+        { "myItem": "value1", "otherProp": "other1" },
+        { "myItem": "value2", "otherProp": "other2" }
+      ]
+    }
+  },
+  "script": "[{\"path\":\"$.sample.myArray[*].path\",\"value\":\"=path(@.myItem)\",\"command\":\"add\"},{\"path\":\"$.sample.myArray[*].secondPath\",\"value\":{\"path\":\"=path(@.otherProp)\"},\"command\":\"add\"}]",
+  "expected": {
+    "sample": {
+      "myArray": [
+        { 
+          "myItem": "value1", 
+          "otherProp": "other1",
+          "path": "$.sample.myArray[0].myItem",
+          "secondPath": {
+            "path": "$.sample.myArray[0].otherProp"
+          }
+        },
+        { 
+          "myItem": "value2", 
+          "otherProp": "other2",
+          "path": "$.sample.myArray[1].myItem",
+          "secondPath": {
+            "path": "$.sample.myArray[1].otherProp"
+          }
+        }
+      ]
+    }
+  }
+}

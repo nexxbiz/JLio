@@ -1,0 +1,105 @@
+{
+  "data": {
+    "first": [
+      {
+        "key": { "id": "1" },
+        "item": "1",
+        "valueFirst": "first id 1",
+        "valueCommon": "common first id 1"
+      },
+      {
+        "key": { "id": "2" },
+        "item": 2,
+        "valueFirst": "first id 2",
+        "valueCommon": "common first id 2"
+      },
+      {
+        "key": { "id": "3" },
+        "item": 3.1,
+        "valueFirst": "first id 3",
+        "valueCommon": "common first id 3"
+      }
+    ],
+    "second": [
+      {
+        "key": { "id": "4" },
+        "item": "4",
+        "valueSecond": "second id 4",
+        "valueCommon": "common scond id 4"
+      },
+      {
+        "key": { "id": "2" },
+        "item": 5,
+        "valueSecond": "second id 2",
+        "valueCommon": "common scond id 2"
+      },
+      {
+        "key": { "id": "1" },
+        "item": 3.1,
+        "valueSecond": "second id 1",
+        "valueCommon": "common scond id 1"
+      }
+    ]
+  },
+  "path": "$.first",
+  "targetPath": "$.second",
+  "mergeSettings": {
+    "strategy": "onlyStructure",
+    "arraySettings": [
+      {
+        "arrayPath": "$.second",
+        "keyPaths": ["key.id"]
+      }
+    ]
+  },
+  "expected": {
+    "first": [
+      {
+        "key": { "id": "1" },
+        "item": "1",
+        "valueFirst": "first id 1",
+        "valueCommon": "common first id 1"
+      },
+      {
+        "key": { "id": "2" },
+        "item": 2,
+        "valueFirst": "first id 2",
+        "valueCommon": "common first id 2"
+      },
+      {
+        "key": { "id": "3" },
+        "item": 3.1,
+        "valueFirst": "first id 3",
+        "valueCommon": "common first id 3"
+      }
+    ],
+    "second": [
+      {
+        "key": { "id": "4" },
+        "item": "4",
+        "valueSecond": "second id 4",
+        "valueCommon": "common scond id 4"
+      },
+      {
+        "key": { "id": "2" },
+        "item": 5,
+        "valueSecond": "second id 2",
+        "valueCommon": "common scond id 2",
+        "valueFirst": "first id 2"
+      },
+      {
+        "key": { "id": "1" },
+        "item": 3.1,
+        "valueSecond": "second id 1",
+        "valueCommon": "common scond id 1",
+        "valueFirst": "first id 1"
+      },
+      {
+        "key": { "id": "3" },
+        "item": 3.1,
+        "valueFirst": "first id 3",
+        "valueCommon": "common first id 3"
+      }
+    ]
+  }
+}

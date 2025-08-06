@@ -1,0 +1,129 @@
+{
+  "data": {
+    "first": [
+      {
+        "key": { "id": "1", "demo": 3, "sub": "a" },
+        "item": "1a",
+        "valueFirst": "first id 1a",
+        "valueCommon": "common first id 1a"
+      },
+      {
+        "key": { "id": "2", "sub": "a" },
+        "item": 2,
+        "valueFirst": "first id 2a",
+        "valueCommon": "common first id 2a"
+      },
+      {
+        "key": { "id": "1", "sub": "b" },
+        "item": 3.1,
+        "valueFirst": "first id 1b",
+        "valueCommon": "common first id 1b"
+      },
+      {
+        "key": { "id": "1", "sub": "c" },
+        "item": "3.1",
+        "valueFirst": "first id 1c",
+        "valueCommon": "common first id 1c"
+      }
+    ],
+    "second": [
+      {
+        "key": { "id": "1", "sub": "a" },
+        "item": "4",
+        "valueSecond": "second id 1a",
+        "valueCommon": "common scond id 1a"
+      },
+      {
+        "key": { "id": "2", "sub": "a" },
+        "item": 5,
+        "valueSecond": "second id 2a",
+        "valueCommon": "common scond id 2a"
+      },
+      {
+        "key": { "id": "1", "sub": "b" },
+        "item": 3.1,
+        "valueSecond": "second id 1b",
+        "valueCommon": "common scond id 1b"
+      },
+      {
+        "key": { "id": "3", "sub": "a" },
+        "item": "3.1",
+        "valueSecond": "second id 3a",
+        "valueCommon": "common scond id 3a"
+      }
+    ]
+  },
+  "path": "$.first",
+  "targetPath": "$.second",
+  "mergeSettings": {
+    "arraySettings": [
+      {
+        "arrayPath": "$.second",
+        "keyPaths": ["key.id", "key.sub"]
+      }
+    ]
+  },
+  "expected": {
+    "first": [
+      {
+        "key": { "id": "1", "demo": 3, "sub": "a" },
+        "item": "1a",
+        "valueFirst": "first id 1a",
+        "valueCommon": "common first id 1a"
+      },
+      {
+        "key": { "id": "2", "sub": "a" },
+        "item": 2,
+        "valueFirst": "first id 2a",
+        "valueCommon": "common first id 2a"
+      },
+      {
+        "key": { "id": "1", "sub": "b" },
+        "item": 3.1,
+        "valueFirst": "first id 1b",
+        "valueCommon": "common first id 1b"
+      },
+      {
+        "key": { "id": "1", "sub": "c" },
+        "item": "3.1",
+        "valueFirst": "first id 1c",
+        "valueCommon": "common first id 1c"
+      }
+    ],
+    "second": [
+      {
+        "key": { "id": "1", "sub": "a", "demo": 3 },
+        "item": "1a",
+        "valueSecond": "second id 1a",
+        "valueCommon": "common first id 1a",
+        "valueFirst": "first id 1a"
+      },
+      {
+        "key": { "id": "2", "sub": "a" },
+        "item": 2,
+        "valueSecond": "second id 2a",
+        "valueCommon": "common first id 2a",
+        "valueFirst": "first id 2a"
+      },
+      {
+        "key": { "id": "1", "sub": "b" },
+        "item": 3.1,
+        "valueSecond": "second id 1b",
+        "valueCommon": "common first id 1b",
+        "valueFirst": "first id 1b"
+      },
+      {
+        "key": { "id": "3", "sub": "a" },
+        "item": "3.1",
+        "valueSecond": "second id 3a",
+        "valueCommon": "common scond id 3a"
+      },
+      {
+        "key": { "id": "1", "sub": "c" },
+        "item": "3.1",
+        "valueFirst": "first id 1c",
+        "valueCommon": "common first id 1c"
+      }
+    ]
+  }
+}

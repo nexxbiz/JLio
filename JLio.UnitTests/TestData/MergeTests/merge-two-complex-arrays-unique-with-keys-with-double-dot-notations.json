@@ -1,0 +1,63 @@
+{
+  "data": {
+    "first": [
+      {
+        "PP": {
+          "PP_EXTERN": 1,
+          "PP_MYBRA": "extern 1"
+        }
+      },
+      {
+        "PP": {
+          "PP_EXTERN": 2,
+          "PP_MYBRA": "extern 2"
+        }
+      }
+    ],
+    "second": {
+      "PP": {
+        "PP_EXTERN": 1
+      },
+      "previous": {
+        "PP": {
+          "PP_EXTERN": 2
+        }
+      }
+    }
+  },
+  "path": "$.first..PP",
+  "targetPath": "$.second..PP",
+  "mergeSettings": {
+    "matchSettings": {
+      "keyPaths": ["PP_EXTERN"]
+    }
+  },
+  "expected": {
+    "first": [
+      {
+        "PP": {
+          "PP_EXTERN": 1,
+          "PP_MYBRA": "extern 1"
+        }
+      },
+      {
+        "PP": {
+          "PP_EXTERN": 2,
+          "PP_MYBRA": "extern 2"
+        }
+      }
+    ],
+    "second": {
+      "PP": {
+        "PP_EXTERN": 1,
+        "PP_MYBRA": "extern 1"
+      },
+      "previous": {
+        "PP": {
+          "PP_EXTERN": 2,
+          "PP_MYBRA": "extern 2"
+        }
+      }
+    }
+  }
+}

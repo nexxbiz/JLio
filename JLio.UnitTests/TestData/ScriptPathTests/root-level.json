@@ -1,0 +1,10 @@
+{
+  "data": { 
+    "myProperty": "value" 
+  },
+  "script": "[{\"path\":\"$.rootPath\",\"value\":\"=path()\",\"command\":\"add\"}]",
+  "expected": { 
+    "myProperty": "value", 
+    "rootPath": "$" 
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "data": {
+    "sample": {
+      "myArray": [
+        { "myItem": "value1" },
+        { "myItem": "value2" }
+      ]
+    }
+  },
+  "script": "[{\"path\":\"$.sample.myArray[*].relativePath\",\"value\":\"=path(@.myItem)\",\"command\":\"add\"}]",
+  "expected": {
+    "sample": {
+      "myArray": [
+        { "myItem": "value1", "relativePath": "$.sample.myArray[0].myItem" },
+        { "myItem": "value2", "relativePath": "$.sample.myArray[1].myItem" }
+      ]
+    }
+  }
+}
