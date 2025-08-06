@@ -434,11 +434,40 @@ namespace JLio.Extensions.ETL.Commands
             
             try
             {
-                // Simple implementation for relative paths like @.propertyName
+                // Handle relative paths like @.propertyName or @.author.demo
                 if (path.StartsWith("@.") && targetToken is JObject targetObject)
                 {
-                    var propertyName = path.Substring(2);
-                    targetObject[propertyName] = value;
+                    var relativePath = path.Substring(2); // Remove "@."
+                    var pathParts = relativePath.Split('.');
+                    
+                    // Navigate/create nested structure
+                    JObject currentObject = targetObject;
+                    
+                    // Process all parts except the last one (which becomes the final property)
+                    for (int i = 0; i < pathParts.Length - 1; i++)
+                    {
+                        var part = pathParts[i];
+                        
+                        if (!currentObject.ContainsKey(part))
+                        {
+                            // Create new object for this path part
+                            currentObject[part] = new JObject();
+                        }
+                        else if (currentObject[part] is not JObject)
+                        {
+                            // If existing property is not an object, replace it with an object
+                            currentObject[part] = new JObject();
+                        }
+                        
+                        currentObject = (JObject)currentObject[part];
+                    }
+                    
+                    // Set the final property
+                    var finalPropertyName = pathParts[pathParts.Length - 1];
+                    currentObject[finalPropertyName] = value;
+                    
+                    executionContext.LogInfo(CoreConstants.CommandExecution,
+                        $"Successfully set value at nested path: {path}");
                 }
                 else
                 {
