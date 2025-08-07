@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using JLio.Core;
 using JLio.Core.Contracts;
 using JLio.Core.Extensions;
@@ -36,6 +37,67 @@ public abstract class CopyMove : CommandBase
         executionContext = context;
         var sourceItems = context.ItemsFetcher.SelectTokens(FromPath, data);
         var OrgPath = ToPath;
+        
+        // 🎯 FIXED: Resolve function expressions in ToPath (including indirect)  
+        if (ToPath.StartsWith("="))
+        {
+            try
+            {
+                // Use the ItemsFetcher's indirect processing logic directly
+                // This mimics what ProcessIndirectPath does in JsonPathItemsFetcher
+                if (ToPath.Contains("=indirect("))
+                {
+                    var indirectPattern = new System.Text.RegularExpressions.Regex(@"=indirect\(([^)]+)\)", 
+                        System.Text.RegularExpressions.RegexOptions.Compiled | System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                    
+                    var match = indirectPattern.Match(ToPath);
+                    if (match.Success)
+                    {
+                        var indirectPathReference = match.Groups[1].Value.Trim();
+                        
+                        // Remove quotes if present
+                        if ((indirectPathReference.StartsWith("'") && indirectPathReference.EndsWith("'")) ||
+                            (indirectPathReference.StartsWith("\"") && indirectPathReference.EndsWith("\"")))
+                        {
+                            indirectPathReference = indirectPathReference.Substring(1, indirectPathReference.Length - 2);
+                        }
+
+                        // Get the value at the indirect path reference
+                        var indirectPathToken = dataContext.SelectToken(indirectPathReference);
+                        if (indirectPathToken != null && indirectPathToken.Type == JTokenType.String)
+                        {
+                            var actualPath = indirectPathToken.Value<string>();
+                            if (!string.IsNullOrEmpty(actualPath))
+                            {
+                                // Replace the =indirect(...) part with the actual path
+                                ToPath = indirectPattern.Replace(ToPath, actualPath);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // Fallback: try the old method with function converter for other functions
+                    var functionConverter = FixedValue.DefaultFunctionConverter;
+                    var function = functionConverter.ParseString(ToPath);
+                    var result = function.GetValue(dataContext, dataContext, context);
+                    
+                    if (result.Success && result.Data.Any())
+                    {
+                        var resolvedPath = result.Data.FirstOrDefault()?.ToString();
+                        if (!string.IsNullOrEmpty(resolvedPath))
+                        {
+                            ToPath = resolvedPath;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                context.LogWarning(CoreConstants.CommandExecution, 
+                    $"Failed to evaluate function expression in toPath: {ToPath}. Error: {ex.Message}");
+            }
+        }
         
         // Check if ToPath is a root path reference
         if (ToPath == executionContext.ItemsFetcher.RootPathIndicator)

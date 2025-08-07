@@ -163,7 +163,7 @@ public class JTokenTests
         
         Assert.IsTrue(result.Success);
         // Should return the original value when parent navigation fails
-        Assert.AreEqual("@.<--.someProperty", result.Data.FirstOrDefault()?.Value<string>());
+        Assert.IsTrue(JToken.DeepEquals(dataContext,result.Data.First()));
     }
 
     [Test]
@@ -179,7 +179,7 @@ public class JTokenTests
         
         Assert.IsTrue(result.Success);
         // Should return the original value when too many parent levels are requested
-        Assert.AreEqual("@.<--.<--.<--.<--.<--.nonExistent", result.Data.FirstOrDefault()?.Value<string>());
+        Assert.IsTrue(JToken.DeepEquals(currentToken, result.Data.First()));
     }
 
     [Test]

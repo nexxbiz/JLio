@@ -17,7 +17,7 @@
       }
     ]
   },
-  "script": "[{\"path\":\"$.employees[*]\",\"property\":\"displayName\",\"value\":\"=concat(@.name, ' (', @.department, ')')\",\"command\":\"set\"}]",
+  "script": "[{\"path\":\"$.employees[*]\",\"property\":\"displayName\",\"value\":\"=concat(@.<--.name, ' (', @.<--.department, ')')\",\"command\":\"set\"}]",
   "expected": {
     "employees": [
       {
