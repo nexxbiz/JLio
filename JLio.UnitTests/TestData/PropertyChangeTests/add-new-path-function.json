@@ -1,0 +1,31 @@
+{
+  "data": {
+    "orders": [
+      {"orderId": "ORD-001", "customerId": "C001", "amount": 100.00},
+      {"orderId": "ORD-002", "customerId": "C002", "amount": 200.00}
+    ]
+  },
+  "script": "[{\"path\":\"$.orders[*]\",\"property\":\"metadata\",\"value\":{\"source\":\"=path()\",\"orderIdPath\":\"=path(@.orderId)\"},\"command\":\"add\"}]",
+  "expected": {
+    "orders": [
+      {
+        "orderId": "ORD-001", 
+        "customerId": "C001", 
+        "amount": 100.00,
+        "metadata": {
+          "source": "$.orders[0]",
+          "orderIdPath": "$.orders[0].orderId"
+        }
+      },
+      {
+        "orderId": "ORD-002", 
+        "customerId": "C002", 
+        "amount": 200.00,
+        "metadata": {
+          "source": "$.orders[1]",
+          "orderIdPath": "$.orders[1].orderId"
+        }
+      }
+    ]
+  }
+}

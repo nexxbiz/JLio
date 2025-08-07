@@ -1,0 +1,15 @@
+{
+  "data": {
+    "items": [
+      {"id": "I001", "name": "Item A", "status": "draft"},
+      {"id": "I002", "name": "Item B", "status": "active"}
+    ]
+  },
+  "script": "[{\"path\":\"$.items[*].status\",\"value\":\"updated\",\"command\":\"put\"}]",
+  "expected": {
+    "items": [
+      {"id": "I001", "name": "Item A", "status": "updated"},
+      {"id": "I002", "name": "Item B", "status": "updated"}
+    ]
+  }
+}

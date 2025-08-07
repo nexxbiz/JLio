@@ -1,0 +1,15 @@
+{
+  "data": {
+    "inventory": [
+      {"id": "I001", "name": "Widget A", "quantity": 100},
+      {"id": "I002", "name": "Widget B", "quantity": 50}
+    ]
+  },
+  "script": "[{\"path\":\"$.inventory[*].description\",\"value\":\"=concat('Item: ', @.name, ' - Qty: ', @.quantity)\",\"command\":\"put\"}]",
+  "expected": {
+    "inventory": [
+      {"id": "I001", "name": "Widget A", "quantity": 100, "description": "Item: Widget A - Qty: 100"},
+      {"id": "I002", "name": "Widget B", "quantity": 50, "description": "Item: Widget B - Qty: 50"}
+    ]
+  }
+}
