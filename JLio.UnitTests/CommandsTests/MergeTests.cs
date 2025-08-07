@@ -147,6 +147,92 @@ public class MergeTests
         Assert.IsTrue(result.Success);
     }
 
+    [Test]
+    public void MergeWithAtNotationKeys_ShouldWork()
+    {
+        // Test data with arrays that need key-based matching using @ notation
+        var data = JObject.Parse(@"{
+            ""source"": [
+                {""id"": 1, ""name"": ""Item 1"", ""value"": ""updated""},
+                {""id"": 2, ""name"": ""Item 2"", ""value"": ""new""}
+            ],
+            ""target"": [
+                {""id"": 1, ""name"": ""Item 1"", ""value"": ""original""},
+                {""id"": 3, ""name"": ""Item 3"", ""value"": ""existing""}
+            ]
+        }");
+
+        // Test with @ notation for key paths
+        var settings = new MergeSettings
+        {
+            ArraySettings = new List<MergeArraySettings>
+            {
+                new MergeArraySettings 
+                { 
+                    ArrayPath = "$.target", 
+                    KeyPaths = new List<string> {"@.id"}  // Using @ notation
+                }
+            }
+        };
+
+        var result = new Merge("$.source", "$.target", settings).Execute(data, executeOptions);
+
+        Assert.IsTrue(result.Success);
+        
+        var targetArray = result.Data.SelectToken("$.target") as JArray;
+        Assert.IsNotNull(targetArray);
+        Assert.AreEqual(3, targetArray.Count); // Should have 3 items: merged item 1, existing item 3, new item 2
+        
+        // Check that item with id=1 was merged (value should be updated to "updated")
+        var item1 = targetArray.FirstOrDefault(t => t.SelectToken("$.id")?.Value<int>() == 1);
+        Assert.IsNotNull(item1);
+        Assert.AreEqual("updated", item1.SelectToken("$.value")?.Value<string>());
+        
+        // Check that item with id=2 was added
+        var item2 = targetArray.FirstOrDefault(t => t.SelectToken("$.id")?.Value<int>() == 2);
+        Assert.IsNotNull(item2);
+        Assert.AreEqual("new", item2.SelectToken("$.value")?.Value<string>());
+        
+        // Check that item with id=3 is still there
+        var item3 = targetArray.FirstOrDefault(t => t.SelectToken("$.id")?.Value<int>() == 3);
+        Assert.IsNotNull(item3);
+        Assert.AreEqual("existing", item3.SelectToken("$.value")?.Value<string>());
+    }
+
+    [Test]
+    public void MergeWithPlainNotationKeys_ShouldStillWork()
+    {
+        // Test backward compatibility - plain notation should still work
+        var data = JObject.Parse(@"{
+            ""source"": [
+                {""id"": 1, ""name"": ""Item 1"", ""value"": ""updated""}
+            ],
+            ""target"": [
+                {""id"": 1, ""name"": ""Item 1"", ""value"": ""original""}
+            ]
+        }");
+
+        var settings = new MergeSettings
+        {
+            ArraySettings = new List<MergeArraySettings>
+            {
+                new MergeArraySettings 
+                { 
+                    ArrayPath = "$.target", 
+                    KeyPaths = new List<string> {"id"}  // Plain notation (backward compatibility)
+                }
+            }
+        };
+
+        var result = new Merge("$.source", "$.target", settings).Execute(data, executeOptions);
+
+        Assert.IsTrue(result.Success);
+        
+        var targetArray = result.Data.SelectToken("$.target") as JArray;
+        var item1 = targetArray.FirstOrDefault();
+        Assert.AreEqual("updated", item1.SelectToken("$.value")?.Value<string>());
+    }
+
     private TestCaseData LoadTestCase(string fileName)
     {
         var filePath = Path.Combine(testDataPath, fileName);
