@@ -10,8 +10,6 @@ namespace JLio.Commands;
 
 public class Set : PropertyChangeCommand
 {
-
-
     public Set()
     {
     }
@@ -28,8 +26,31 @@ public class Set : PropertyChangeCommand
         Value = value;
     }
 
+    // New constructor for new syntax
+    public Set(string path, string property, JToken value)
+    {
+        Path = path;
+        Property = property;
+        Value = new FunctionSupportedValue(new FixedValue(value));
+    }
+
+    // New constructor for new syntax with function support
+    public Set(string path, string property, IFunctionSupportedValue value)
+    {
+        Path = path;
+        Property = property;
+        Value = value;
+    }
+
     public override JLioExecutionResult Execute(JToken dataContext, IExecutionContext context)
     {
+        // Check if using new syntax, if so, use base class implementation
+        if (!string.IsNullOrEmpty(Property))
+        {
+            return base.Execute(dataContext, context);
+        }
+
+        // Legacy implementation for backwards compatibility
         executionContext = context;
         ResetExecutionSucces();
         var validationResult = ValidateCommandInstance();
@@ -58,6 +79,16 @@ public class Set : PropertyChangeCommand
         if (string.IsNullOrWhiteSpace(Path))
             result.ValidationMessages.Add($"Path property for {CommandName} command is missing");
 
+        // Additional validation for new syntax
+        if (!string.IsNullOrEmpty(Property))
+        {
+            // When using new syntax, validate that property name is reasonable
+            if (Property.Contains(".") || Property.Contains("[") || Property.Contains("]"))
+            {
+                result.ValidationMessages.Add($"Property name '{Property}' should be a simple property name, not a path");
+            }
+        }
+
         return result;
     }
 
@@ -79,6 +110,14 @@ public class Set : PropertyChangeCommand
         switch (jToken)
         {
             case JObject o:
+                // Handle case where propertyName is null (shouldn't happen for objects in Set)
+                if (string.IsNullOrEmpty(propertyName))
+                {
+                    executionContext.LogWarning(CoreConstants.CommandExecution,
+                        $"Property name is required for setting object properties. {CommandName} function not applied to {o.Path}");
+                    return;
+                }
+
                 if (!o.ContainsKey(propertyName) &&
                     executionContext.ItemsFetcher.SelectToken(propertyName, o) != null)
                     ReplaceTargetTokenWithNewValue(o.SelectToken(propertyName), dataContext);
@@ -93,11 +132,10 @@ public class Set : PropertyChangeCommand
                 ReplaceCurrentValueWithNew(propertyName, o, dataContext);
                 break;
             case JArray a:
+                // Set doesn't typically work on arrays directly, but handle gracefully
                 executionContext.LogInfo(CoreConstants.CommandExecution,
-                    $"can't set value on a array on {a.Path}. {CommandName} functionality not applied.");
+                    $"Set command cannot be applied directly to arrays. Use Add command instead for {a.Path}");
                 break;
         }
     }
-
-
 }

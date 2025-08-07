@@ -25,20 +25,45 @@ public class Put : PropertyChangeCommand
         Value = value;
     }
 
+    // New constructor for new syntax
+    public Put(string path, string property, JToken value)
+    {
+        Path = path;
+        Property = property;
+        Value = new FunctionSupportedValue(new FixedValue(value));
+    }
+
+    // New constructor for new syntax with function support
+    public Put(string path, string property, IFunctionSupportedValue value)
+    {
+        Path = path;
+        Property = property;
+        Value = value;
+    }
+
     internal override void ApplyValueToTarget(string propertyName, JToken jToken, JToken dataContext)
     {
         switch (jToken)
         {
             case JObject o:
+                // Handle case where propertyName is null (shouldn't happen for objects)
+                if (string.IsNullOrEmpty(propertyName))
+                {
+                    executionContext.LogWarning(CoreConstants.CommandExecution,
+                        $"Property name is required for putting to objects. {CommandName} function not applied to {o.Path}");
+                    return;
+                }
+
                 if (JsonMethods.IsPropertyOfTypeArray(propertyName, o) || o.ContainsKey(propertyName))
                 {
-                    ReplaceCurrentValueWithNew (propertyName, o, dataContext);
+                    ReplaceCurrentValueWithNew(propertyName, o, dataContext);
                     return;
                 }
                 AddProperty(propertyName, o, dataContext);
                 break;
             case JArray a:
-                ReplaceCurrentValueWithNew(propertyName, (JObject)a.Parent?.Parent, dataContext);
+                // For arrays, propertyName can be null (direct array operation) - Put replaces the array content
+                ReplaceTargetTokenWithNewValue(a, dataContext);
                 break;
         }
     }

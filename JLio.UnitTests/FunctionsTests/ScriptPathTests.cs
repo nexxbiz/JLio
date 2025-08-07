@@ -152,6 +152,138 @@ public class ScriptPathTests
         ExecuteTestCase(testCase);
     }
 
+    [Test]
+    public void PathFunction_ContextualPathBehavior_WithCustomerExample()
+    {
+        // This test verifies the correct behavior of @.id vs @ when processing arrays
+        
+        // Arrange - Customer data similar to documentation example
+        var customerData = JToken.Parse(@"{
+            ""customers"": [
+                {""id"": ""C001"", ""name"": ""Alice Johnson"", ""type"": ""premium""},
+                {""id"": ""C002"", ""name"": ""Bob Smith"", ""type"": ""standard""}
+            ]
+        }");
+
+        // Test 1: Using =path(@.id) - should return path to the id property
+        var script1 = @"[{
+            ""path"": ""$.customers[*].idPath"",
+            ""value"": ""=path(@.id)"",
+            ""command"": ""add""
+        }]";
+
+        var result1 = JLioConvert.Parse(script1, parseOptions).Execute(customerData.DeepClone(), executionContext);
+        
+        Assert.IsTrue(result1.Success);
+        Assert.AreEqual("$.customers[0].id", result1.Data.SelectToken("$.customers[0].idPath")?.Value<string>());
+        Assert.AreEqual("$.customers[1].id", result1.Data.SelectToken("$.customers[1].idPath")?.Value<string>());
+
+        // Test 2: Using =path() - should return path to current customer object
+        var script2 = @"[{
+            ""path"": ""$.customers[*].customerPath"",
+            ""value"": ""=path()"",
+            ""command"": ""add""
+        }]";
+
+        var result2 = JLioConvert.Parse(script2, parseOptions).Execute(customerData.DeepClone(), executionContext);
+        
+        Assert.IsTrue(result2.Success);
+        Assert.AreEqual("$.customers[0]", result2.Data.SelectToken("$.customers[0].customerPath")?.Value<string>());
+        Assert.AreEqual("$.customers[1]", result2.Data.SelectToken("$.customers[1].customerPath")?.Value<string>());
+
+        // Test 3: Using =path(@) - should return path to current customer object (same as path())
+        var script3 = @"[{
+            ""path"": ""$.customers[*].currentPath"",
+            ""value"": ""=path(@)"",
+            ""command"": ""add""
+        }]";
+
+        var result3 = JLioConvert.Parse(script3, parseOptions).Execute(customerData.DeepClone(), executionContext);
+        
+        Assert.IsTrue(result3.Success);
+        Assert.AreEqual("$.customers[0]", result3.Data.SelectToken("$.customers[0].currentPath")?.Value<string>());
+        Assert.AreEqual("$.customers[1]", result3.Data.SelectToken("$.customers[1].currentPath")?.Value<string>());
+    }
+
+    [Test]
+    public void PathFunction_DocumentationExampleCorrection_CustomerIdPath()
+    {
+        // This test demonstrates the CORRECT way to get customer object paths
+        // The documentation example was misleading
+        
+        var customerData = JToken.Parse(@"{
+            ""customers"": [
+                {""id"": ""C001"", ""name"": ""Alice Johnson"", ""type"": ""premium""},
+                {""id"": ""C002"", ""name"": ""Bob Smith"", ""type"": ""standard""}
+            ]
+        }");
+
+        // CORRECT: To get the path to each customer object, use =path() or =path(@)
+        var correctScript = @"[{
+            ""path"": ""$.customers[*].customerIdPath"",
+            ""value"": ""=path()"",
+            ""command"": ""add""
+        }]";
+
+        var result = JLioConvert.Parse(correctScript, parseOptions).Execute(customerData, executionContext);
+        
+        Assert.IsTrue(result.Success);
+        
+        // This should give us the path to each customer object, not the id property
+        Assert.AreEqual("$.customers[0]", result.Data.SelectToken("$.customers[0].customerIdPath")?.Value<string>());
+        Assert.AreEqual("$.customers[1]", result.Data.SelectToken("$.customers[1].customerIdPath")?.Value<string>());
+        
+        // Verify the objects still have their original data
+        Assert.AreEqual("C001", result.Data.SelectToken("$.customers[0].id")?.Value<string>());
+        Assert.AreEqual("Alice Johnson", result.Data.SelectToken("$.customers[0].name")?.Value<string>());
+        Assert.AreEqual("C002", result.Data.SelectToken("$.customers[1].id")?.Value<string>());
+        Assert.AreEqual("Bob Smith", result.Data.SelectToken("$.customers[1].name")?.Value<string>());
+    }
+
+    [Test]
+    public void PathFunction_PropertyPath_VsObjectPath()
+    {
+        // Demonstrate the difference between getting property path vs object path
+        
+        var testData = JToken.Parse(@"{
+            ""orders"": [
+                {""orderId"": ""ORD-001"", ""customerId"": ""C001"", ""total"": 150.00}
+            ]
+        }");
+
+        // Test getting property paths
+        var propertyScript = @"[
+            {
+                ""path"": ""$.orders[*].orderIdPath"",
+                ""value"": ""=path(@.orderId)"",
+                ""command"": ""add""
+            },
+            {
+                ""path"": ""$.orders[*].customerIdPath"",
+                ""value"": ""=path(@.customerId)"",
+                ""command"": ""add""
+            }
+        ]";
+
+        var propertyResult = JLioConvert.Parse(propertyScript, parseOptions).Execute(testData, executionContext);
+        
+        Assert.IsTrue(propertyResult.Success);
+        Assert.AreEqual("$.orders[0].orderId", propertyResult.Data.SelectToken("$.orders[0].orderIdPath")?.Value<string>());
+        Assert.AreEqual("$.orders[0].customerId", propertyResult.Data.SelectToken("$.orders[0].customerIdPath")?.Value<string>());
+
+        // Test getting object path
+        var objectScript = @"[{
+            ""path"": ""$.orders[*].orderPath"",
+            ""value"": ""=path()"",
+            ""command"": ""add""
+        }]";
+
+        var objectResult = JLioConvert.Parse(objectScript, parseOptions).Execute(testData.DeepClone(), executionContext);
+        
+        Assert.IsTrue(objectResult.Success);
+        Assert.AreEqual("$.orders[0]", objectResult.Data.SelectToken("$.orders[0].orderPath")?.Value<string>());
+    }
+
     private TestCaseData LoadTestCase(string fileName)
     {
         var filePath = Path.Combine(testDataPath, fileName);
