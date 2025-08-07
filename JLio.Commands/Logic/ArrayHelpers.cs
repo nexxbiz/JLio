@@ -30,11 +30,53 @@ public static class ArrayHelpers
         return matchResult;
     }
 
+    /// <summary>
+    /// Compares values from two tokens using the specified JSON path.
+    /// Supports both @ notation (@.property) and plain notation (property) for consistency with JLio framework.
+    /// </summary>
+    /// <param name="jsonPath">
+    /// The path to the property to compare. Can be:
+    /// - Plain notation: "id", "name", "key.id" 
+    /// - @ notation: "@.id", "@.name", "@.key.id" (for consistency with other JLio functions)
+    /// - Empty string: compares the tokens directly
+    /// </param>
+    /// <param name="firstElement">The first token to compare</param>
+    /// <param name="secondElement">The second token to compare</param>
+    /// <returns>True if the values at the specified path are equal, false otherwise</returns>
     private static bool AreTheSameValue(string jsonPath, JToken firstElement, JToken secondElement)
     {
-        jsonPath = $"$.{jsonPath}";
-        var firstKeyValue = firstElement.SelectToken(jsonPath);
-        var secondKeyValue = secondElement.SelectToken(jsonPath);
+        // Handle both @ notation and plain property notation for consistency
+        string normalizedPath;
+        if (jsonPath.StartsWith("@.") || jsonPath.StartsWith("@"))
+        {
+            // If the path starts with @, it's already relative to the current item
+            // Just remove the @ and we'll use it directly on the tokens
+            normalizedPath = jsonPath.StartsWith("@.") ? jsonPath.Substring(2) : jsonPath.Substring(1);
+            if (normalizedPath.StartsWith("."))
+            {
+                normalizedPath = normalizedPath.Substring(1);
+            }
+        }
+        else
+        {
+            // For backward compatibility, support paths without @ 
+            normalizedPath = jsonPath;
+        }
+
+        // If normalized path is empty, compare the tokens directly
+        if (string.IsNullOrEmpty(normalizedPath))
+        {
+            return JToken.DeepEquals(firstElement, secondElement);
+        }
+
+        // Add the root indicator if needed
+        if (!normalizedPath.StartsWith("$"))
+        {
+            normalizedPath = $"$.{normalizedPath}";
+        }
+
+        var firstKeyValue = firstElement.SelectToken(normalizedPath);
+        var secondKeyValue = secondElement.SelectToken(normalizedPath);
         return JToken.DeepEquals(firstKeyValue, secondKeyValue);
     }
 
