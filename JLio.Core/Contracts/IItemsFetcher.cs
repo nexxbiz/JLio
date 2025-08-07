@@ -12,5 +12,7 @@ public interface IItemsFetcher
     string ParentPathIndicator { get; }
     SelectedTokens SelectTokens(string path, JToken data);
     JToken SelectToken(string path, JToken data);
-    string GetPath(string toPath, JToken dataContext);
+    string GetPath(JToken token);
+    JToken NavigateToParent(JToken currentToken, int levels = 1);
+    string ResolveRelativePath(string relativePath, JToken currentToken, JToken dataContext);
 }

@@ -1,0 +1,15 @@
+{
+  "data": {
+    "users": [
+      {"id": "U001", "tags": ["admin"]},
+      {"id": "U002", "tags": ["user"]}
+    ]
+  },
+  "script": "[{\"path\":\"$.users[*].tags\",\"value\":\"verified\",\"command\":\"add\"}]",
+  "expected": {
+    "users": [
+      {"id": "U001", "tags": ["admin", "verified"]},
+      {"id": "U002", "tags": ["user", "verified"]}
+    ]
+  }
+}

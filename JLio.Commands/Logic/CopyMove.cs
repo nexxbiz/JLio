@@ -36,9 +36,11 @@ public abstract class CopyMove : CommandBase
         executionContext = context;
         var sourceItems = context.ItemsFetcher.SelectTokens(FromPath, data);
         var OrgPath = ToPath;
-        ToPath = context.ItemsFetcher.GetPath(ToPath, data);
+        
+        // Check if ToPath is a root path reference
         if (ToPath == executionContext.ItemsFetcher.RootPathIndicator)
             return HandleRootObject(dataContext, sourceItems);
+            
         var innerArrayIndex = GetInnerArrayIndex();
         if (innerArrayIndex != -1)
             HandleActionPerSource(action, sourceItems, innerArrayIndex);

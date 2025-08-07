@@ -1,0 +1,58 @@
+{
+  "data": {
+    "departments": [
+      {
+        "name": "Engineering",
+        "employees": [
+          {"name": "Alice", "role": "Developer"},
+          {"name": "Bob", "role": "Manager"}
+        ]
+      },
+      {
+        "name": "Marketing",
+        "employees": [
+          {"name": "Carol", "role": "Designer"}
+        ]
+      }
+    ]
+  },
+  "script": "[{\"path\":\"$.departments[*].employees[*].departmentInfo\",\"value\":{\"departmentName\":\"=fetch(@.<--.name)\",\"departmentPath\":\"=path(@.<--)\"},\"command\":\"add\"}]",
+  "expected": {
+    "departments": [
+      {
+        "name": "Engineering",
+        "employees": [
+          {
+            "name": "Alice", 
+            "role": "Developer",
+            "departmentInfo": {
+              "departmentName": "Engineering",
+              "departmentPath": "$.departments[0]"
+            }
+          },
+          {
+            "name": "Bob", 
+            "role": "Manager",
+            "departmentInfo": {
+              "departmentName": "Engineering",
+              "departmentPath": "$.departments[0]"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Marketing",
+        "employees": [
+          {
+            "name": "Carol", 
+            "role": "Designer",
+            "departmentInfo": {
+              "departmentName": "Marketing",
+              "departmentPath": "$.departments[1]"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

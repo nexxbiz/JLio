@@ -1,0 +1,15 @@
+{
+  "data": {
+    "products": [
+      {"id": "P001", "name": "Product A", "price": 100.00, "status": "draft"},
+      {"id": "P002", "name": "Product B", "price": 200.00, "status": "draft"}
+    ]
+  },
+  "script": "[{\"path\":\"$.products[*]\",\"property\":\"status\",\"value\":\"published\",\"command\":\"set\"}]",
+  "expected": {
+    "products": [
+      {"id": "P001", "name": "Product A", "price": 100.00, "status": "published"},
+      {"id": "P002", "name": "Product B", "price": 200.00, "status": "published"}
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "data": {
+    "customers": [
+      {"id": "C001", "name": "Alice Johnson", "type": "premium"},
+      {"id": "C002", "name": "Bob Smith", "type": "standard"}
+    ]
+  },
+  "script": "[{\"path\":\"$.customers[*]\",\"property\":\"status\",\"value\":\"active\",\"command\":\"add\"}]",
+  "expected": {
+    "customers": [
+      {"id": "C001", "name": "Alice Johnson", "type": "premium", "status": "active"},
+      {"id": "C002", "name": "Bob Smith", "type": "standard", "status": "active"}
+    ]
+  }
+}

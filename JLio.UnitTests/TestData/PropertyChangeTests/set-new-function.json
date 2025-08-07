@@ -1,0 +1,39 @@
+{
+  "data": {
+    "employees": [
+      {
+        "id": "E001",
+        "name": "John Doe",
+        "salary": 50000,
+        "department": "IT",
+        "displayName": ""
+      },
+      {
+        "id": "E002",
+        "name": "Jane Smith",
+        "salary": 60000,
+        "department": "HR",
+        "displayName": ""
+      }
+    ]
+  },
+  "script": "[{\"path\":\"$.employees[*]\",\"property\":\"displayName\",\"value\":\"=concat(@.name, ' (', @.department, ')')\",\"command\":\"set\"}]",
+  "expected": {
+    "employees": [
+      {
+        "id": "E001",
+        "name": "John Doe",
+        "salary": 50000,
+        "department": "IT",
+        "displayName": "John Doe (IT)"
+      },
+      {
+        "id": "E002",
+        "name": "Jane Smith",
+        "salary": 60000,
+        "department": "HR",
+        "displayName": "Jane Smith (HR)"
+      }
+    ]
+  }
+}
