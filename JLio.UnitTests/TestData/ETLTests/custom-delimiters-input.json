@@ -1,0 +1,26 @@
+{
+  "report": {
+    "metadata": {
+      "generatedDate": "2024-01-01T10:00:00Z",
+      "version": "1.0"
+    },
+    "sections": [
+      {
+        "title": "Summary",
+        "data": {
+          "totalRecords": 100,
+          "categories": ["A", "B", "C"]
+        }
+      },
+      {
+        "title": "Details",
+        "data": {
+          "records": [
+            {"id": 1, "value": "test1"},
+            {"id": 2, "value": "test2"}
+          ]
+        }
+      }
+    ]
+  }
+}

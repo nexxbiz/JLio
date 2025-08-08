@@ -1,0 +1,50 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "John Doe",
+      "email": "john@example.com",
+      "preferences": {
+        "theme": "dark",
+        "notifications": true
+      },
+      "tags": [
+        {
+          "0": "admin"
+        },
+        {
+          "1": "user"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Jane Smith",
+      "email": "jane@example.com",
+      "preferences": {
+        "theme": "light",
+        "notifications": false
+      },
+      "tags": [
+        {
+          "0": "user"
+        }
+      ]
+    }
+  ],
+  "_metadata": {
+    "originalStructure": {
+      "preferences": "object",
+      "tags": "array[1]"
+    },
+    "delimiter": ".",
+    "arrayDelimiter": ".",
+    "includeArrayIndices": true,
+    "preserveTypes": true,
+    "typeIndicator": "_type",
+    "timestamp": "2025-01-07T15:30:00Z",
+    "version": "1.0",
+    "rootPath": "$.[1]",
+    "metadataKey": "_metadata"
+  }
+}

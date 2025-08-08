@@ -1,0 +1,10 @@
+[{
+  "path": "$.report",
+  "command": "flatten",
+  "flattenSettings": {
+    "delimiter": "_",
+    "includeArrayIndices": true,
+    "metadataPath": "$",
+    "metadataKey": "_meta"
+  }
+}]

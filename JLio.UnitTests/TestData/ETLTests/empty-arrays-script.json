@@ -1,0 +1,10 @@
+[{
+  "path": "$.data",
+  "command": "flatten",
+  "flattenSettings": {
+    "delimiter": ".",
+    "includeArrayIndices": true,
+    "metadataPath": "$",
+    "metadataKey": "_metadata"
+  }
+}]

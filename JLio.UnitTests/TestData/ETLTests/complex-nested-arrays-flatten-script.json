@@ -1,0 +1,10 @@
+[{
+  "path": "$.companies[*]",
+  "command": "flatten",
+  "flattenSettings": {
+    "delimiter": ".",
+    "includeArrayIndices": true,
+    "metadataPath": "$",
+    "metadataKey": "_flattenMetadata"
+  }
+}]

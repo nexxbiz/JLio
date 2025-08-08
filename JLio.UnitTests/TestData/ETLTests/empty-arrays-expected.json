@@ -1,0 +1,19 @@
+{
+  "data": {
+    "": []
+  },
+  "_metadata": {
+    "originalStructure": {
+      "": "array[0]"
+    },
+    "delimiter": ".",
+    "arrayDelimiter": ".",
+    "includeArrayIndices": true,
+    "preserveTypes": true,
+    "typeIndicator": "_type",
+    "timestamp": "2025-01-07T15:30:00Z",
+    "version": "1.0",
+    "rootPath": "$.data",
+    "metadataKey": "_metadata"
+  }
+}

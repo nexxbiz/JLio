@@ -1,0 +1,51 @@
+{
+  "inventory": [
+    {
+      "productId": "P001",
+      "productId_type": "String",
+      "name": "Laptop",
+      "name_type": "String",
+      "specs.cpu": "Intel i7",
+      "specs.cpu_type": "String",
+      "specs.ram": "16GB",
+      "specs.ram_type": "String",
+      "specs.storage": "512GB SSD",
+      "specs.storage_type": "String",
+      "variants.0.color": "Silver",
+      "variants.0.color_type": "String",
+      "variants.0.price": 1299.99,
+      "variants.0.price_type": "Float",
+      "variants.1.color": "Black",
+      "variants.1.color_type": "String",
+      "variants.1.price": 1399.99,
+      "variants.1.price_type": "Float",
+      "categories.0": "Electronics",
+      "categories.0_type": "String",
+      "categories.1": "Computers",
+      "categories.1_type": "String",
+      "metadata.lastUpdated": "2024-01-01T10:00:00Z",
+      "metadata.lastUpdated_type": "Date",
+      "metadata.supplier": "TechCorp",
+      "metadata.supplier_type": "String"
+    }
+  ],
+  "_structure": {
+    "originalStructure": {
+      "specs": "object",
+      "variants": "array[2]",
+      "variants.0": "object",
+      "variants.1": "object",
+      "categories": "array[2]",
+      "metadata": "object"
+    },
+    "delimiter": ".",
+    "arrayDelimiter": ".",
+    "includeArrayIndices": true,
+    "preserveTypes": true,
+    "typeIndicator": "_type",
+    "timestamp": "2025-01-07T15:30:00Z",
+    "version": "1.0",
+    "rootPath": "$.[0]",
+    "metadataKey": "_structure"
+  }
+}
