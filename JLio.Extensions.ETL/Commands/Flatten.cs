@@ -19,6 +19,11 @@ namespace JLio.Extensions.ETL.Commands
         [JsonProperty("flattenSettings")]
         public FlattenSettings FlattenSettings { get; set; } = new();
 
+        // Pre-allocate reusable collections to reduce GC pressure
+        private readonly Dictionary<string, object> _reuseableFlattenResult = new Dictionary<string, object>(256);
+        private readonly Dictionary<string, string> _reusableStructure = new Dictionary<string, string>(128);
+        private readonly List<string> _reusablePathSegments = new List<string>(16);
+
         public override JLioExecutionResult Execute(JToken dataContext, IExecutionContext context)
         {
             try
@@ -35,16 +40,30 @@ namespace JLio.Extensions.ETL.Commands
                 
                 foreach (var token in targetTokens)
                 {
-                    var flattened = FlattenToken(token, "", new Dictionary<string, object>(), 0);
+                    _reuseableFlattenResult.Clear(); // Reuse dictionary
+                    var flattened = FlattenToken(token, "", _reuseableFlattenResult, 0);
                     var metadata = CreateMetadata(token, context);
                     
                     // Add JSONPath column if requested
                     if (FlattenSettings.IncludeJsonPath)
                     {
-                        foreach (var kvp in flattened.ToList())
+                        // Avoid ToList() and use efficient enumeration
+                        var jsonPathColumn = FlattenSettings.JsonPathColumn;
+                        var keysToProcess = new string[flattened.Count];
+                        var valuesBuffer = new object[flattened.Count];
+                        int index = 0;
+                        
+                        foreach (var kvp in flattened)
                         {
-                            var jsonPath = BuildJsonPathForFlattenedKey(kvp.Key, token);
-                            flattened[FlattenSettings.JsonPathColumn + "." + kvp.Key] = jsonPath;
+                            keysToProcess[index] = kvp.Key;
+                            valuesBuffer[index] = kvp.Value;
+                            index++;
+                        }
+                        
+                        for (int i = 0; i < index; i++)
+                        {
+                            var jsonPath = BuildJsonPathForFlattenedKey(keysToProcess[i], token);
+                            flattened[$"{jsonPathColumn}.{keysToProcess[i]}"] = jsonPath;
                         }
                     }
                     
@@ -73,11 +92,8 @@ namespace JLio.Extensions.ETL.Commands
                 return result;
             }
 
-            // Check exclude/include paths
-            if (ShouldExcludePath(prefix))
-                return result;
-
-            if (!ShouldIncludePath(prefix))
+            // Check exclude/include paths - optimized with early returns
+            if (ShouldExcludePath(prefix) || !ShouldIncludePath(prefix))
                 return result;
 
             switch (token.Type)
@@ -90,11 +106,14 @@ namespace JLio.Extensions.ETL.Commands
                         break;
                     }
                     
+                    var delimiter = FlattenSettings.Delimiter;
+                    var isRootLevel = string.IsNullOrEmpty(prefix);
+                    
                     foreach (var property in obj.Properties())
                     {
-                        var newKey = string.IsNullOrEmpty(prefix) 
+                        var newKey = isRootLevel 
                             ? property.Name 
-                            : $"{prefix}{FlattenSettings.Delimiter}{property.Name}";
+                            : string.Concat(prefix, delimiter, property.Name); // Optimized concatenation
                         FlattenToken(property.Value, newKey, result, depth + 1);
                     }
                     break;
@@ -107,11 +126,13 @@ namespace JLio.Extensions.ETL.Commands
                         break;
                     }
                     
+                    var arrayDelim = FlattenSettings.IncludeArrayIndices 
+                        ? FlattenSettings.ArrayDelimiter
+                        : FlattenSettings.Delimiter;
+                    
                     for (int i = 0; i < array.Count; i++)
                     {
-                        var arrayKey = FlattenSettings.IncludeArrayIndices 
-                            ? $"{prefix}{FlattenSettings.ArrayDelimiter}{i}"
-                            : $"{prefix}{FlattenSettings.Delimiter}{i}";
+                        var arrayKey = string.Concat(prefix, arrayDelim, i.ToString()); // Optimized concatenation
                         FlattenToken(array[i], arrayKey, result, depth + 1);
                     }
                     break;
@@ -123,7 +144,7 @@ namespace JLio.Extensions.ETL.Commands
                     // Add type information if requested
                     if (FlattenSettings.PreserveTypes)
                     {
-                        result[$"{prefix}{FlattenSettings.TypeIndicator}"] = token.Type.ToString();
+                        result[string.Concat(prefix, FlattenSettings.TypeIndicator)] = token.Type.ToString();
                     }
                     break;
             }
@@ -133,42 +154,59 @@ namespace JLio.Extensions.ETL.Commands
 
         private bool ShouldExcludePath(string path)
         {
-            if (FlattenSettings.ExcludePaths == null || !FlattenSettings.ExcludePaths.Any())
+            var excludePaths = FlattenSettings.ExcludePaths;
+            if (excludePaths == null || excludePaths.Count == 0)
                 return false;
 
-            return FlattenSettings.ExcludePaths.Any(excludePath => 
-                path.StartsWith(excludePath, StringComparison.OrdinalIgnoreCase));
+            // Optimized path checking using ReadOnlySpan
+            var pathSpan = path.AsSpan();
+            foreach (var excludePath in excludePaths)
+            {
+                if (pathSpan.StartsWith(excludePath.AsSpan(), StringComparison.OrdinalIgnoreCase))
+                    return true;
+            }
+            return false;
         }
 
         private bool ShouldIncludePath(string path)
         {
-            if (FlattenSettings.IncludePaths == null || !FlattenSettings.IncludePaths.Any())
+            var includePaths = FlattenSettings.IncludePaths;
+            if (includePaths == null || includePaths.Count == 0)
                 return true;
 
-            return FlattenSettings.IncludePaths.Any(includePath => 
-                path.StartsWith(includePath, StringComparison.OrdinalIgnoreCase));
+            // Optimized path checking using ReadOnlySpan
+            var pathSpan = path.AsSpan();
+            foreach (var includePath in includePaths)
+            {
+                if (pathSpan.StartsWith(includePath.AsSpan(), StringComparison.OrdinalIgnoreCase))
+                    return true;
+            }
+            return false;
         }
 
         private string BuildJsonPathForFlattenedKey(string flattenedKey, JToken originalToken)
         {
-            // Build JSONPath using basic logic
+            // Reuse list for path segments
+            _reusablePathSegments.Clear();
+            _reusablePathSegments.Add("$");
+            
             var segments = flattenedKey.Split(new[] { FlattenSettings.Delimiter }, StringSplitOptions.RemoveEmptyEntries);
-            var pathSegments = new List<string> { "$" };
-
+            
             foreach (var segment in segments)
             {
                 if (int.TryParse(segment, out int index))
                 {
-                    // This is an array index
-                    pathSegments[pathSegments.Count - 1] = $"{pathSegments[pathSegments.Count - 1]}[{index}]";
+                    // This is an array index - modify last segment
+                    var lastIndex = _reusablePathSegments.Count - 1;
+                    _reusablePathSegments[lastIndex] = $"{_reusablePathSegments[lastIndex]}[{index}]";
                 }
                 else
                 {
-                    pathSegments.Add(segment);
+                    _reusablePathSegments.Add(segment);
                 }
             }
 
-            return string.Join(".", pathSegments).Replace(".[", "[");
+            return string.Join(".", _reusablePathSegments).Replace(".[", "[");
         }
 
         private void ReplaceTokenWithFlattened(JToken originalToken, Dictionary<string, object> flattened, JToken dataContext)
@@ -208,7 +246,7 @@ namespace JLio.Extensions.ETL.Commands
 
         private string GenerateJsonPathForToken(JToken token)
         {
-            var pathSegments = new List<string>();
+            _reusablePathSegments.Clear();
             var current = token;
             
             while (current.Parent != null)
@@ -216,13 +254,13 @@ namespace JLio.Extensions.ETL.Commands
                 switch (current.Parent)
                 {
                     case JProperty property:
-                        pathSegments.Insert(0, property.Name);
+                        _reusablePathSegments.Insert(0, property.Name);
                         current = property.Parent;
                         break;
                         
                     case JArray array:
                         var index = array.IndexOf(current);
-                        pathSegments.Insert(0, $"[{index}]");
+                        _reusablePathSegments.Insert(0, $"[{index}]");
                         current = array.Parent;
                         break;
                         
@@ -232,30 +270,39 @@ namespace JLio.Extensions.ETL.Commands
                 }
             }
             
-            if (pathSegments.Count == 0)
+            if (_reusablePathSegments.Count == 0)
                 return "$";
                 
-            return "$." + string.Join(".", pathSegments).Replace(".[", "[");
+            return "$." + string.Join(".", _reusablePathSegments).Replace(".[", "[");
         }
 
         private Dictionary<string, string> AnalyzeStructure(JToken token, string prefix)
         {
-            var structure = new Dictionary<string, string>();
+            // Reuse structure dictionary
+            _reusableStructure.Clear();
+            AnalyzeStructureRecursive(token, prefix, _reusableStructure);
             
+            // Return a copy to avoid issues with reuse
+            return new Dictionary<string, string>(_reusableStructure);
+        }
+
+        private void AnalyzeStructureRecursive(JToken token, string prefix, Dictionary<string, string> structure)
+        {
             switch (token.Type)
             {
                 case JTokenType.Object:
                     if (!string.IsNullOrEmpty(prefix))
                         structure[prefix] = "object";
                         
+                    var delimiter = FlattenSettings.Delimiter;
+                    var isRootLevel = string.IsNullOrEmpty(prefix);
+                    
                     foreach (var property in ((JObject)token).Properties())
                     {
-                        var newKey = string.IsNullOrEmpty(prefix) 
+                        var newKey = isRootLevel 
                             ? property.Name 
-                            : $"{prefix}{FlattenSettings.Delimiter}{property.Name}";
-                        var childStructure = AnalyzeStructure(property.Value, newKey);
-                        foreach (var kvp in childStructure)
-                            structure[kvp.Key] = kvp.Value;
+                            : string.Concat(prefix, delimiter, property.Name);
+                        AnalyzeStructureRecursive(property.Value, newKey, structure);
                     }
                     break;
                     
@@ -263,19 +310,17 @@ namespace JLio.Extensions.ETL.Commands
                     var array = (JArray)token;
                     structure[prefix] = $"array[{array.Count}]";
                     
+                    var arrayDelim = FlattenSettings.IncludeArrayIndices 
+                        ? FlattenSettings.ArrayDelimiter
+                        : FlattenSettings.Delimiter;
+                    
                     for (int i = 0; i < array.Count; i++)
                     {
-                        var arrayKey = FlattenSettings.IncludeArrayIndices 
-                            ? $"{prefix}{FlattenSettings.ArrayDelimiter}{i}"
-                            : $"{prefix}{FlattenSettings.Delimiter}{i}";
-                        var childStructure = AnalyzeStructure(array[i], arrayKey);
-                        foreach (var kvp in childStructure)
-                            structure[kvp.Key] = kvp.Value;
+                        var arrayKey = string.Concat(prefix, arrayDelim, i.ToString());
+                        AnalyzeStructureRecursive(array[i], arrayKey, structure);
                     }
                     break;
             }
-
-            return structure;
         }
 
         private void StoreMetadata(JToken dataContext, FlattenMetadata metadata, IExecutionContext context)

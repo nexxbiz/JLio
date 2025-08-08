@@ -20,6 +20,10 @@ namespace JLio.Extensions.ETL.Commands
         [JsonProperty("csvSettings")]
         public CsvSettings CsvSettings { get; set; } = new();
 
+        // Cache reusable objects
+        private readonly StringBuilder _csvBuilder = new StringBuilder(8192); // Pre-allocate with reasonable size
+        private readonly StringBuilder _escapingBuffer = new StringBuilder(512);
+
         public override JLioExecutionResult Execute(JToken dataContext, IExecutionContext context)
         {
             try
@@ -53,25 +57,32 @@ namespace JLio.Extensions.ETL.Commands
 
         private string ConvertToCsv(JToken token, IExecutionContext context)
         {
-            var csvBuilder = new StringBuilder();
-            
             if (token is JObject obj)
             {
                 // Convert single object to CSV with one data row
                 var flatData = ExtractFlatData(obj);
-                return ConvertFlatDataToCsv(new List<Dictionary<string, object>> { flatData });
+                return ConvertFlatDataToCsv(new[] { flatData }); // Use array instead of List
             }
             else if (token is JArray array)
             {
                 // Convert array of objects to CSV with multiple data rows
-                var allFlatData = new List<Dictionary<string, object>>();
+                var allFlatData = new Dictionary<string, object>[array.Count]; // Pre-allocated array
+                var count = 0;
                 
                 foreach (var item in array)
                 {
                     if (item is JObject itemObj)
                     {
-                        allFlatData.Add(ExtractFlatData(itemObj));
+                        allFlatData[count++] = ExtractFlatData(itemObj);
                     }
+                }
+                
+                // Trim array if needed
+                if (count < array.Count)
+                {
+                    var trimmed = new Dictionary<string, object>[count];
+                    Array.Copy(allFlatData, trimmed, count);
+                    allFlatData = trimmed;
                 }
                 
                 return ConvertFlatDataToCsv(allFlatData);
@@ -86,26 +97,27 @@ namespace JLio.Extensions.ETL.Commands
 
         private Dictionary<string, object> ExtractFlatData(JObject obj)
         {
-            var flatData = new Dictionary<string, object>();
+            var flatData = new Dictionary<string, object>(obj.Count); // Pre-size dictionary
             
             foreach (var property in obj.Properties())
             {
-                // Skip metadata unless specifically requested
+                // Skip metadata unless specifically requested - optimized checks
+                var propertyName = property.Name;
                 if (!CsvSettings.IncludeMetadata && 
-                    (property.Name.StartsWith("_") || property.Name.Contains("Metadata")))
+                    (propertyName[0] == '_' || propertyName.Contains("Metadata")))
                 {
                     continue;
                 }
                 
-                // Skip type columns unless specifically requested
+                // Skip type columns unless specifically requested - optimized check
                 if (!CsvSettings.IncludeTypeColumns && 
-                    property.Name.EndsWith(CsvSettings.TypeColumnSuffix))
+                    propertyName.EndsWith(CsvSettings.TypeColumnSuffix))
                 {
                     continue;
                 }
                 
                 var value = ExtractValue(property.Value);
-                flatData[property.Name] = value;
+                flatData[propertyName] = value;
             }
             
             return flatData;
@@ -121,8 +133,15 @@ namespace JLio.Extensions.ETL.Commands
                     
                 case JTokenType.Boolean:
                     var boolValue = token.Value<bool>();
-                    var boolFormats = CsvSettings.BooleanFormat.Split(',');
-                    return boolValue ? boolFormats[0] : (boolFormats.Length > 1 ? boolFormats[1] : boolFormats[0]);
+                    var boolFormats = CsvSettings.BooleanFormat.AsSpan();
+                    var commaIndex = boolFormats.IndexOf(',');
+                    if (commaIndex >= 0)
+                    {
+                        return boolValue ? 
+                            boolFormats.Slice(0, commaIndex).ToString() : 
+                            boolFormats.Slice(commaIndex + 1).ToString();
+                    }
+                    return boolFormats.ToString();
                     
                 case JTokenType.Integer:
                     return token.Value<long>();
@@ -145,50 +164,76 @@ namespace JLio.Extensions.ETL.Commands
             }
         }
 
-        private string ConvertFlatDataToCsv(List<Dictionary<string, object>> allFlatData)
+        private string ConvertFlatDataToCsv(IEnumerable<Dictionary<string, object>> allFlatData)
         {
-            if (allFlatData.Count == 0)
+            var flatDataArray = allFlatData as Dictionary<string, object>[] ?? allFlatData.ToArray();
+            if (flatDataArray.Length == 0)
             {
                 return "";
             }
             
-            var csvBuilder = new StringBuilder();
+            // Clear and reuse StringBuilder
+            _csvBuilder.Clear();
             
-            // Get all unique column names from all rows
+            // Get all unique column names efficiently
             var allColumns = new HashSet<string>();
-            foreach (var flatData in allFlatData)
+            foreach (var flatData in flatDataArray)
             {
+                // Use Keys property directly instead of iterating
                 foreach (var key in flatData.Keys)
                 {
                     allColumns.Add(key);
                 }
             }
             
-            var columnList = allColumns.OrderBy(c => c).ToList();
+            // Convert to sorted array for consistent output
+            var columnArray = new string[allColumns.Count];
+            allColumns.CopyTo(columnArray);
+            Array.Sort(columnArray, StringComparer.Ordinal);
             
             // Write headers if requested
             if (CsvSettings.IncludeHeaders)
             {
-                var headerRow = string.Join(CsvSettings.Delimiter, 
-                    columnList.Select(EscapeCsvField));
-                csvBuilder.AppendLine(headerRow);
+                WriteHeaderRow(columnArray);
             }
             
             // Write data rows
-            foreach (var flatData in allFlatData)
-            {
-                var values = new List<string>();
-                foreach (var column in columnList)
-                {
-                    var value = flatData.ContainsKey(column) ? flatData[column] : null;
-                    values.Add(EscapeCsvField(FormatValue(value)));
-                }
-                
-                var dataRow = string.Join(CsvSettings.Delimiter, values);
-                csvBuilder.AppendLine(dataRow);
-            }
+            WriteDataRows(flatDataArray, columnArray);
             
-            return csvBuilder.ToString().TrimEnd('\r', '\n');
+            // Return and trim line endings
+            var result = _csvBuilder.ToString();
+            return result.TrimEnd('\r', '\n');
+        }
+
+        private void WriteHeaderRow(string[] columns)
+        {
+            for (int i = 0; i < columns.Length; i++)
+            {
+                if (i > 0)
+                {
+                    _csvBuilder.Append(CsvSettings.Delimiter);
+                }
+                _csvBuilder.Append(EscapeCsvField(columns[i]));
+            }
+            _csvBuilder.AppendLine();
+        }
+
+        private void WriteDataRows(Dictionary<string, object>[] flatDataArray, string[] columns)
+        {
+            foreach (var flatData in flatDataArray)
+            {
+                for (int i = 0; i < columns.Length; i++)
+                {
+                    if (i > 0)
+                    {
+                        _csvBuilder.Append(CsvSettings.Delimiter);
+                    }
+                    
+                    var value = flatData.TryGetValue(columns[i], out var val) ? val : null;
+                    _csvBuilder.Append(EscapeCsvField(FormatValue(value)));
+                }
+                _csvBuilder.AppendLine();
+            }
         }
 
         private string FormatValue(object value)
@@ -199,20 +244,17 @@ namespace JLio.Extensions.ETL.Commands
             }
             
             // Handle numeric values to avoid locale-specific formatting
-            if (value is double doubleValue)
+            switch (value)
             {
-                return doubleValue.ToString(CultureInfo.InvariantCulture);
+                case double doubleValue:
+                    return doubleValue.ToString(CultureInfo.InvariantCulture);
+                case float floatValue:
+                    return floatValue.ToString(CultureInfo.InvariantCulture);
+                case decimal decimalValue:
+                    return decimalValue.ToString(CultureInfo.InvariantCulture);
+                default:
+                    return value.ToString() ?? CsvSettings.NullValueRepresentation;
             }
-            if (value is float floatValue)
-            {
-                return floatValue.ToString(CultureInfo.InvariantCulture);
-            }
-            if (value is decimal decimalValue)
-            {
-                return decimalValue.ToString(CultureInfo.InvariantCulture);
-            }
-            
-            return value.ToString() ?? CsvSettings.NullValueRepresentation;
         }
 
         private string EscapeCsvField(string field)
@@ -222,21 +264,35 @@ namespace JLio.Extensions.ETL.Commands
                 return CsvSettings.QuoteAllFields ? $"\"{field}\"" : field;
             }
             
-            // Check if field needs to be quoted
+            // Optimized quoting check using spans and avoiding multiple string operations
+            var delimiter = CsvSettings.Delimiter;
+            var escapeChar = CsvSettings.EscapeQuoteChar;
+            
             bool needsQuoting = CsvSettings.QuoteAllFields ||
-                               field.Contains(CsvSettings.Delimiter) ||
-                               field.Contains(CsvSettings.EscapeQuoteChar) ||
-                               field.Contains('\r') ||
-                               field.Contains('\n') ||
-                               field.StartsWith(" ") ||
-                               field.EndsWith(" ");
+                               field.Contains(delimiter) ||
+                               field.Contains(escapeChar) ||
+                               field.IndexOfAny(new[] { '\r', '\n' }) >= 0 ||
+                               field[0] == ' ' ||
+                               field[field.Length - 1] == ' ';
             
             if (needsQuoting)
             {
+                // Use reusable buffer for escaping
+                _escapingBuffer.Clear();
+                _escapingBuffer.Append(escapeChar);
+                
                 // Escape existing quote characters by doubling them
-                var escapedField = field.Replace(CsvSettings.EscapeQuoteChar, 
-                    CsvSettings.EscapeQuoteChar + CsvSettings.EscapeQuoteChar);
-                return $"{CsvSettings.EscapeQuoteChar}{escapedField}{CsvSettings.EscapeQuoteChar}";
+                foreach (char c in field)
+                {
+                    _escapingBuffer.Append(c);
+                    if (c == escapeChar[0])
+                    {
+                        _escapingBuffer.Append(escapeChar);
+                    }
+                }
+                
+                _escapingBuffer.Append(escapeChar);
+                return _escapingBuffer.ToString();
             }
             
             return field;
