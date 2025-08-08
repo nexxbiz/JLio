@@ -1,0 +1,14 @@
+{
+  "data": {
+    "user": {
+      "id": 123,
+      "name": "John Doe",
+      "email": "john@example.com",
+      "active": true
+    }
+  },
+  "script": "[{\"path\":\"$.user\",\"command\":\"toCsv\",\"csvSettings\":{\"delimiter\":\",\",\"includeHeaders\":true}}]",
+  "expected": {
+    "user": "active,email,id,name\r\ntrue,john@example.com,123,John Doe"
+  }
+}

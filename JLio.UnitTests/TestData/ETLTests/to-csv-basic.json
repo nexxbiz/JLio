@@ -1,0 +1,30 @@
+{
+  "data": {
+    "companies": [
+      {
+        "id": 1,
+        "id_type": "Integer",
+        "name": "TechCorp",
+        "name_type": "String",
+        "address.street": "123 Tech Ave",
+        "address.street_type": "String",
+        "address.city": "Silicon Valley",
+        "address.city_type": "String",
+        "address.country": "USA",
+        "address.country_type": "String",
+        "departments.0.name": "Engineering",
+        "departments.0.name_type": "String",
+        "departments.0.employees.0.name": "John Doe",
+        "departments.0.employees.0.name_type": "String",
+        "departments.0.employees.0.skills.0": "JavaScript",
+        "departments.0.employees.0.skills.0_type": "String"
+      }
+    ]
+  },
+  "script": "[{\"path\":\"$.companies[*]\",\"command\":\"toCsv\",\"csvSettings\":{\"delimiter\":\",\",\"includeHeaders\":true,\"includeTypeColumns\":false}}]",
+  "expected": {
+    "companies": [
+      "address.city,address.country,address.street,departments.0.employees.0.name,departments.0.employees.0.skills.0,departments.0.name,id,name\r\nSilicon Valley,USA,123 Tech Ave,John Doe,JavaScript,Engineering,1,TechCorp"
+    ]
+  }
+}

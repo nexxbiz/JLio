@@ -76,6 +76,90 @@ namespace JLio.UnitTests.CommandsTests.ETLTests
             ExecuteTestCase(testCase);
         }
 
+        [Test]
+        public void ToCsv_BasicConversion_ShouldGenerateCorrectCsv()
+        {
+            var testCase = LoadTestCase("to-csv-basic.json");
+            ExecuteTestCase(testCase);
+        }
+
+        [Test]
+        public void ToCsv_EscapingAndSpecialCharacters_ShouldHandleCorrectly()
+        {
+            var testCase = LoadTestCase("to-csv-escaping.json");
+            ExecuteTestCase(testCase);
+        }
+
+        [Test]
+        public void ToCsv_SingleObject_ShouldGenerateOneRowCsv()
+        {
+            var testCase = LoadTestCase("to-csv-single-object.json");
+            ExecuteTestCase(testCase);
+        }
+
+        [Test]
+        public void ToCsv_WithTypesAndMetadata_ShouldIncludeAllColumns()
+        {
+            var testCase = LoadTestCase("to-csv-with-types-and-metadata.json");
+            ExecuteTestCase(testCase);
+        }
+
+        [Test]
+        public void ToCsv_FlattenAndConvert_ShouldWorkTogether()
+        {
+            // Test the integration of flatten followed by toCsv
+            var inputData = JToken.Parse(@"{
+                ""products"": [
+                    {
+                        ""id"": 1,
+                        ""info"": {
+                            ""name"": ""Laptop"",
+                            ""specs"": {
+                                ""cpu"": ""Intel i7"",
+                                ""ram"": ""16GB""
+                            }
+                        },
+                        ""tags"": [""electronics"", ""computers""]
+                    }
+                ]
+            }");
+
+            var script = @"[
+                {
+                    ""path"": ""$.products[*]"",
+                    ""command"": ""flatten"",
+                    ""flattenSettings"": {
+                        ""delimiter"": ""."",
+                        ""includeArrayIndices"": true,
+                        ""metadataPath"": ""$"",
+                        ""metadataKey"": ""_metadata""
+                    }
+                },
+                {
+                    ""path"": ""$.products[*]"",
+                    ""command"": ""toCsv"",
+                    ""csvSettings"": {
+                        ""delimiter"": "","",
+                        ""includeHeaders"": true,
+                        ""includeTypeColumns"": false,
+                        ""includeMetadata"": false
+                    }
+                }
+            ]";
+
+            var parsedScript = JLioConvert.Parse(script, parseOptions);
+            var result = parsedScript.Execute(inputData, executionContext);
+
+            Assert.IsTrue(result.Success, "Script execution failed");
+            
+            var csvOutput = result.Data.SelectToken("$.products[0]")?.Value<string>();
+            Assert.IsNotNull(csvOutput, "CSV output should not be null");
+            Assert.IsTrue(csvOutput.Contains("id,info.name,info.specs.cpu,info.specs.ram,tags.0,tags.1"), 
+                "CSV should contain expected headers");
+            Assert.IsTrue(csvOutput.Contains("1,Laptop,Intel i7,16GB,electronics,computers"), 
+                "CSV should contain expected data row");
+        }
+
         private TestCaseData LoadTestCase(string fileName)
         {
             var filePath = Path.Combine(testDataPath, fileName);
@@ -207,6 +291,44 @@ namespace JLio.UnitTests.CommandsTests.ETLTests
             Assert.Contains("Path property is required for restore command", validationResult.ValidationMessages);
             Assert.Contains("Delimiter cannot be empty in RestoreSettings", validationResult.ValidationMessages);
             Assert.Contains("JsonPathColumn cannot be empty when UseJsonPathColumn is true", validationResult.ValidationMessages);
+        }
+
+        [Test]
+        public void CanValidateToCsvCommand()
+        {
+            var toCsvCommand = new ToCsv
+            {
+                Path = "", // Empty path to trigger validation error
+                CsvSettings = null // Null settings to trigger validation error
+            };
+
+            var validationResult = toCsvCommand.ValidateCommandInstance();
+
+            Assert.IsFalse(validationResult.IsValid);
+            Assert.Contains("Path property is required for toCsv command", validationResult.ValidationMessages);
+            Assert.Contains("CsvSettings property is required for toCsv command", validationResult.ValidationMessages);
+        }
+
+        [Test]
+        public void ToCsvCommand_InvalidSettings_ShouldFailValidation()
+        {
+            var toCsvCommand = new ToCsv
+            {
+                Path = "$.data",
+                CsvSettings = new CsvSettings
+                {
+                    Delimiter = "", // Empty delimiter
+                    EscapeQuoteChar = "", // Empty escape char
+                    BooleanFormat = "true" // Missing comma
+                }
+            };
+
+            var validationResult = toCsvCommand.ValidateCommandInstance();
+
+            Assert.IsFalse(validationResult.IsValid);
+            Assert.Contains("Delimiter cannot be empty in CsvSettings", validationResult.ValidationMessages);
+            Assert.Contains("EscapeQuoteChar cannot be empty in CsvSettings", validationResult.ValidationMessages);
+            Assert.Contains("BooleanFormat must contain comma-separated true,false values", validationResult.ValidationMessages);
         }
 
         private class TestCaseData

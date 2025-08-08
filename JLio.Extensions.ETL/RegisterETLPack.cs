@@ -10,6 +10,7 @@ public static class RegisterETLPack
         parseOptions.RegisterCommand<Resolve>();
         parseOptions.RegisterCommand<Flatten>();
         parseOptions.RegisterCommand<Restore>();
+        parseOptions.RegisterCommand<ToCsv>();
         return parseOptions;
     }
 }
