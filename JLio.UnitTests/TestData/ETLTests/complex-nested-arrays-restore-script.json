@@ -1,9 +1,0 @@
-[{
-  "path": "$.companies[*]",
-  "command": "restore",
-  "restoreSettings": {
-    "metadataPath": "$",
-    "metadataKey": "_flattenMetadata",
-    "removeMetadata": true
-  }
-}]

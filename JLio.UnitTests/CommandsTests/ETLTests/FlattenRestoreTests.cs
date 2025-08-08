@@ -34,52 +34,97 @@ namespace JLio.UnitTests.CommandsTests.ETLTests
             testDataPath = Path.Combine(assemblyDirectory, "TestData", "ETLTests");
         }
 
-        [TestCase("simple-roundtrip", TestName = "Simple Flatten and Restore Roundtrip")]
-        [TestCase("complex-nested-arrays-flatten", TestName = "Complex Nested Arrays Flattening")]
-        [TestCase("complex-nested-arrays-restore", TestName = "Complex Nested Arrays Restore")]
-        [TestCase("csv-like-structure", TestName = "CSV-like Structure with JSONPath")]
-        [TestCase("empty-arrays", TestName = "Empty Arrays Handling")]
-        [TestCase("custom-delimiters", TestName = "Custom Delimiters Test")]
-        public void FlattenRestoreFileBasedTests(string testCaseName)
+        [Test]
+        public void SimpleRoundtrip_FlattenAndRestore_ShouldReturnOriginalStructure()
         {
-            // Load test files
-            var inputFile = Path.Combine(testDataPath, $"{testCaseName}-input.json");
-            var expectedFile = Path.Combine(testDataPath, $"{testCaseName}-expected.json");
-            var scriptFile = Path.Combine(testDataPath, $"{testCaseName}-script.json");
+            var testCase = LoadTestCase("simple-roundtrip.json");
+            ExecuteTestCase(testCase);
+        }
 
-            Assert.IsTrue(File.Exists(inputFile), $"Input file not found: {inputFile}");
-            Assert.IsTrue(File.Exists(expectedFile), $"Expected file not found: {expectedFile}");
-            Assert.IsTrue(File.Exists(scriptFile), $"Script file not found: {scriptFile}");
+        [Test]
+        public void ComplexNestedArraysFlatten_ShouldFlattenCorrectly()
+        {
+            var testCase = LoadTestCase("complex-nested-arrays-flatten.json");
+            ExecuteTestCase(testCase);
+        }
 
-            // Load data
-            var inputData = JToken.Parse(File.ReadAllText(inputFile));
-            var expectedData = JToken.Parse(File.ReadAllText(expectedFile));
-            var script = File.ReadAllText(scriptFile);
+        [Test]
+        public void ComplexNestedArraysRestore_ShouldRestoreCorrectly()
+        {
+            var testCase = LoadTestCase("complex-nested-arrays-restore.json");
+            ExecuteTestCase(testCase);
+        }
 
-            // Execute the script
-            var parsedScript = JLioConvert.Parse(script, parseOptions);
-            var result = parsedScript.Execute(inputData, executionContext);
+        [Test]
+        public void CsvLikeStructure_ShouldFlattenToCSVFormat()
+        {
+            var testCase = LoadTestCase("csv-like-structure.json");
+            ExecuteTestCase(testCase);
+        }
+
+        [Test]
+        public void EmptyArrays_ShouldHandleCorrectly()
+        {
+            var testCase = LoadTestCase("empty-arrays.json");
+            ExecuteTestCase(testCase);
+        }
+
+        [Test]
+        public void CustomDelimiters_ShouldUseCorrectDelimiters()
+        {
+            var testCase = LoadTestCase("custom-delimiters.json");
+            ExecuteTestCase(testCase);
+        }
+
+        private TestCaseData LoadTestCase(string fileName)
+        {
+            var filePath = Path.Combine(testDataPath, fileName);
+            var jsonContent = File.ReadAllText(filePath);
+            var testCaseJson = JObject.Parse(jsonContent);
+
+            return new TestCaseData
+            {
+                Data = testCaseJson["data"]?.DeepClone(),
+                Script = testCaseJson["script"]?.ToString(),
+                Expected = testCaseJson["expected"]?.DeepClone()
+            };
+        }
+
+        private void ExecuteTestCase(TestCaseData testCase)
+        {
+            // Act
+            var parsedScript = JLioConvert.Parse(testCase.Script, parseOptions);
+            var result = parsedScript.Execute(testCase.Data, executionContext);
 
             // Assert execution was successful
-            Assert.IsTrue(result.Success, $"Script execution failed for test case: {testCaseName}");
+            if (!result.Success)
+            {
+                var errors = executionContext.Logger.LogEntries.Where(e => e.Level == Microsoft.Extensions.Logging.LogLevel.Error).ToList();
+                var warnings = executionContext.Logger.LogEntries.Where(e => e.Level == Microsoft.Extensions.Logging.LogLevel.Warning).ToList();
+                
+                Console.WriteLine($"Execution errors: {string.Join("; ", errors.Select(e => e.Message))}");
+                Console.WriteLine($"Execution warnings: {string.Join("; ", warnings.Select(e => e.Message))}");
+            }
+            
+            Assert.IsTrue(result.Success, $"Script execution failed");
             
             // Verify no errors in execution context
-            var errors = executionContext.Logger.LogEntries.Where(e => e.Level == Microsoft.Extensions.Logging.LogLevel.Error).ToList();
-            Assert.IsEmpty(errors, $"Execution errors found: {string.Join("; ", errors.Select(e => e.Message))}");
+            var allErrors = executionContext.Logger.LogEntries.Where(e => e.Level == Microsoft.Extensions.Logging.LogLevel.Error).ToList();
+            Assert.IsEmpty(allErrors, $"Execution errors found: {string.Join("; ", allErrors.Select(e => e.Message))}");
 
             // Compare results using deep equality (excluding dynamic fields like timestamp)
             var actualResult = result.Data;
-            var areEqual = CompareResultsIgnoringDynamicFields(expectedData, actualResult);
+            var areEqual = CompareResultsIgnoringDynamicFields(testCase.Expected, actualResult);
             
             if (!areEqual)
             {
-                Console.WriteLine($"Expected for {testCaseName}:");
-                Console.WriteLine(expectedData.ToString());
-                Console.WriteLine($"Actual for {testCaseName}:");
+                Console.WriteLine($"Expected:");
+                Console.WriteLine(testCase.Expected.ToString());
+                Console.WriteLine($"Actual:");
                 Console.WriteLine(actualResult.ToString());
             }
             
-            Assert.IsTrue(areEqual, $"Results do not match expected output for test case: {testCaseName}");
+            Assert.IsTrue(areEqual, $"Results do not match expected output");
         }
 
         private bool CompareResultsIgnoringDynamicFields(JToken expected, JToken actual)
@@ -162,6 +207,13 @@ namespace JLio.UnitTests.CommandsTests.ETLTests
             Assert.Contains("Path property is required for restore command", validationResult.ValidationMessages);
             Assert.Contains("Delimiter cannot be empty in RestoreSettings", validationResult.ValidationMessages);
             Assert.Contains("JsonPathColumn cannot be empty when UseJsonPathColumn is true", validationResult.ValidationMessages);
+        }
+
+        private class TestCaseData
+        {
+            public JToken Data { get; set; }
+            public string Script { get; set; }
+            public JToken Expected { get; set; }
         }
     }
 }
