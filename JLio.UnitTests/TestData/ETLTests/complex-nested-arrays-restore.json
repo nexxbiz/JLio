@@ -1,0 +1,171 @@
+{
+  "data": {
+    "companies": [
+      {
+        "id": 1,
+        "name": "TechCorp",
+        "address.street": "123 Tech Ave",
+        "address.city": "Silicon Valley",
+        "address.country": "USA",
+        "departments.0.id": 101,
+        "departments.0.name": "Engineering",
+        "departments.0.employees.0.id": 1001,
+        "departments.0.employees.0.name": "John Doe",
+        "departments.0.employees.0.skills.0": "JavaScript",
+        "departments.0.employees.0.skills.1": "C#",
+        "departments.0.employees.0.projects.0": "ProjectA",
+        "departments.0.employees.0.projects.1": "ProjectB",
+        "departments.0.employees.1.id": 1002,
+        "departments.0.employees.1.name": "Jane Smith",
+        "departments.0.employees.1.skills.0": "Python",
+        "departments.0.employees.1.skills.1": "SQL",
+        "departments.0.employees.1.projects.0": "ProjectC",
+        "departments.1.id": 102,
+        "departments.1.name": "Marketing",
+        "departments.1.employees.0.id": 1003,
+        "departments.1.employees.0.name": "Bob Wilson",
+        "departments.1.employees.0.skills.0": "SEO",
+        "departments.1.employees.0.skills.1": "Analytics",
+        "departments.1.employees.0.projects.0": "CampaignX"
+      }
+    ],
+    "_flattenMetadata": {
+      "originalStructure": {
+        "address": "object",
+        "departments": "array[2]",
+        "departments.0": "object",
+        "departments.0.employees": "array[2]",
+        "departments.0.employees.0": "object",
+        "departments.0.employees.0.skills": "array[2]",
+        "departments.0.employees.0.projects": "array[2]",
+        "departments.0.employees.1": "object",
+        "departments.0.employees.1.skills": "array[2]",
+        "departments.0.employees.1.projects": "array[1]",
+        "departments.1": "object",
+        "departments.1.employees": "array[1]",
+        "departments.1.employees.0": "object",
+        "departments.1.employees.0.skills": "array[2]",
+        "departments.1.employees.0.projects": "array[1]"
+      },
+      "delimiter": ".",
+      "arrayDelimiter": ".",
+      "includeArrayIndices": true,
+      "preserveTypes": true,
+      "typeIndicator": "_type",
+      "timestamp": "2025-01-07T15:30:00Z",
+      "version": "1.0",
+      "rootPath": "$.companies[0]",
+      "metadataKey": "_flattenMetadata"
+    }
+  },
+  "script": "[{\"path\":\"$.companies[*]\",\"command\":\"restore\",\"restoreSettings\":{\"metadataPath\":\"$\",\"metadataKey\":\"_flattenMetadata\",\"removeMetadata\":true}}]",
+  "expected": {
+    "companies": [
+      {
+        "id": 1,
+        "name": "TechCorp",
+        "address": {
+          "street": "123 Tech Ave",
+          "city": "Silicon Valley",
+          "country": "USA"
+        },
+        "departments": [
+          {
+            "id": 101,
+            "name": "Engineering",
+            "employees": [
+              {
+                "id": 1001,
+                "name": "John Doe",
+                "skills": [
+                  {
+                    "0": "JavaScript"
+                  },
+                  {
+                    "1": "C#"
+                  }
+                ],
+                "projects": [
+                  {
+                    "0": "ProjectA"
+                  },
+                  {
+                    "1": "ProjectB"
+                  }
+                ]
+              },
+              {
+                "id": 1002,
+                "name": "Jane Smith",
+                "skills": [
+                  {
+                    "0": "Python"
+                  },
+                  {
+                    "1": "SQL"
+                  }
+                ],
+                "projects": [
+                  {
+                    "0": "ProjectC"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": 102,
+            "name": "Marketing",
+            "employees": [
+              {
+                "id": 1003,
+                "name": "Bob Wilson",
+                "skills": [
+                  {
+                    "0": "SEO"
+                  },
+                  {
+                    "1": "Analytics"
+                  }
+                ],
+                "projects": [
+                  {
+                    "0": "CampaignX"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "_flattenMetadata": {
+      "originalStructure": {
+        "address": "object",
+        "departments": "array[2]",
+        "departments.0": "object",
+        "departments.0.employees": "array[2]",
+        "departments.0.employees.0": "object",
+        "departments.0.employees.0.skills": "array[2]",
+        "departments.0.employees.0.projects": "array[2]",
+        "departments.0.employees.1": "object",
+        "departments.0.employees.1.skills": "array[2]",
+        "departments.0.employees.1.projects": "array[1]",
+        "departments.1": "object",
+        "departments.1.employees": "array[1]",
+        "departments.1.employees.0": "object",
+        "departments.1.employees.0.skills": "array[2]",
+        "departments.1.employees.0.projects": "array[1]"
+      },
+      "delimiter": ".",
+      "arrayDelimiter": ".",
+      "includeArrayIndices": true,
+      "preserveTypes": true,
+      "typeIndicator": "_type",
+      "timestamp": "2025-01-07T15:30:00Z",
+      "version": "1.0",
+      "rootPath": "$.companies[0]",
+      "metadataKey": "_flattenMetadata"
+    }
+  }
+}

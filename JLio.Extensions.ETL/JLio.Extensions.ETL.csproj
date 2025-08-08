@@ -7,5 +7,6 @@
   </PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\JLio.Core\JLio.Core.csproj" />
+		<ProjectReference Include="..\JLio.Commands\JLio.Commands.csproj" />
 	</ItemGroup>
 </Project>

@@ -7,6 +7,41 @@ namespace JLio.Commands.Logic;
 
 public static class ArrayHelpers
 {
+    /// <summary>
+    /// Generates JSONPath for a given token by traversing up the parent hierarchy
+    /// </summary>
+    internal static string GenerateJsonPath(JToken token)
+    {
+        var pathSegments = new List<string>();
+        var current = token;
+
+        while (current.Parent != null)
+        {
+            switch (current.Parent)
+            {
+                case JProperty property:
+                    pathSegments.Insert(0, property.Name);
+                    current = property.Parent;
+                    break;
+
+                case JArray array:
+                    var index = array.IndexOf(current);
+                    pathSegments.Insert(0, $"[{index}]");
+                    current = array.Parent;
+                    break;
+
+                default:
+                    current = current.Parent;
+                    break;
+            }
+        }
+
+        if (pathSegments.Count == 0)
+            return "$";
+
+        return "$." + string.Join(".", pathSegments).Replace(".[", "[");
+    }
+
     internal static List<JToken> FindTargetArrayElementForKeys(JToken item, JToken itemToMatch, List<string> keys)
     {
         var result = new List<JToken>();

@@ -1,0 +1,45 @@
+{
+  "companies": [
+    {
+      "id": 1,
+      "name": "TechCorp",
+      "address": {
+        "street": "123 Tech Ave",
+        "city": "Silicon Valley",
+        "country": "USA"
+      },
+      "departments": [
+        {
+          "id": 101,
+          "name": "Engineering",
+          "employees": [
+            {
+              "id": 1001,
+              "name": "John Doe",
+              "skills": ["JavaScript", "C#"],
+              "projects": ["ProjectA", "ProjectB"]
+            },
+            {
+              "id": 1002,
+              "name": "Jane Smith",
+              "skills": ["Python", "SQL"],
+              "projects": ["ProjectC"]
+            }
+          ]
+        },
+        {
+          "id": 102,
+          "name": "Marketing",
+          "employees": [
+            {
+              "id": 1003,
+              "name": "Bob Wilson",
+              "skills": ["SEO", "Analytics"],
+              "projects": ["CampaignX"]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

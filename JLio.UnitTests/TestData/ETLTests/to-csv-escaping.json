@@ -1,0 +1,26 @@
+{
+  "data": {
+    "products": [
+      {
+        "id": 1,
+        "name": "Laptop with \"special\" features",
+        "description": "A laptop\nwith multiple lines\rand commas, quotes",
+        "price": 1299.99,
+        "inStock": true,
+        "category": null
+      },
+      {
+        "id": 2,
+        "name": "Mouse",
+        "description": "Simple mouse",
+        "price": 29.99,
+        "inStock": false,
+        "category": "Accessories"
+      }
+    ]
+  },
+  "script": "[{\"path\":\"$.products\",\"command\":\"toCsv\",\"csvSettings\":{\"delimiter\":\",\",\"includeHeaders\":true,\"quoteAllFields\":false,\"nullValueRepresentation\":\"NULL\",\"booleanFormat\":\"TRUE,FALSE\"}}]",
+  "expected": {
+    "products": "category,description,id,inStock,name,price\r\nNULL,\"A laptop\nwith multiple lines\rand commas, quotes\",1,TRUE,\"Laptop with \"\"special\"\" features\",1299.99\r\nAccessories,Simple mouse,2,FALSE,Mouse,29.99"
+  }
+}

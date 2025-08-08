@@ -14,6 +14,8 @@ A JLio script is an array of command definitions. Each command has a `command` p
 
 The table below lists the available commands and their main arguments.
 
+## Core Commands
+
 | Command | Arguments | Description |
 |---|---|---|
 | **add** | `path`, `value` | Add a property or append to an array. |
@@ -27,10 +29,30 @@ The table below lists the available commands and their main arguments.
 | **merge** | `path`, `value` | Merge objects and arrays. |
 | **compare** | `path`, `value` | Compare two values according to settings. |
 
+## ETL (Extract, Transform, Load) Commands
+
+The ETL commands require the `JLio.Extensions.ETL` package and provide powerful data transformation capabilities:
+
+| Command | Arguments | Description |
+|---|---|---|
+| **flatten** | `path`, `flattenSettings` | Transform nested JSON objects into flat structures with dot-notation keys. |
+| **restore** | `path`, `restoreSettings` | Reconstruct original nested structures from flattened data using metadata. |
+| **resolve** | `path`, `resolveSettings` | Cross-reference and enrich data from multiple collections (like SQL JOINs). |
+| **toCsv** | `path`, `csvSettings` | Convert JSON objects to CSV format with proper encoding and escaping. |
+
+### ETL Registration
+
+To use ETL commands, register the extension:
+
+```csharp
+var parseOptions = ParseOptions.CreateDefault().RegisterETL();
+```
+
 Arguments can reference JSONPath locations and may use functions in the `value` field.
 
-## Command details
+## Command Details
 
+### Core Commands
 - [add](commands/add.md)
 - [set](commands/set.md)
 - [copy](commands/copy.md)
@@ -41,3 +63,60 @@ Arguments can reference JSONPath locations and may use functions in the `value` 
 - [ifElse](commands/ifElse.md)
 - [merge](commands/merge.md)
 - [compare](commands/compare.md)
+
+### ETL Commands
+- [flatten](commands/flatten.md)
+- [restore](commands/restore.md)
+- [resolve](commands/resolve.md)
+- [toCsv](commands/toCsv.md)
+
+## ETL Pipeline Examples
+
+### JSON to CSV Export
+```json
+[
+  {
+    "path": "$.records[*]",
+    "command": "flatten",
+    "flattenSettings": {
+      "delimiter": ".",
+      "includeArrayIndices": false
+    }
+  },
+  {
+    "path": "$.records[*]",
+    "command": "toCsv",
+    "csvSettings": {
+      "delimiter": ",",
+      "includeHeaders": true
+    }
+  }
+]
+```
+
+### Data Enrichment Pipeline
+```json
+[
+  {
+    "path": "$.orders[*]",
+    "command": "resolve",
+    "resolveSettings": [
+      {
+        "resolveKeys": [{"sourceKey": "customerId", "referenceKey": "id"}],
+        "referencesCollectionPath": "$.customers[*]",
+        "values": [{"sourceProperty": "customerName", "referenceProperty": "name"}]
+      }
+    ]
+  },
+  {
+    "path": "$.orders[*]",
+    "command": "flatten"
+  },
+  {
+    "path": "$.orders[*]",
+    "command": "toCsv"
+  }
+]
+```
+
+For comprehensive ETL documentation and patterns, see [ETL Guide](etl.md)
