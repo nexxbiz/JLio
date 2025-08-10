@@ -25,7 +25,7 @@ namespace JLio.UnitTests.CommandsTests.ETLTests
         {
             parseOptions = ParseOptions.CreateDefault().RegisterETL();
             executionContext = ExecutionContext.CreateDefault();
-            
+
             // Get the test data directory path
             var assemblyLocation = Assembly.GetExecutingAssembly().Location;
             var assemblyDirectory = Path.GetDirectoryName(assemblyLocation);
@@ -149,12 +149,12 @@ namespace JLio.UnitTests.CommandsTests.ETLTests
             var result = parsedScript.Execute(inputData, executionContext);
 
             Assert.IsTrue(result.Success, "Script execution failed");
-            
+
             var csvOutput = result.Data.SelectToken("$.products[0]")?.Value<string>();
             Assert.IsNotNull(csvOutput, "CSV output should not be null");
-            Assert.IsTrue(csvOutput.Contains("id,info.name,info.specs.cpu,info.specs.ram,tags.0,tags.1"), 
+            Assert.IsTrue(csvOutput.Contains("id,info.name,info.specs.cpu,info.specs.ram,tags.0,tags.1"),
                 "CSV should contain expected headers");
-            Assert.IsTrue(csvOutput.Contains("1,Laptop,Intel i7,16GB,electronics,computers"), 
+            Assert.IsTrue(csvOutput.Contains("1,Laptop,Intel i7,16GB,electronics,computers"),
                 "CSV should contain expected data row");
         }
 
@@ -183,13 +183,13 @@ namespace JLio.UnitTests.CommandsTests.ETLTests
             {
                 var errors = executionContext.Logger.LogEntries.Where(e => e.Level == Microsoft.Extensions.Logging.LogLevel.Error).ToList();
                 var warnings = executionContext.Logger.LogEntries.Where(e => e.Level == Microsoft.Extensions.Logging.LogLevel.Warning).ToList();
-                
+
                 Console.WriteLine($"Execution errors: {string.Join("; ", errors.Select(e => e.Message))}");
                 Console.WriteLine($"Execution warnings: {string.Join("; ", warnings.Select(e => e.Message))}");
             }
-            
+
             Assert.IsTrue(result.Success, $"Script execution failed");
-            
+
             // Verify no errors in execution context
             var allErrors = executionContext.Logger.LogEntries.Where(e => e.Level == Microsoft.Extensions.Logging.LogLevel.Error).ToList();
             Assert.IsEmpty(allErrors, $"Execution errors found: {string.Join("; ", allErrors.Select(e => e.Message))}");
@@ -197,7 +197,7 @@ namespace JLio.UnitTests.CommandsTests.ETLTests
             // Compare results using deep equality (excluding dynamic fields like timestamp)
             var actualResult = result.Data;
             var areEqual = CompareResultsIgnoringDynamicFields(testCase.Expected, actualResult);
-            
+
             if (!areEqual)
             {
                 Console.WriteLine($"Expected:");
@@ -205,7 +205,7 @@ namespace JLio.UnitTests.CommandsTests.ETLTests
                 Console.WriteLine($"Actual:");
                 Console.WriteLine(actualResult.ToString());
             }
-            
+
             Assert.IsTrue(areEqual, $"Results do not match expected output");
         }
 
@@ -214,15 +214,15 @@ namespace JLio.UnitTests.CommandsTests.ETLTests
             // Create deep clones to avoid modifying original data
             var expectedClone = expected.DeepClone();
             var actualClone = actual.DeepClone();
-            
+
             // Remove dynamic fields that change between test runs
             RemoveDynamicFields(expectedClone);
             RemoveDynamicFields(actualClone);
-            
+
             // Normalize line endings for CSV content comparison (cross-platform compatibility)
             NormalizeLineEndings(expectedClone);
             NormalizeLineEndings(actualClone);
-            
+
             return JToken.DeepEquals(expectedClone, actualClone);
         }
 
@@ -264,13 +264,13 @@ namespace JLio.UnitTests.CommandsTests.ETLTests
                     .Concat(obj.SelectTokens("$.._metadata").Cast<JObject>())
                     .Concat(obj.SelectTokens("$.._structure").Cast<JObject>())
                     .Concat(obj.SelectTokens("$.._meta").Cast<JObject>());
-                
+
                 foreach (var metadata in metadataTokens)
                 {
                     metadata.Remove("timestamp");
                     metadata.Remove("rootPath"); // This might vary based on execution context
                 }
-                
+
                 // Recursively process child objects
                 foreach (var property in obj.Properties().ToList())
                 {

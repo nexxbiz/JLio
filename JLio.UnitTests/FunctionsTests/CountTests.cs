@@ -40,7 +40,7 @@ public class CountTests
     }
 
     [Test]
-    public void CanBeUsedInFluentApi()
+    public void Count_CanBeUsedInFluentApi()
     {
         var script = new JLioScript()
                 .Add(CountBuilders.Count("$.items"))

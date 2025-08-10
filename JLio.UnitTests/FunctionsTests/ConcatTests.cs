@@ -54,7 +54,7 @@ public class ConcatTests
     }
 
     [Test]
-    public void CanBeUsedInFluentApi()
+    public void Concat_CanBeUsedInFluentApi()
     {
         var script = new JLioScript()
                 .Add(ConcatBuilders.Concat("'a'", "'b'"))
@@ -64,21 +64,36 @@ public class ConcatTests
 
         Assert.IsNotNull(result);
         Assert.IsTrue(result.Success);
-        Assert.AreNotEqual(result.Data.SelectToken("$.result").Type, JTokenType.Null);
-        Assert.AreEqual("ab", result.Data.SelectToken("$.result").ToString());
+        Assert.AreEqual("ab", result.Data.SelectToken("$.result")?.Value<string>());
     }
 
     [Test]
-    public void CanbeUsedInFluentApi_Set()
+    public void Concat_CanBeUsedInFluentApi_Set()
     {
         var script = new JLioScript()
             .Set(ConcatBuilders.Concat("'a'", "'b'"))
-            .OnPath("$.demo");
-        var result = script.Execute(JToken.Parse("{\"demo\":{\"pageIndex\":5,\"shouldBeRemoved\":true}}"));
+            .OnPath("$.result");
+        var result = script.Execute(JObject.Parse("{\"result\":\"something\"}"));
 
         Assert.IsNotNull(result);
         Assert.IsTrue(result.Success);
-        Assert.AreNotEqual(result.Data.SelectToken("$.demo").Type, JTokenType.Null);
-        Assert.AreEqual("ab", result.Data.SelectToken("$.demo").ToString());
+        Assert.AreEqual("ab", result.Data.SelectToken("$.result")?.Value<string>());
+    }
+
+    [TestCase("=concat()", "{}", "")]
+    [TestCase("=concat('a','b','c')", "{}", "abc")]
+    [TestCase("= concat ( 'a' , concat('a','b','c') ,  'concat('a','b','c')' )", "{}", "aabcconcat('a','b','c')")]
+    [TestCase("=concat($.a, 'b', $.c)", "{\"a\":\"a\",\"b\":\"b\",\"c\":\"c\"}", "abc")]
+    [TestCase("=concat($.a, $.b, $.c)",
+        "{\"a\":\"a\",\"b\":\"b\",\"c\":\"c\"}", "abc")]
+    public void Concat_ScriptTest(string function, string data, string resultValue)
+    {
+        var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"add\"}}]";
+        var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeOptions);
+
+        Assert.IsTrue(result.Success);
+        Assert.IsTrue(executeOptions.GetLogEntries().TrueForAll(i => i.Level != LogLevel.Error));
+        Assert.IsNotNull(result.Data.SelectToken("$.result"));
+        Assert.AreEqual(resultValue, result.Data.SelectToken("$.result")?.Value<string>());
     }
 }

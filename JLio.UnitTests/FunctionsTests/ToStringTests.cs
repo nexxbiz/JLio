@@ -26,7 +26,7 @@ public class ToStringTests
     [TestCase("=toString()", "{\"result\" : 3 }", "3")]
     [TestCase("=toString()", "{\"result\" : \"3\"}", "3")]
     [TestCase("=toString()", "{\"result\" : {\"demo\":67}}", "{\"demo\":67}")]
-    public void ScriptTestSet(string function, string data, string expectedResult)
+    public void ToString_ScriptTestSet(string function, string data, string expectedResult)
     {
         var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"set\"}}]";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executionContext);
@@ -40,7 +40,7 @@ public class ToStringTests
     [TestCase("=toString($.item)", "{\"item\" : 3 }", "3")]
     [TestCase("=toString($.item)", "{\"item\" : \"3\"}", "3")]
     [TestCase("=toString($.item)", "{\"item\" : {\"demo\":67}}", "{\r\n  \"demo\": 67\r\n}")]
-    public void ScriptTestAdd(string function, string data, string expectedResult)
+    public void ToString_ScriptTestAdd(string function, string data, string expectedResult)
     {
         var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"add\"}}]";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executionContext);
@@ -53,7 +53,7 @@ public class ToStringTests
     }
 
     [Test]
-    public void CanbeUsedInFluentApi()
+    public void ToString_CanBeUsedInFluentApi()
     {
         var script = new JLioScript()
                 .Set(ToStringBuilders.ToString())

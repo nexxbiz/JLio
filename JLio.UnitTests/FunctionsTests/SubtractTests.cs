@@ -32,7 +32,7 @@ public class SubtractTests
     [TestCase("=subtract($.numbers[*],2)", "{\"numbers\":[2,3,4]}", 7)]
     [TestCase("=subtract($.nested,$.b[*])", "{\"nested\":[1,[2,3]],\"b\":[1]}", 5)]
     [TestCase("=subtract($.sa,$.sb)", "{\"sa\":\"10\",\"sb\":\"8\"}", 2)]
-    public void subtractTests(string function, string data, double resultValue)
+    public void Subtract_Tests(string function, string data, double resultValue)
     {
         var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"add\"}}]";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executionContext);
@@ -43,7 +43,7 @@ public class SubtractTests
     }
 
     [Test]
-    public void CanBeUsedInFluentApi()
+    public void Subtract_CanBeUsedInFluentApi()
     {
         var script = new JLioScript()
                 .Add(SubtractBuilders.Subtract("5", "2"))
@@ -56,7 +56,7 @@ public class SubtractTests
     }
 
     [Test]
-    public void ScriptFailsOnInvalidValue()
+    public void Subtract_ScriptFailsOnInvalidValue()
     {
         var script = "[{'path':'$.result','value':'=subtract($.obj,$.a)','command':'add'}]".Replace("'","\"");
         var data = "{\"obj\":{\"v\":1},\"a\":2}";
@@ -67,7 +67,7 @@ public class SubtractTests
     }
 
     [Test]
-    public void ScriptFailsOnWrongArgumentCount()
+    public void Subtract_ScriptFailsOnWrongArgumentCount()
     {
         var script = "[{'path':'$.result','value':'=subtract($.a)','command':'add'}]".Replace("'","\"");
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse("{\"a\":1}"), executionContext);

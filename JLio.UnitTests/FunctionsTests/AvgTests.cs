@@ -39,7 +39,7 @@ public class AvgTests
     }
 
     [Test]
-    public void CanBeUsedInFluentApi()
+    public void Avg_CanBeUsedInFluentApi()
     {
         var script = new JLioScript()
                 .Add(AvgBuilders.Avg("1", "3"))
