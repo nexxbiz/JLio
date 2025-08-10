@@ -11,6 +11,16 @@ public static class RegisterMathPack
         parseOptions.RegisterFunction<Count>();
         parseOptions.RegisterFunction<Calculate>();
         parseOptions.RegisterFunction<Subtract>();
+        parseOptions.RegisterFunction<Min>();
+        parseOptions.RegisterFunction<Max>();
+        parseOptions.RegisterFunction<Abs>();
+        parseOptions.RegisterFunction<Round>();
+        parseOptions.RegisterFunction<Floor>();
+        parseOptions.RegisterFunction<Ceiling>();
+        parseOptions.RegisterFunction<Ceil>(); // Alias for Ceiling
+        parseOptions.RegisterFunction<Pow>();
+        parseOptions.RegisterFunction<Sqrt>();
+        parseOptions.RegisterFunction<Median>();
         return parseOptions;
     }
 }
