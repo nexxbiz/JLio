@@ -70,7 +70,7 @@ public class SumTests
     }
 
     [Test]
-    public void CanBeUsedInFluentApi()
+    public void Sum_CanBeUsedInFluentApi()
     {
         var script = new JLioScript()
                 .Add(SumBuilders.Sum("1", "2"))

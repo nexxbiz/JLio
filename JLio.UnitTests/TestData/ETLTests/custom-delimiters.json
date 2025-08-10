@@ -1,0 +1,80 @@
+{
+  "data": {
+    "report": {
+      "metadata": {
+        "generatedDate": "2024-01-01T10:00:00Z",
+        "version": "1.0"
+      },
+      "sections": [
+        {
+          "title": "Summary",
+          "data": {
+            "totalRecords": 100,
+            "categories": ["A", "B", "C"]
+          }
+        },
+        {
+          "title": "Details",
+          "data": {
+            "records": [
+              {"id": 1, "value": "test1"},
+              {"id": 2, "value": "test2"}
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "script": "[{\"path\":\"$.report\",\"command\":\"flatten\",\"flattenSettings\":{\"delimiter\":\"_\",\"includeArrayIndices\":true,\"metadataPath\":\"$\",\"metadataKey\":\"_meta\"}}]",
+  "expected": {
+    "report": {
+      "metadata_generatedDate": "2024-01-01T10:00:00Z",
+      "metadata_generatedDate_type": "Date",
+      "metadata_version": "1.0",
+      "metadata_version_type": "String",
+      "sections.0_title": "Summary",
+      "sections.0_title_type": "String",
+      "sections.0_data_totalRecords": 100,
+      "sections.0_data_totalRecords_type": "Integer",
+      "sections.0_data_categories.0": "A",
+      "sections.0_data_categories.0_type": "String",
+      "sections.0_data_categories.1": "B",
+      "sections.0_data_categories.1_type": "String",
+      "sections.0_data_categories.2": "C",
+      "sections.0_data_categories.2_type": "String",
+      "sections.1_title": "Details",
+      "sections.1_title_type": "String",
+      "sections.1_data_records.0_id": 1,
+      "sections.1_data_records.0_id_type": "Integer",
+      "sections.1_data_records.0_value": "test1",
+      "sections.1_data_records.0_value_type": "String",
+      "sections.1_data_records.1_id": 2,
+      "sections.1_data_records.1_id_type": "Integer",
+      "sections.1_data_records.1_value": "test2",
+      "sections.1_data_records.1_value_type": "String"
+    },
+    "_meta": {
+      "originalStructure": {
+        "metadata": "object",
+        "sections": "array[2]",
+        "sections.0": "object",
+        "sections.0_data": "object",
+        "sections.0_data_categories": "array[3]",
+        "sections.1": "object",
+        "sections.1_data": "object",
+        "sections.1_data_records": "array[2]",
+        "sections.1_data_records.0": "object",
+        "sections.1_data_records.1": "object"
+      },
+      "delimiter": "_",
+      "arrayDelimiter": ".",
+      "includeArrayIndices": true,
+      "preserveTypes": true,
+      "typeIndicator": "_type",
+      "timestamp": "2025-01-07T15:30:00Z",
+      "version": "1.0",
+      "rootPath": "$.report",
+      "metadataKey": "_meta"
+    }
+  }
+}

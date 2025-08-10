@@ -1,0 +1,18 @@
+{
+  "data": {
+    "report": {
+      "data.field1": "value1",
+      "data.field1_type": "String",
+      "data.field2": 42,
+      "data.field2_type": "Integer",
+      "_metadata": {
+        "generated": "2024-01-01"
+      },
+      "_timestamp": "2024-01-01T10:00:00Z"
+    }
+  },
+  "script": "[{\"path\":\"$.report\",\"command\":\"toCsv\",\"csvSettings\":{\"delimiter\":\",\",\"includeHeaders\":true,\"includeTypeColumns\":true,\"includeMetadata\":true}}]",
+  "expected": {
+    "report": "_metadata,_timestamp,data.field1,data.field1_type,data.field2,data.field2_type\r\n\"{\"\"generated\"\":\"\"2024-01-01\"\"}\",2024-01-01T10:00:00Z,value1,String,42,Integer"
+  }
+}

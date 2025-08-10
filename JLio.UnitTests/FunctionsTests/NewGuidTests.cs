@@ -4,7 +4,6 @@ using JLio.Core.Contracts;
 using JLio.Core.Models;
 using JLio.Extensions.Text;
 using JLio.Extensions.Text.Builders;
-using JLio.Functions.Builders;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -27,7 +26,7 @@ public class NewGuidTests
 
     [TestCase("=newGuid()", "{}")]
     [TestCase("=newGuid(32)", "{}")]
-    public void scriptTest(string function, string data)
+    public void NewGuid_ScriptTest(string function, string data)
     {
         var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"add\"}}]";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeOptions);
@@ -39,7 +38,7 @@ public class NewGuidTests
     }
 
     [Test]
-    public void CanbeUsedInFluentApi()
+    public void NewGuid_CanBeUsedInFluentApi()
     {
         var script = new JLioScript()
                 .Add(NewGuidBuilders.NewGuid())

@@ -269,7 +269,7 @@ public class CalculateExtendedTests
 
     #region Fluent API Tests
     [Test]
-    public void CanBeUsedInFluentApi()
+    public void Calculate_CanBeUsedInFluentApi()
     {
         var script = new JLioScript()
                 .Add(CalculateBuilders.Calculate("1+{{$.v}}"))

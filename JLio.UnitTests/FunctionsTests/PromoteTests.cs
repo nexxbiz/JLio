@@ -26,7 +26,7 @@ public class PromoteTests
     [TestCase("=promote($.source,'new')", "{\"source\" : [1,2]}", "{\"new\": [1,2] }")]
     [TestCase("=promote($.source,'new')", "{\"source\" : \"1\"}", "{\"new\": \"1\" }")]
     [TestCase("=promote($.source[*],'new')", "{\"source\" : [1,2]}", "{\"new\": [1,2] }")]
-    public void ScriptTestWithPath(string function, string data, string expectedResult)
+    public void Promote_ScriptTestWithPath(string function, string data, string expectedResult)
     {
         var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"add\"}}]";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeContext);
@@ -59,11 +59,12 @@ public class PromoteTests
     }
 
     [TestCase("=promote()", "{\"result\" : [1,2]}")]
-    public void WillReturnErrorFalse(string function, string data)
+    public void Promote_WillReturnErrorFalse(string function, string data)
     {
-        var script = $"[{{\"path\":\"$.result[*]\",\"value\":\"{function}\",\"command\":\"set\"}}]";
+        var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"add\"}}]";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeContext);
 
+        Assert.IsFalse(result.Success);
         Assert.IsTrue(executeContext.Logger.LogEntries.Any(i => i.Level == LogLevel.Error));
     }
 

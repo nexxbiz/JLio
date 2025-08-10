@@ -4,7 +4,6 @@ using JLio.Core.Contracts;
 using JLio.Core.Models;
 using JLio.Extensions.Text;
 using JLio.Extensions.Text.Builders;
-using JLio.Functions.Builders;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -29,14 +28,14 @@ public class FormatTests
         "\"10-01-2022\"")]
     [TestCase("=format($.source,'dd-MM-yyyy')", "{\"source\" : \"11/29/2023 1:54:49 PM\"}",
         "\"29-11-2023\"")]
-    public void ScriptTestWithPath(string function, string data, string expectedResult)
+    public void Format_ScriptTestWithPath(string function, string data, string resultValue)
     {
         var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"add\"}}]";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeContext);
 
         Assert.IsTrue(result.Success);
         Assert.IsTrue(executeContext.Logger.LogEntries.TrueForAll(i => i.Level != LogLevel.Error));
-        Assert.IsTrue(JToken.DeepEquals(JToken.Parse(expectedResult), result.Data.SelectToken("$.result")));
+        Assert.IsTrue(JToken.DeepEquals(JToken.Parse(resultValue), result.Data.SelectToken("$.result")));
     }
 
     [TestCase("=format('dd-MM-yyyy')", "{\"source\" : \"2022-01-10T21:15:15.113Z\"}",

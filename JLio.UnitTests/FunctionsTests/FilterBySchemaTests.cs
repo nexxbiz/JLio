@@ -67,11 +67,12 @@ public class FilterBySchemaTests
     [TestCase(
         "=filterBySchema($.schema)",
         "{\"result\" : [1,2] , \"schema\" : {\"$id\":\"https://example.com/person.schema.json\",\"$schema\":\"https://json-schema.org/draft/2020-12/schema\",\"title\":\"Person\",\"type\":\"object\",\"properties\":{\"firstName\":{\"type\":\"string\",\"description\":\"The person's first name.\"},\"lastName\":{\"type\":\"string\",\"description\":\"The person's last name.\"},\"age\":{\"description\":\"Age in years which must be equal to or greater than zero.\",\"type\":\"integer\",\"minimum\":0}}}    }")]
-    public void WillReturnErrorFalse(string function, string data)
+    public void FilterBySchema_WillReturnErrorFalse(string function, string data)
     {
-        var script = $"[{{\"path\":\"$.result[*]\",\"value\":\"{function}\",\"command\":\"set\"}}]";
+        var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"add\"}}]";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeContext);
 
+        Assert.IsFalse(result.Success);
         Assert.IsTrue(executeContext.Logger.LogEntries.Any(i => i.Level == LogLevel.Error));
     }
 
