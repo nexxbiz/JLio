@@ -219,7 +219,40 @@ namespace JLio.UnitTests.CommandsTests.ETLTests
             RemoveDynamicFields(expectedClone);
             RemoveDynamicFields(actualClone);
             
+            // Normalize line endings for CSV content comparison (cross-platform compatibility)
+            NormalizeLineEndings(expectedClone);
+            NormalizeLineEndings(actualClone);
+            
             return JToken.DeepEquals(expectedClone, actualClone);
+        }
+
+        private void NormalizeLineEndings(JToken token)
+        {
+            if (token is JObject obj)
+            {
+                foreach (var property in obj.Properties().ToList())
+                {
+                    NormalizeLineEndings(property.Value);
+                }
+            }
+            else if (token is JArray array)
+            {
+                foreach (var item in array)
+                {
+                    NormalizeLineEndings(item);
+                }
+            }
+            else if (token is JValue value && value.Type == JTokenType.String)
+            {
+                var stringValue = value.Value<string>();
+                if (!string.IsNullOrEmpty(stringValue) && (stringValue.Contains('\r') || stringValue.Contains('\n')))
+                {
+                    // Normalize line endings by converting all to \n (Unix style)
+                    // This handles CSV content that might have different line endings on different platforms
+                    var normalized = stringValue.Replace("\r\n", "\n").Replace("\r", "\n");
+                    value.Value = normalized;
+                }
+            }
         }
 
         private void RemoveDynamicFields(JToken token)
