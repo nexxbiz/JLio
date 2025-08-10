@@ -1,8 +1,6 @@
-using System.Collections.Generic;
 using System.Linq;
 using JLio.Core.Contracts;
 using JLio.Core.Extensions;
-using JLio.Core.Models;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 

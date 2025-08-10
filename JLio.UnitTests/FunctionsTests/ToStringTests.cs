@@ -4,7 +4,6 @@ using JLio.Core.Contracts;
 using JLio.Core.Models;
 using JLio.Extensions.Text;
 using JLio.Extensions.Text.Builders;
-using JLio.Functions.Builders;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
