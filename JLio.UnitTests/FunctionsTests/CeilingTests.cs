@@ -64,4 +64,17 @@ public class CeilingTests
         Assert.IsFalse(result.Success);
         Assert.IsTrue(executionContext.GetLogEntries().Any(i => i.Level == LogLevel.Error));
     }
+
+    [Test]
+    public void Ceiling_WithCalculateForDivisionExpression()
+    {
+        var data = "{\"totalItems\": 157, \"batchSize\": 25}";
+        var script = "[{\"path\":\"$.result\",\"value\":\"=ceiling(calculate('{{$.totalItems}} / {{$.batchSize}}'))\",\"command\":\"add\"}]";
+        
+        var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executionContext);
+        
+        Assert.IsTrue(result.Success);
+        Assert.IsTrue(executionContext.GetLogEntries().TrueForAll(i => i.Level != LogLevel.Error));
+        Assert.AreEqual(7, result.Data.SelectToken("$.result")?.Value<double>());
+    }
 }
