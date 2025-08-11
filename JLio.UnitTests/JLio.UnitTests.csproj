@@ -18,6 +18,7 @@
     <ProjectReference Include="..\JLio.Extensions.Math\JLio.Extensions.Math.csproj" />
     <ProjectReference Include="..\JLio.Extensions.Text\JLio.Extensions.Text.csproj" />
     <ProjectReference Include="..\JLio.Extensions.ETL\JLio.Extensions.ETL.csproj" />
+    <ProjectReference Include="..\JLio.Extensions.TimeDate\JLio.Extensions.TimeDate.csproj" />
   </ItemGroup>
 
   <!-- Copy all test data files using wildcards -->

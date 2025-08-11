@@ -63,7 +63,14 @@ Date, time, and unique identifier generation.
 - [datetime](datetime.md) - Generate formatted date/time values
 - [newGuid](newGuid.md) - Generate unique identifiers (GUID/UUID)
 
-**Planned Extensions**
+**Date Analysis & Comparison**
+- [maxDate](datetime/maxDate.md) - Find the latest date from multiple values
+- [minDate](datetime/minDate.md) - Find the earliest date from multiple values  
+- [avgDate](datetime/avgDate.md) - Calculate average date from multiple values
+- [isDateBetween](datetime/isDateBetween.md) - Check if date falls within a range
+- [dateCompare](datetime/dateCompare.md) - Compare two dates (-1, 0, 1)
+
+**Future Extensions**
 - dateAdd, dateDiff, parseDate, dateFormat *(coming soon)*
 
 ### ?? Core Functions
@@ -82,10 +89,10 @@ Essential data manipulation functions built into the core.
 ### All Functions
 ```csharp
 var parseOptions = ParseOptions.CreateDefault()
-    .RegisterMath()      // Math functions
-    .RegisterText();     // Text functions
+    .RegisterMath()        // Math functions
+    .RegisterText()        // Text functions  
+    .RegisterTimeDate();   // DateTime functions
     
-// DateTime functions are included by default
 // Core functions are always available
 ```
 
@@ -96,6 +103,9 @@ var parseOptions = ParseOptions.CreateDefault().RegisterMath();
 
 // Text functions only  
 var parseOptions = ParseOptions.CreateDefault().RegisterText();
+
+// DateTime functions only
+var parseOptions = ParseOptions.CreateDefault().RegisterTimeDate();
 
 // Core functions only (default)
 var parseOptions = ParseOptions.CreateDefault();
@@ -116,10 +126,11 @@ var parseOptions = ParseOptions.CreateDefault();
 - **Generation**: join, concat, format
 - **Validation**: contains, startsWith, endsWith, length
 
-### ? Temporal Operations
+### ?? Temporal Operations
 - **Timestamping**: datetime with various formats
 - **Identification**: newGuid for unique IDs
-- **Scheduling**: datetime with timezone support
+- **Date Analysis**: maxDate, minDate, avgDate for data analysis
+- **Date Validation**: isDateBetween, dateCompare for range checking
 
 ### ?? Data Conversion
 - **String Conversion**: toString, format, join
@@ -137,6 +148,9 @@ var script = new JLioScript()
     // Math calculation  
     .Add(SumBuilders.Sum("$.amounts[*]"))
     .OnPath("$.total")
+    // DateTime analysis
+    .Add(MaxDateBuilders.MaxDate("$.events[*].timestamp"))
+    .OnPath("$.latestEvent")
     // DateTime stamping
     .Add(DatetimeBuilders.Datetime("UTC"))
     .OnPath("$.processedAt");
@@ -153,6 +167,16 @@ var script = new JLioScript()
   {
     "path": "$.processing.startTime", 
     "value": "=datetime('UTC')",
+    "command": "add"
+  },
+  {
+    "path": "$.dateRange.earliest",
+    "value": "=minDate($.events[*].timestamp)",
+    "command": "add"
+  },
+  {
+    "path": "$.dateRange.latest", 
+    "value": "=maxDate($.events[*].timestamp)",
     "command": "add"
   },
   {
@@ -173,11 +197,20 @@ var script = new JLioScript()
 ]
 ```
 
+### Date Range Validation
+```json
+{
+  "path": "$.validation.isInRange",
+  "value": "=isDateBetween($.eventDate, $.period.start, $.period.end)",
+  "command": "add"
+}
+```
+
 ### Conditional Function Usage
 ```json
 {
   "path": "$.result",
-  "value": "=if(length($.text) > 0, toUpper(trim($.text)), 'EMPTY')",
+  "value": "=if(dateCompare($.startDate, $.endDate) <= 0, 'Valid', 'Invalid Date Range')",
   "command": "add"
 }
 ```
@@ -187,7 +220,7 @@ var script = new JLioScript()
 ### Function Selection
 - **Text Functions**: Optimized for string operations, culture-aware
 - **Math Functions**: Support string-to-number conversion, array processing
-- **DateTime Functions**: Minimal overhead for timestamp generation
+- **DateTime Functions**: Culture-independent parsing, timezone-aware
 - **Core Functions**: Highly optimized for data extraction and validation
 
 ### Best Practices
@@ -218,12 +251,16 @@ Many functions have been enhanced or moved between packages:
 // Enhanced with new text functions
 "=join(' ', $.a, $.b)"        // More flexible
 "=trim(concat($.a, $.b))"     // Combined operations
+
+// New date analysis capabilities
+"=maxDate($.events[*].timestamp)"    // Find latest event
+"=isDateBetween($.date, $.start, $.end)"  // Validate ranges
 ```
 
 ### Package Evolution
 - **Text Package**: Expanded with advanced string operations
 - **Math Package**: Enhanced with string number support
-- **DateTime Package**: Planned expansion with date arithmetic
+- **DateTime Package**: New date analysis and comparison functions
 - **Core Package**: Stable foundation functions
 
 ## Documentation Standards
