@@ -2,6 +2,7 @@ using JLio.Core;
 using JLio.Core.Contracts;
 using JLio.Core.Models;
 using Newtonsoft.Json.Linq;
+using System.Globalization;
 
 namespace JLio.Extensions.Math;
 
@@ -52,7 +53,7 @@ public class Subtract : FunctionBase
                 result += token.Value<double>();
                 return true;
 
-            case JTokenType.String when double.TryParse(token.Value<string>(), out var numeric):
+            case JTokenType.String when double.TryParse(token.Value<string>(), NumberStyles.Float, CultureInfo.InvariantCulture, out var numeric):
                 result += numeric;
                 return true;
 
