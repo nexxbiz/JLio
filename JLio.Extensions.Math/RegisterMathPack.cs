@@ -17,7 +17,6 @@ public static class RegisterMathPack
         parseOptions.RegisterFunction<Round>();
         parseOptions.RegisterFunction<Floor>();
         parseOptions.RegisterFunction<Ceiling>();
-        parseOptions.RegisterFunction<Ceil>(); // Alias for Ceiling
         parseOptions.RegisterFunction<Pow>();
         parseOptions.RegisterFunction<Sqrt>();
         parseOptions.RegisterFunction<Median>();
