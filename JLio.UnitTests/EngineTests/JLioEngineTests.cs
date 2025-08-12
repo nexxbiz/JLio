@@ -45,7 +45,7 @@ public class JLioEngineTests
             .WithMathExtensions()
             .Build();
         
-        var script = "[{\"path\":\"$.result\",\"value\":\"=calculate(3 * 3 + 4)\",\"command\":\"add\"}]";
+        var script = "[{\"path\":\"$.result\",\"value\":\"=calculate(2 * 3 + 4)\",\"command\":\"add\"}]";
         var data = new JObject();
 
         // Act
@@ -53,7 +53,7 @@ public class JLioEngineTests
 
         // Assert
         Assert.IsTrue(result.Success);
-        Assert.AreEqual(13, result.Data.SelectToken("$.result")?.Value<int>());
+        Assert.AreEqual(10, result.Data.SelectToken("$.result")?.Value<int>());
     }
 
     [Test]
