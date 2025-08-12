@@ -21,6 +21,8 @@ namespace JLio.Commands.Logic;
 
 public abstract class CopyMove : CommandBase
 {
+    [JsonProperty("destinationAsArray")]
+    public bool DestinationAsArray { get; set; } = false;
     //private eAction action;
     private JToken data;
     private IExecutionContext executionContext;
@@ -203,9 +205,38 @@ public abstract class CopyMove : CommandBase
         switch (jToken)
         {
             case JObject o:
-                if (JsonMethods.IsPropertyOfTypeArray(propertyName, o))
+                if (DestinationAsArray)
                 {
-                    AddToArray((JArray) o[propertyName], value);
+                    // If property exists and is not array, convert to array with old value
+                    if (o.ContainsKey(propertyName))
+                    {
+                        if (o[propertyName] is JArray arr)
+                        {
+                            AddToArray(arr, value);
+                        }
+                        else
+                        {
+                            var oldVal = o[propertyName];
+                            var newArr = new JArray();
+                            if (oldVal != null && oldVal.Type != JTokenType.Null)
+                                newArr.Add(oldVal);
+                            newArr.Add(value);
+                            o[propertyName] = newArr;
+                            executionContext.LogInfo(CoreConstants.CommandExecution, $"Property {propertyName} converted to array and value added: {o.Path}");
+                        }
+                    }
+                    else
+                    {
+                        // Property does not exist, create as array
+                        var newArr = new JArray(value);
+                        o[propertyName] = newArr;
+                        executionContext.LogInfo(CoreConstants.CommandExecution, $"Property {propertyName} created as array: {o.Path}");
+                    }
+                    return;
+                }
+                else if (JsonMethods.IsPropertyOfTypeArray(propertyName, o))
+                {
+                    AddToArray((JArray)o[propertyName], value);
                     return;
                 }
                 else if (o.ContainsKey(propertyName))
@@ -213,7 +244,6 @@ public abstract class CopyMove : CommandBase
                     o[propertyName] = value;
                     return;
                 }
-
                 AddProperty(propertyName, o, value);
                 break;
             case JArray a:

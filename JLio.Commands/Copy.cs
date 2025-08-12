@@ -12,10 +12,11 @@ public class Copy : CopyMove
     {
     }
 
-    public Copy(string from, string to)
+    public Copy(string from, string to, bool destinationAsArray = false)
     {
         FromPath = from;
         ToPath = to;
+        DestinationAsArray = destinationAsArray;
     }
 
     public override JLioExecutionResult Execute(JToken dataContext, IExecutionContext context)
