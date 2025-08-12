@@ -28,6 +28,18 @@ public class FunctionsProvider : IFunctionsProvider, IFunctionsProviderRegistrar
         return this;
     }
 
+    public IFunctionsProviderRegistrar Register(Type functionType)
+    {
+        if (!typeof(IFunction).IsAssignableFrom(functionType))
+            throw new ArgumentException($"Type {functionType.Name} does not implement IFunction", nameof(functionType));
+
+        var functionInstance = (IFunction)Activator.CreateInstance(functionType);
+        DeleteIfFunctionNameAlreadyExists(functionInstance);
+
+        functions.Add(functionInstance.FunctionName, new FunctionRegistration(functionType));
+        return this;
+    }
+
     private void DeleteIfFunctionNameAlreadyExists(IFunction functionInstance)
     {
         if (functionInstance != null && !functions.ContainsKey(functionInstance.FunctionName))

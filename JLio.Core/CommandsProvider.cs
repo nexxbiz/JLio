@@ -27,6 +27,17 @@ public class CommandsProvider : ICommandsProvider, ICommandsProviderRegistrar
         return this;
     }
 
+    public ICommandsProviderRegistrar Register(Type commandType)
+    {
+        if (!typeof(ICommand).IsAssignableFrom(commandType))
+            throw new ArgumentException($"Type {commandType.Name} does not implement ICommand", nameof(commandType));
+
+        var commandInstance = (ICommand)Activator.CreateInstance(commandType);
+        if (commandInstance != null && !registeredCommands.ContainsKey(commandInstance.CommandName))
+            registeredCommands.Add(commandInstance.CommandName, new CommandRegistration(commandType));
+        return this;
+    }
+
     private static ICommand CreateInstance(CommandRegistration commandRegistration)
     {
         return (ICommand) Activator.CreateInstance(commandRegistration.Type);
