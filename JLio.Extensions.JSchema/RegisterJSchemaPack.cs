@@ -7,6 +7,7 @@ public static class RegisterJSchemaPack
     public static IParseOptions RegisterJSchema(this IParseOptions parseOptions)
     {
         parseOptions.RegisterFunction<FilterBySchema>();
+        parseOptions.RegisterFunction<OrderBySchema>();
         return parseOptions;
     }
 }
