@@ -7,7 +7,7 @@ public static class RegisterExtensions
     public static IFunctionsProviderRegistrar RegisterJSchemaFunctions(this IFunctionsProviderRegistrar parseOptions)
     {
         return parseOptions.Register<FilterBySchema>()
-                          .Register<OrderBySchema>();
+                           .Register<OrderBySchema>();
     }
 
     public static IFunctionsProviderRegistrar RegisterFilterByJSchemaFunction(this IFunctionsProviderRegistrar parseOptions)
