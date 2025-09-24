@@ -34,10 +34,9 @@ public class OrderBySchemaTests
     private ParseOptions parseOptions;
 
     [Test]
-    [TestCase(
-        "{\"type\":\"object\",\"properties\":{\"lastName\":{\"type\":\"string\"},\"firstName\":{\"type\":\"string\"},\"age\":{\"type\":\"integer\"}}}")]
-    public void CanBeUsedInFluentApi(string schema)
+    public void CanBeUsedInFluentApi()
     {
+        var schema = "{\"type\":\"object\",\"properties\":{\"lastName\":{\"type\":\"string\"},\"firstName\":{\"type\":\"string\"},\"age\":{\"type\":\"integer\"}}}";
         var parsedSchema = JSchema.Parse(schema);
 
         var script = new JLioScript()
@@ -84,11 +83,10 @@ public class OrderBySchemaTests
     }
 
     [Test]
-    [TestCase(
-        "=orderBySchema($.schema)",
-        "{\"result\" : [1,2] , \"schema\" : {\"$id\":\"https://example.com/person.schema.json\",\"$schema\":\"https://json-schema.org/draft/2020-12/schema\",\"title\":\"Person\",\"type\":\"object\",\"properties\":{\"firstName\":{\"type\":\"string\",\"description\":\"The person's first name.\"},\"lastName\":{\"type\":\"string\",\"description\":\"The person's last name.\"},\"age\":{\"description\":\"Age in years which must be equal to or greater than zero.\",\"type\":\"integer\",\"minimum\":0}}}    }")]
-    public void OrderBySchema_WillReturnErrorForArrayInput(string function, string data)
+    public void OrderBySchema_WillReturnErrorForArrayInput()
     {
+        var function = "=orderBySchema($.schema)";
+        var data = "{\"result\" : [1,2] , \"schema\" : {\"$id\":\"https://example.com/person.schema.json\",\"$schema\":\"https://json-schema.org/draft/2020-12/schema\",\"title\":\"Person\",\"type\":\"object\",\"properties\":{\"firstName\":{\"type\":\"string\",\"description\":\"The person's first name.\"},\"lastName\":{\"type\":\"string\",\"description\":\"The person's last name.\"},\"age\":{\"description\":\"Age in years which must be equal to or greater than zero.\",\"type\":\"integer\",\"minimum\":0}}}    }";
         var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"set\"}}]";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executeContext);
 
