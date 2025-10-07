@@ -7,6 +7,23 @@ namespace JLio.Validation;
 /// <summary>
 /// Validator for JLio JSON scripts with extensible command validation.
 /// </summary>
+/// <example>
+/// <code>
+/// var script = JToken.Parse(@"[
+///   { ""command"": ""add"", ""path"": ""$.myObject.newProp"", ""value"": ""new value"" },
+///   { ""command"": ""unknown"", ""path"": ""$.x"", ""value"": 1 }
+/// ]");
+/// 
+/// var validator = JLioScriptValidator.CreateDefault(new JLioValidationOptions
+/// {
+///     AllowUnknownCommands = true
+/// });
+/// 
+/// var result = validator.Validate(script);
+/// // result.Success == true (since unknown commands allowed)
+/// // result.Issues contains a Warning "Command.Unknown" for index 1
+/// </code>
+/// </example>
 public sealed class JLioScriptValidator
 {
     private readonly Dictionary<string, ICommandSpec> _registry;

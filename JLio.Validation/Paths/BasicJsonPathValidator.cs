@@ -144,8 +144,12 @@ public class BasicJsonPathValidator : IJsonPathValidator
 
     private static bool HasEmptySegments(string path)
     {
-        // Check for patterns like $.., $., $..property (but allow $.. as recursive descent)
-        if (path.Contains("...")) return true; // More than two dots
+        // Check for patterns like "..." (more than two consecutive dots)
+        if (path.Contains("...")) return true;
+        
+        // Check for invalid patterns like "$." at end or "$...$" 
+        if (path.EndsWith(".") && !path.EndsWith("..")) return true;
+        if (path.StartsWith("$.")) return false; // This is valid
         
         // Split on dots but be careful about recursive descent
         var segments = path.Split('.');
@@ -160,8 +164,14 @@ public class BasicJsonPathValidator : IJsonPathValidator
             if (string.IsNullOrEmpty(segment))
             {
                 // This is only valid if it's part of recursive descent
-                // i.e., we have an empty segment between two dots
+                // We need to check that there's exactly one empty segment (for ..)
+                // and not multiple consecutive empty segments
                 if (i == 0 || i == segments.Length - 1) return true; // Empty at start or end is invalid
+                
+                // Check if this is part of a valid .. pattern
+                // by ensuring we don't have consecutive empty segments (which would be ...)
+                if (i + 1 < segments.Length && string.IsNullOrEmpty(segments[i + 1])) return true;
+                
                 continue;
             }
             
