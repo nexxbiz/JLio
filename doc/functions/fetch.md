@@ -11,20 +11,35 @@ The `Fetch` function retrieves values from JSON data using JSONPath expressions.
 // Basic fetch from JSONPath
 "=fetch($.user.name)"
 
+// Fetch with default value
+"=fetch($.user.name, 'Anonymous')"
+
 // Fetch from current context
 "=fetch(@.localProperty)"
+
+// Fetch from current context with default
+"=fetch(@.localProperty, 'default')"
 
 // Fetch array elements
 "=fetch($.items[0])"
 
+// Fetch array elements with default
+"=fetch($.items[0], {})"
+
 // Fetch with filters
 "=fetch($.users[?(@.active == true)])"
+
+// Fetch with filters and default
+"=fetch($.users[?(@.active == true)], {})"
 ```
 
 ### Programmatic Usage
 ```csharp
 // With JSONPath argument
 var fetchFunction = new Fetch("$.user.name");
+
+// With JSONPath and default value
+var fetchFunction = new Fetch("$.user.name", "Unknown User");
 
 // Empty constructor for dynamic arguments
 var fetchFunction = new Fetch();
@@ -38,7 +53,11 @@ var fetchFunction = FetchBuilders.Fetch("$.data.value");
 ## Parameters
 
 - **Path (First Argument)**: JSONPath expression specifying what to fetch
-- **Return Behavior**: Returns the first matching token or null if not found
+- **Default Value (Second Argument, Optional)**: Value to return when path doesn't exist
+- **Return Behavior**: 
+  - Returns the first matching token when path exists (even if null)
+  - Returns default value when path doesn't exist (only if default provided)
+  - Returns null when path doesn't exist and no default provided
 - **Context**: Evaluates paths relative to the data context and current token
 
 ## Examples
@@ -70,6 +89,99 @@ var fetchFunction = FetchBuilders.Fetch("$.data.value");
     "email": "john@example.com"
   },
   "displayValue": "John Doe"
+}
+```
+
+## Default Value Examples
+
+### Fetch with Fallback Value
+```json
+{
+  "path": "$.displayName",
+  "value": "=fetch($.user.name, 'Anonymous User')",
+  "command": "add"
+}
+```
+
+**Input Data (Missing Path)**:
+```json
+{
+  "user": {
+    "email": "user@example.com"
+  }
+}
+```
+
+**Result**:
+```json
+{
+  "user": {
+    "email": "user@example.com"
+  },
+  "displayName": "Anonymous User"
+}
+```
+
+### Explicit Null vs Missing Path
+```json
+{
+  "path": "$.result",
+  "value": "=fetch($.value, 'default')",
+  "command": "add"
+}
+```
+
+**Input Data (Explicit Null)**:
+```json
+{
+  "value": null
+}
+```
+
+**Result** (Returns null, not default):
+```json
+{
+  "value": null,
+  "result": null
+}
+```
+
+**Input Data (Missing Path)**:
+```json
+{
+  "other": "data"
+}
+```
+
+**Result** (Returns default):
+```json
+{
+  "other": "data",
+  "result": "default"
+}
+```
+
+### Numeric Default Values
+```json
+{
+  "path": "$.score",
+  "value": "=fetch($.userScore, 0)",
+  "command": "add"
+}
+```
+
+**Input Data**:
+```json
+{
+  "userName": "player1"
+}
+```
+
+**Result**:
+```json
+{
+  "userName": "player1",
+  "score": 0
 }
 ```
 
@@ -364,8 +476,20 @@ var script = new JLioScript()
 
 ### No Match Found
 ```json
-// Returns null when path doesn't exist
+// Returns null when path doesn't exist (no default provided)
 "=fetch($.nonExistent.path)"  // Returns: null
+
+// Returns default when path doesn't exist (default provided)
+"=fetch($.nonExistent.path, 'fallback')"  // Returns: "fallback"
+```
+
+### Explicit Null vs Missing Path
+```json
+// Returns null when path exists but value is null (ignores default)
+"=fetch($.explicitNull, 'default')"  // Returns: null (if $.explicitNull is null)
+
+// Returns default when path doesn't exist at all
+"=fetch($.missing, 'default')"  // Returns: "default"
 ```
 
 ### Multiple Matches
@@ -404,8 +528,10 @@ The function returns the actual value type found, which may be string, number, o
 2. **Cache Results**: Store fetched values in variables if used multiple times
 3. **Validate Paths**: Ensure JSONPath expressions are correct and efficient
 4. **Handle Nulls**: Always consider null return values in your logic
-5. **Test Edge Cases**: Verify behavior with missing data and empty arrays
-6. **Document Dependencies**: Clearly document what data the fetch depends on
+5. **Use Defaults Wisely**: Provide default values for optional data to improve robustness
+6. **Understand Null vs Missing**: Remember that explicit null values are preserved, not replaced by defaults
+7. **Test Edge Cases**: Verify behavior with missing data, empty arrays, and explicit nulls
+8. **Document Dependencies**: Clearly document what data the fetch depends on
 7. **Avoid Deep Nesting**: Minimize the depth of JSONPath expressions
 
 ## Common Patterns
