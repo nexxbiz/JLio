@@ -83,18 +83,7 @@ public class FunctionConverter : JsonConverter
         if (mainSplit.Count > 1 && function != null)
             return DiscoverFunctionsUsedInArguments(function, mainSplit[1].Text);
 
-        // Use the same parsing logic as ParseString to preserve types
-        JToken parsedValue;
-        try
-        {
-            parsedValue = JToken.Parse(text);
-        }
-        catch
-        {
-            // If JSON parsing fails, treat as string
-            parsedValue = JToken.Parse($"\"{text}\"");
-        }
-        return (new FixedValue(parsedValue, this), new Arguments());
+        return (new FixedValue(new JValue(text), this), new Arguments());
     }
 
     private (IFunction function, Arguments arguments) DiscoverFunctionsUsedInArguments(IFunction function,
