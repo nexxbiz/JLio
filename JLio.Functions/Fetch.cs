@@ -15,13 +15,13 @@ public class Fetch : FunctionBase
 
     public Fetch(string path)
     {
-            Arguments.Add(new FunctionSupportedValue(new FixedValue(path)));
+        Arguments.Add(new FunctionSupportedValue(new FixedValue(new JValue(path))));
     }
 
     public Fetch(string path, string defaultValue)
     {
-            Arguments.Add(new FunctionSupportedValue(new FixedValue(path)));
-            Arguments.Add(new FunctionSupportedValue(new FixedValue(defaultValue)));
+        Arguments.Add(new FunctionSupportedValue(new FixedValue(new JValue(path))));
+        Arguments.Add(new FunctionSupportedValue(new FixedValue(new JValue(defaultValue))));
     }
 
     public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)
@@ -46,7 +46,7 @@ public class Fetch : FunctionBase
             {
                 var defaultArgument = Arguments[1];
                 var defaultResult = defaultArgument.GetValue(currentToken, dataContext, context);
-                return new JLioFunctionResult(true, defaultResult.Data.GetJTokenValue());
+                return new JLioFunctionResult(true, GetParsedDefaultValue(defaultResult.Data.GetJTokenValue()));
             }
             return new JLioFunctionResult(false, JValue.CreateNull());
         }
@@ -62,7 +62,7 @@ public class Fetch : FunctionBase
                 {
                     var defaultArgument = Arguments[1];
                     var defaultResult = defaultArgument.GetValue(currentToken, dataContext, context);
-                    return new JLioFunctionResult(true, defaultResult.Data.GetJTokenValue());
+                    return new JLioFunctionResult(true, GetParsedDefaultValue(defaultResult.Data.GetJTokenValue()));
                 }
                 // Return success with null for missing path (original behavior)
                 return new JLioFunctionResult(true, JValue.CreateNull());
@@ -74,5 +74,29 @@ public class Fetch : FunctionBase
 
         // Fallback to original behavior for backward compatibility
         return new JLioFunctionResult(true, selectedTokens.GetJTokenValue());
+    }
+
+    private JToken GetParsedDefaultValue(JToken defaultValue)
+    {
+        // If the default value is a string, try to parse it as JSON to preserve types
+        if (defaultValue != null && defaultValue.Type == JTokenType.String)
+        {
+            var stringValue = defaultValue.Value<string>();
+            
+            // Try to parse as JSON first to handle complex literals like arrays, objects, booleans, numbers, null
+            try
+            {
+                var parsed = JToken.Parse(stringValue);
+                return parsed;
+            }
+            catch
+            {
+                // If parsing fails, return as string (it's a literal string value)
+                return defaultValue;
+            }
+        }
+        
+        // Return as-is if it's not a string or is null
+        return defaultValue;
     }
 }

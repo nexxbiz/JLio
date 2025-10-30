@@ -181,4 +181,90 @@ public class FetchTests
         Assert.IsTrue(result.Success);
         Assert.AreEqual("TechCorp - null", result.Data.SelectToken("$.result")!.Value<string>());
     }
+
+    [Test]
+    public void FetchWithDefaultValueSupportsStringLiterals()
+    {
+        var function = "=fetch($.missing, 'hello world')";
+        var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"add\"}}]";
+        var result = JLioConvert.Parse(script, parseOptions)
+            .Execute(new JObject(), executionContext);
+        Assert.IsTrue(result.Success);
+        Assert.AreEqual("hello world", result.Data.SelectToken("$.result")!.Value<string>());
+    }
+
+    [Test]
+    public void FetchWithDefaultValueSupportsArrayLiterals()
+    {
+        var function = "=fetch($.missing, [1, 2, 3])";
+        var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"add\"}}]";
+        var result = JLioConvert.Parse(script, parseOptions)
+            .Execute(new JObject(), executionContext);
+        Assert.IsTrue(result.Success);
+        var resultArray = result.Data.SelectToken("$.result") as JArray;
+        Assert.IsNotNull(resultArray);
+        Assert.AreEqual(3, resultArray.Count);
+        Assert.AreEqual(1, resultArray[0]!.Value<int>());
+        Assert.AreEqual(2, resultArray[1]!.Value<int>());
+        Assert.AreEqual(3, resultArray[2]!.Value<int>());
+    }
+
+    [Test]
+    public void FetchWithDefaultValueSupportsObjectLiterals()
+    {
+        var function = "=fetch($.missing, { 'demo': 42, 'name': 'test' })";
+        var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"add\"}}]";
+        var result = JLioConvert.Parse(script, parseOptions)
+            .Execute(new JObject(), executionContext);
+        Assert.IsTrue(result.Success);
+        var resultObject = result.Data.SelectToken("$.result") as JObject;
+        Assert.IsNotNull(resultObject);
+        Assert.AreEqual(42, resultObject.SelectToken("$.demo")!.Value<int>());
+        Assert.AreEqual("test", resultObject.SelectToken("$.name")!.Value<string>());
+    }
+
+    [Test]
+    public void FetchWithDefaultValueSupportsComplexNestedStructures()
+    {
+        var function = "=fetch($.missing, { 'users': ['alice', 'bob'], 'count': 2 })";
+        var script = $"[{{\"path\":\"$.result\",\"value\":\"{function}\",\"command\":\"add\"}}]";
+        var result = JLioConvert.Parse(script, parseOptions)
+            .Execute(new JObject(), executionContext);
+        Assert.IsTrue(result.Success);
+        var resultObject = result.Data.SelectToken("$.result") as JObject;
+        Assert.IsNotNull(resultObject);
+        Assert.AreEqual(2, resultObject.SelectToken("$.count")!.Value<int>());
+        var usersArray = resultObject.SelectToken("$.users") as JArray;
+        Assert.IsNotNull(usersArray);
+        Assert.AreEqual("alice", usersArray[0]!.Value<string>());
+        Assert.AreEqual("bob", usersArray[1]!.Value<string>());
+    }
+
+    [Test]
+    public void FetchWithDefaultValuePreservesTypeOfSimpleValues()
+    {
+        // Test boolean
+        var boolFunction = "=fetch($.missing, true)";
+        var boolScript = $"[{{\"path\":\"$.result\",\"value\":\"{boolFunction}\",\"command\":\"add\"}}]";
+        var boolResult = JLioConvert.Parse(boolScript, parseOptions)
+            .Execute(new JObject(), executionContext);
+        Assert.IsTrue(boolResult.Success);
+        Assert.AreEqual(true, boolResult.Data.SelectToken("$.result")!.Value<bool>());
+
+        // Test null
+        var nullFunction = "=fetch($.missing, null)";
+        var nullScript = $"[{{\"path\":\"$.result\",\"value\":\"{nullFunction}\",\"command\":\"add\"}}]";
+        var nullResult = JLioConvert.Parse(nullScript, parseOptions)
+            .Execute(new JObject(), executionContext);
+        Assert.IsTrue(nullResult.Success);
+        Assert.AreEqual(JTokenType.Null, nullResult.Data.SelectToken("$.result")!.Type);
+
+        // Test number
+        var numberFunction = "=fetch($.missing, 42.5)";
+        var numberScript = $"[{{\"path\":\"$.result\",\"value\":\"{numberFunction}\",\"command\":\"add\"}}]";
+        var numberResult = JLioConvert.Parse(numberScript, parseOptions)
+            .Execute(new JObject(), executionContext);
+        Assert.IsTrue(numberResult.Success);
+        Assert.AreEqual(42.5, numberResult.Data.SelectToken("$.result")!.Value<double>());
+    }
 }

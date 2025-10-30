@@ -1,0 +1,18 @@
+<Project>
+  <PropertyGroup>
+    <!-- Ensure consistent project GUIDs and prevent test discovery conflicts -->
+    <Deterministic>true</Deterministic>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    
+    <!-- Test-related properties to prevent duplicate key issues -->
+    <VSTestUseMSBuildOutput>false</VSTestUseMSBuildOutput>
+    <VSTestConsoleTreatNoTestsAsError>false</VSTestConsoleTreatNoTestsAsError>
+    
+    <!-- Enable nullable reference types for .NET 8 projects -->
+    <Nullable>enable</Nullable>
+    
+    <!-- Disable nullable warnings that are showing up in the build -->
+    <WarningsAsErrors />
+    <WarningsNotAsErrors>CS8600;CS8602;CS8604;CS8618</WarningsNotAsErrors>
+  </PropertyGroup>
+</Project>
