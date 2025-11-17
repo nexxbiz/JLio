@@ -27,7 +27,7 @@ public class ConditionalAggregateFunctionsTests
     [Test]
     public void SumIf_NumericGreaterThan()
     {
-        var script = "[{'path':'$.result','value':'=sumif($.numbers[*],\\'>5\\')','command':'add'}]".Replace("'", "\"");
+        var script = "[{\"path\":\"$.result\",\"value\":\"=sumif($.numbers[*],'>5')\",\"command\":\"add\"}]";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse("{\"numbers\":[3,5,7,9,2]}"), executionContext);
         Assert.IsTrue(result.Success);
         Assert.AreEqual(16, result.Data.SelectToken("$.result")?.Value<double>());
@@ -36,7 +36,7 @@ public class ConditionalAggregateFunctionsTests
     [Test]
     public void SumIf_NumericGreaterThanOrEqual()
     {
-        var script = "[{'path':'$.result','value':'=sumif($.numbers[*],\\'>=5\\')','command':'add'}]".Replace("'", "\"");
+        var script = "[{\"path\":\"$.result\",\"value\":\"=sumif($.numbers[*],'>=5')\",\"command\":\"add\"}]";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse("{\"numbers\":[3,5,7,9,2]}"), executionContext);
         Assert.IsTrue(result.Success);
         Assert.AreEqual(21, result.Data.SelectToken("$.result")?.Value<double>());
@@ -45,7 +45,7 @@ public class ConditionalAggregateFunctionsTests
     [Test]
     public void SumIf_NumericLessThan()
     {
-        var script = "[{'path':'$.result','value':'=sumif($.numbers[*],\\'<5\\')','command':'add'}]".Replace("'", "\"");
+        var script = "[{\"path\":\"$.result\",\"value\":\"=sumif($.numbers[*],'<5')\",\"command\":\"add\"}]";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse("{\"numbers\":[3,5,7,9,2]}"), executionContext);
         Assert.IsTrue(result.Success);
         Assert.AreEqual(5, result.Data.SelectToken("$.result")?.Value<double>());
@@ -54,7 +54,7 @@ public class ConditionalAggregateFunctionsTests
     [Test]
     public void SumIf_WithSumRange()
     {
-        var script = "[{'path':'$.result','value':'=sumif($.items[*].category,\\'electronics\\',$.items[*].price)','command':'add'}]".Replace("'", "\"");
+        var script = "[{\"path\":\"$.result\",\"value\":\"=sumif($.items[*].category,'electronics',$.items[*].price)\",\"command\":\"add\"}]";
         var data = "{\"items\":[{\"category\":\"electronics\",\"price\":100},{\"category\":\"books\",\"price\":20},{\"category\":\"electronics\",\"price\":150}]}";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executionContext);
         Assert.IsTrue(result.Success);
@@ -64,7 +64,7 @@ public class ConditionalAggregateFunctionsTests
     [Test]
     public void SumIf_Wildcards()
     {
-        var script = "[{'path':'$.result','value':'=sumif($.names[*],\\'*john*\\',$.values[*])','command':'add'}]".Replace("'", "\"");
+        var script = "[{\"path\":\"$.result\",\"value\":\"=sumif($.names[*],'*john*',$.values[*])\",\"command\":\"add\"}]";
         var data = "{\"names\":[\"john\",\"jane\",\"johnny\",\"bob\"],\"values\":[10,20,30,40]}";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executionContext);
         Assert.IsTrue(result.Success);
@@ -74,7 +74,7 @@ public class ConditionalAggregateFunctionsTests
     [Test]
     public void SumIf_IgnoresNonNumericValues()
     {
-        var script = "[{'path':'$.result','value':'=sumif($.values[*],\\'>0\\')','command':'add'}]".Replace("'", "\"");
+        var script = "[{\"path\":\"$.result\",\"value\":\"=sumif($.values[*],'>0')\",\"command\":\"add\"}]";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse("{\"values\":[1,\"text\",3,null,5]}"), executionContext);
         Assert.IsTrue(result.Success);
         Assert.AreEqual(9, result.Data.SelectToken("$.result")?.Value<double>());
@@ -83,7 +83,7 @@ public class ConditionalAggregateFunctionsTests
     [Test]
     public void SumIf_NoMatchesReturnsZero()
     {
-        var script = "[{'path':'$.result','value':'=sumif($.values[*],\\'>100\\')','command':'add'}]".Replace("'", "\"");
+        var script = "[{\"path\":\"$.result\",\"value\":\"=sumif($.values[*],'>100')\",\"command\":\"add\"}]";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse("{\"values\":[1,2,3]}"), executionContext);
         Assert.IsTrue(result.Success);
         Assert.AreEqual(0, result.Data.SelectToken("$.result")?.Value<double>());
@@ -96,7 +96,7 @@ public class ConditionalAggregateFunctionsTests
     [Test]
     public void SumIfs_SingleCriteria()
     {
-        var script = "[{'path':'$.result','value':'=sumifs($.values[*],$.values[*],\\'>5\\')','command':'add'}]".Replace("'", "\"");
+        var script = "[{\"path\":\"$.result\",\"value\":\"=sumifs($.values[*],$.values[*],'>5')\",\"command\":\"add\"}]";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse("{\"values\":[3,5,7,9,2]}"), executionContext);
         Assert.IsTrue(result.Success);
         Assert.AreEqual(16, result.Data.SelectToken("$.result")?.Value<double>());
@@ -105,7 +105,7 @@ public class ConditionalAggregateFunctionsTests
     [Test]
     public void SumIfs_MultipleCriteria()
     {
-        var script = "[{'path':'$.result','value':'=sumifs($.prices[*],$.prices[*],\\'>=10\\',$.prices[*],\\'<=50\\')','command':'add'}]".Replace("'", "\"");
+        var script = "[{\"path\":\"$.result\",\"value\":\"=sumifs($.prices[*],$.prices[*],'>=10',$.prices[*],'<=50')\",\"command\":\"add\"}]";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse("{\"prices\":[5,15,25,55,30]}"), executionContext);
         Assert.IsTrue(result.Success);
         Assert.AreEqual(70, result.Data.SelectToken("$.result")?.Value<double>());
@@ -114,7 +114,7 @@ public class ConditionalAggregateFunctionsTests
     [Test]
     public void SumIfs_DifferentRanges()
     {
-        var script = "[{'path':'$.result','value':'=sumifs($.sales[*],$.categories[*],\\'electronics\\',$.status[*],\\'active\\')','command':'add'}]".Replace("'", "\"");
+        var script = "[{\"path\":\"$.result\",\"value\":\"=sumifs($.sales[*],$.categories[*],'electronics',$.status[*],'active')\",\"command\":\"add\"}]";
         var data = "{\"sales\":[100,50,150,75],\"categories\":[\"electronics\",\"books\",\"electronics\",\"books\"],\"status\":[\"active\",\"active\",\"inactive\",\"active\"]}";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executionContext);
         Assert.IsTrue(result.Success);
@@ -128,7 +128,7 @@ public class ConditionalAggregateFunctionsTests
     [Test]
     public void CountIf_NumericComparison()
     {
-        var script = "[{'path':'$.result','value':'=countif($.numbers[*],\\'>5\\')','command':'add'}]".Replace("'", "\"");
+        var script = "[{\"path\":\"$.result\",\"value\":\"=countif($.numbers[*],'>5')\",\"command\":\"add\"}]";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse("{\"numbers\":[3,5,7,9,2]}"), executionContext);
         Assert.IsTrue(result.Success);
         Assert.AreEqual(2, result.Data.SelectToken("$.result")?.Value<int>());
@@ -137,7 +137,7 @@ public class ConditionalAggregateFunctionsTests
     [Test]
     public void CountIf_TextEquality()
     {
-        var script = "[{'path':'$.result','value':'=countif($.items[*],\\'electronics\\')','command':'add'}]".Replace("'", "\"");
+        var script = "[{\"path\":\"$.result\",\"value\":\"=countif($.items[*],'electronics')\",\"command\":\"add\"}]";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse("{\"items\":[\"electronics\",\"books\",\"electronics\",\"music\"]}"), executionContext);
         Assert.IsTrue(result.Success);
         Assert.AreEqual(2, result.Data.SelectToken("$.result")?.Value<int>());
@@ -146,7 +146,7 @@ public class ConditionalAggregateFunctionsTests
     [Test]
     public void CountIf_Wildcards()
     {
-        var script = "[{'path':'$.result','value':'=countif($.names[*],\\'*john*\\')','command':'add'}]".Replace("'", "\"");
+        var script = "[{\"path\":\"$.result\",\"value\":\"=countif($.names[*],'*john*')\",\"command\":\"add\"}]";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse("{\"names\":[\"john\",\"jane\",\"johnny\",\"bob\"]}"), executionContext);
         Assert.IsTrue(result.Success);
         Assert.AreEqual(2, result.Data.SelectToken("$.result")?.Value<int>());
@@ -159,7 +159,7 @@ public class ConditionalAggregateFunctionsTests
     [Test]
     public void CountIfs_SingleCriteria()
     {
-        var script = "[{'path':'$.result','value':'=countifs($.values[*],\\'>5\\')','command':'add'}]".Replace("'", "\"");
+        var script = "[{\"path\":\"$.result\",\"value\":\"=countifs($.values[*],'>5')\",\"command\":\"add\"}]";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse("{\"values\":[3,5,7,9,2]}"), executionContext);
         Assert.IsTrue(result.Success);
         Assert.AreEqual(2, result.Data.SelectToken("$.result")?.Value<int>());
@@ -168,7 +168,7 @@ public class ConditionalAggregateFunctionsTests
     [Test]
     public void CountIfs_MultipleCriteria()
     {
-        var script = "[{'path':'$.result','value':'=countifs($.values[*],\\'>=5\\',$.values[*],\\'<=10\\')','command':'add'}]".Replace("'", "\"");
+        var script = "[{\"path\":\"$.result\",\"value\":\"=countifs($.values[*],'>=5',$.values[*],'<=10')\",\"command\":\"add\"}]";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse("{\"values\":[3,5,7,9,2,12]}"), executionContext);
         Assert.IsTrue(result.Success);
         Assert.AreEqual(3, result.Data.SelectToken("$.result")?.Value<int>());
@@ -177,7 +177,7 @@ public class ConditionalAggregateFunctionsTests
     [Test]
     public void CountIfs_DifferentRanges()
     {
-        var script = "[{'path':'$.result','value':'=countifs($.categories[*],\\'electronics\\',$.status[*],\\'active\\')','command':'add'}]".Replace("'", "\"");
+        var script = "[{\"path\":\"$.result\",\"value\":\"=countifs($.categories[*],'electronics',$.status[*],'active')\",\"command\":\"add\"}]";
         var data = "{\"categories\":[\"electronics\",\"books\",\"electronics\",\"books\"],\"status\":[\"active\",\"active\",\"inactive\",\"active\"]}";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executionContext);
         Assert.IsTrue(result.Success);
@@ -191,7 +191,7 @@ public class ConditionalAggregateFunctionsTests
     [Test]
     public void AverageIf_NumericComparison()
     {
-        var script = "[{'path':'$.result','value':'=averageif($.numbers[*],\\'>5\\')','command':'add'}]".Replace("'", "\"");
+        var script = "[{\"path\":\"$.result\",\"value\":\"=averageif($.numbers[*],'>5')\",\"command\":\"add\"}]";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse("{\"numbers\":[3,5,7,9,2]}"), executionContext);
         Assert.IsTrue(result.Success);
         Assert.AreEqual(8, result.Data.SelectToken("$.result")?.Value<double>());
@@ -200,7 +200,7 @@ public class ConditionalAggregateFunctionsTests
     [Test]
     public void AverageIf_WithAverageRange()
     {
-        var script = "[{'path':'$.result','value':'=averageif($.items[*].category,\\'electronics\\',$.items[*].price)','command':'add'}]".Replace("'", "\"");
+        var script = "[{\"path\":\"$.result\",\"value\":\"=averageif($.items[*].category,'electronics',$.items[*].price)\",\"command\":\"add\"}]";
         var data = "{\"items\":[{\"category\":\"electronics\",\"price\":100},{\"category\":\"books\",\"price\":20},{\"category\":\"electronics\",\"price\":200}]}";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executionContext);
         Assert.IsTrue(result.Success);
@@ -210,7 +210,7 @@ public class ConditionalAggregateFunctionsTests
     [Test]
     public void AverageIf_IgnoresNonNumericValues()
     {
-        var script = "[{'path':'$.result','value':'=averageif($.values[*],\\'>0\\')','command':'add'}]".Replace("'", "\"");
+        var script = "[{\"path\":\"$.result\",\"value\":\"=averageif($.values[*],'>0')\",\"command\":\"add\"}]";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse("{\"values\":[2,\"text\",4,null,6]}"), executionContext);
         Assert.IsTrue(result.Success);
         Assert.AreEqual(4, result.Data.SelectToken("$.result")?.Value<double>());
@@ -223,7 +223,7 @@ public class ConditionalAggregateFunctionsTests
     [Test]
     public void AverageIfs_SingleCriteria()
     {
-        var script = "[{'path':'$.result','value':'=averageifs($.values[*],$.values[*],\\'>5\\')','command':'add'}]".Replace("'", "\"");
+        var script = "[{\"path\":\"$.result\",\"value\":\"=averageifs($.values[*],$.values[*],'>5')\",\"command\":\"add\"}]";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse("{\"values\":[3,5,7,9,2]}"), executionContext);
         Assert.IsTrue(result.Success);
         Assert.AreEqual(8, result.Data.SelectToken("$.result")?.Value<double>());
@@ -232,7 +232,7 @@ public class ConditionalAggregateFunctionsTests
     [Test]
     public void AverageIfs_MultipleCriteria()
     {
-        var script = "[{'path':'$.result','value':'=averageifs($.values[*],$.values[*],\\'>=5\\',$.values[*],\\'<=10\\')','command':'add'}]".Replace("'", "\"");
+        var script = "[{\"path\":\"$.result\",\"value\":\"=averageifs($.values[*],$.values[*],'>=5',$.values[*],'<=10')\",\"command\":\"add\"}]";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse("{\"values\":[3,5,7,9,2,12]}"), executionContext);
         Assert.IsTrue(result.Success);
         Assert.AreEqual(7, result.Data.SelectToken("$.result")?.Value<double>());
@@ -245,7 +245,7 @@ public class ConditionalAggregateFunctionsTests
     [Test]
     public void MinIfs_SingleCriteria()
     {
-        var script = "[{'path':'$.result','value':'=minifs($.values[*],$.values[*],\\'>5\\')','command':'add'}]".Replace("'", "\"");
+        var script = "[{\"path\":\"$.result\",\"value\":\"=minifs($.values[*],$.values[*],'>5')\",\"command\":\"add\"}]";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse("{\"values\":[3,5,7,9,2]}"), executionContext);
         Assert.IsTrue(result.Success);
         Assert.AreEqual(7, result.Data.SelectToken("$.result")?.Value<double>());
@@ -254,7 +254,7 @@ public class ConditionalAggregateFunctionsTests
     [Test]
     public void MinIfs_MultipleCriteria()
     {
-        var script = "[{'path':'$.result','value':'=minifs($.values[*],$.values[*],\\'>=5\\',$.values[*],\\'<=10\\')','command':'add'}]".Replace("'", "\"");
+        var script = "[{\"path\":\"$.result\",\"value\":\"=minifs($.values[*],$.values[*],'>=5',$.values[*],'<=10')\",\"command\":\"add\"}]";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse("{\"values\":[3,5,7,9,2,12]}"), executionContext);
         Assert.IsTrue(result.Success);
         Assert.AreEqual(5, result.Data.SelectToken("$.result")?.Value<double>());
@@ -263,7 +263,7 @@ public class ConditionalAggregateFunctionsTests
     [Test]
     public void MinIfs_NoMatchesReturnsError()
     {
-        var script = "[{'path':'$.result','value':'=minifs($.values[*],$.values[*],\\'>100\\')','command':'add'}]".Replace("'", "\"");
+        var script = "[{\"path\":\"$.result\",\"value\":\"=minifs($.values[*],$.values[*],'>100')\",\"command\":\"add\"}]";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse("{\"values\":[1,2,3]}"), executionContext);
         Assert.IsFalse(result.Success);
         Assert.IsTrue(executionContext.GetLogEntries().Any(i => i.Level == LogLevel.Error));
@@ -276,7 +276,7 @@ public class ConditionalAggregateFunctionsTests
     [Test]
     public void MaxIfs_SingleCriteria()
     {
-        var script = "[{'path':'$.result','value':'=maxifs($.values[*],$.values[*],\\'>5\\')','command':'add'}]".Replace("'", "\"");
+        var script = "[{\"path\":\"$.result\",\"value\":\"=maxifs($.values[*],$.values[*],'>5')\",\"command\":\"add\"}]";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse("{\"values\":[3,5,7,9,2]}"), executionContext);
         Assert.IsTrue(result.Success);
         Assert.AreEqual(9, result.Data.SelectToken("$.result")?.Value<double>());
@@ -285,7 +285,7 @@ public class ConditionalAggregateFunctionsTests
     [Test]
     public void MaxIfs_MultipleCriteria()
     {
-        var script = "[{'path':'$.result','value':'=maxifs($.values[*],$.values[*],\\'>=5\\',$.values[*],\\'<=10\\')','command':'add'}]".Replace("'", "\"");
+        var script = "[{\"path\":\"$.result\",\"value\":\"=maxifs($.values[*],$.values[*],'>=5',$.values[*],'<=10')\",\"command\":\"add\"}]";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse("{\"values\":[3,5,7,9,2,12]}"), executionContext);
         Assert.IsTrue(result.Success);
         Assert.AreEqual(9, result.Data.SelectToken("$.result")?.Value<double>());
@@ -294,7 +294,7 @@ public class ConditionalAggregateFunctionsTests
     [Test]
     public void MaxIfs_NoMatchesReturnsError()
     {
-        var script = "[{'path':'$.result','value':'=maxifs($.values[*],$.values[*],\\'>100\\')','command':'add'}]".Replace("'", "\"");
+        var script = "[{\"path\":\"$.result\",\"value\":\"=maxifs($.values[*],$.values[*],'>100')\",\"command\":\"add\"}]";
         var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse("{\"values\":[1,2,3]}"), executionContext);
         Assert.IsFalse(result.Success);
         Assert.IsTrue(executionContext.GetLogEntries().Any(i => i.Level == LogLevel.Error));

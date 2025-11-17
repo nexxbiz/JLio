@@ -50,9 +50,22 @@ public class SumIf : FunctionBase
             return JLioFunctionResult.Failed(currentToken);
         }
 
-        var criteria = criteriaValue.Value.Type == JTokenType.String 
-            ? criteriaValue.Value.Value<string>() 
-            : criteriaValue.Value.ToString();
+        // Extract criteria string properly  
+        string criteria;
+        if (criteriaValue.Value.Type == JTokenType.String)
+        {
+            criteria = criteriaValue.Value.Value<string>();
+            // Remove surrounding single quotes if present (JLio string literals)
+            if (criteria.StartsWith("'") && criteria.EndsWith("'") && criteria.Length >= 2)
+            {
+                criteria = criteria.Substring(1, criteria.Length - 2);
+            }
+        }
+        else
+        {
+            criteria = criteriaValue.Value.ToString();
+        }
+        
         var range = ExtractArray(rangeValue.Value);
         
         // If sum_range is provided, use it; otherwise sum from range

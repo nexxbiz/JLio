@@ -151,6 +151,12 @@ public class AverageIfs : FunctionBase
     }
     private string ExtractCriteriaString(JToken token)
     {
-        return token.Type == JTokenType.String ? token.Value<string>() : token.ToString();
+        var str = token.Type == JTokenType.String ? token.Value<string>() : token.ToString();
+        // Remove surrounding single quotes if present (JLio string literals)
+        if (str.StartsWith("'") && str.EndsWith("'") && str.Length >= 2)
+        {
+            str = str.Substring(1, str.Length - 2);
+        }
+        return str;
     }
 }
