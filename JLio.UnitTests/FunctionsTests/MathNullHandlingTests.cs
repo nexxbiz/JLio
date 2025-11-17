@@ -505,4 +505,143 @@ public class MathNullHandlingTests
     }
 
     #endregion
+
+    #region Nested Functions with Fetch Tests
+
+    [Test]
+    public void Sum_WithFetchReturningNull_TreatsAsZero()
+    {
+        // Arrange - fetch returns null when path is missing, null should be treated as 0
+        var script = "[{\"path\":\"$.result\",\"value\":\"=sum(fetch(@.age),10)\",\"command\":\"add\"}]";
+        var data = "{}";
+
+        // Act
+        var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executionContext);
+
+        // Assert
+        Assert.IsTrue(result.Success, "Sum should succeed when fetch returns null");
+        Assert.AreEqual(10, result.Data.SelectToken("$.result")?.Value<double>()); // null + 10 = 0 + 10 = 10
+    }
+
+    [Test]
+    public void Sum_WithFetchReturningValue_UsesValue()
+    {
+        // Arrange - fetch returns a value
+        var script = "[{\"path\":\"$.result\",\"value\":\"=sum(fetch(@.age),10)\",\"command\":\"add\"}]";
+        var data = "{\"age\":25}";
+
+        // Act
+        var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executionContext);
+
+        // Assert
+        Assert.IsTrue(result.Success);
+        Assert.AreEqual(35, result.Data.SelectToken("$.result")?.Value<double>()); // 25 + 10 = 35
+    }
+
+    [Test]
+    public void Sum_WithFetchDefaultValue_UsesDefault()
+    {
+        // Arrange - fetch with default value when path is missing
+        var script = "[{\"path\":\"$.result\",\"value\":\"=sum(fetch(@.age,18),10)\",\"command\":\"add\"}]";
+        var data = "{}";
+
+        // Act
+        var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executionContext);
+
+        // Assert
+        Assert.IsTrue(result.Success);
+        Assert.AreEqual(28, result.Data.SelectToken("$.result")?.Value<double>()); // 18 (default) + 10 = 28
+    }
+
+    [Test]
+    public void Calculate_WithFetchInTokens_AndNullValue_TreatsAsZero()
+    {
+        // Arrange - fetch returns null, calculate should treat as 0
+        var script = "[{\"path\":\"$.result\",\"value\":\"=calculate('{{=fetch(@.age)}} * 100')\",\"command\":\"add\"}]";
+        var data = "{}";
+
+        // Act
+        var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executionContext);
+
+        // Assert
+        Assert.IsTrue(result.Success, "Calculate should succeed when fetch returns null");
+        Assert.AreEqual(0, result.Data.SelectToken("$.result")?.Value<double>()); // null * 100 = 0 * 100 = 0
+    }
+
+    [Test]
+    public void Calculate_WithFetchInTokens_AndValue_UsesValue()
+    {
+        // Arrange - fetch returns a value
+        var script = "[{\"path\":\"$.result\",\"value\":\"=calculate('{{=fetch(@.age)}} * 100')\",\"command\":\"add\"}]";
+        var data = "{\"age\":25}";
+
+        // Act
+        var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executionContext);
+
+        // Assert
+        Assert.IsTrue(result.Success);
+        Assert.AreEqual(2500, result.Data.SelectToken("$.result")?.Value<double>()); // 25 * 100 = 2500
+    }
+
+    [Test]
+    public void Calculate_WithFetchDefaultValue_UsesDefault()
+    {
+        // Arrange - fetch with default value when path is missing
+        var script = "[{\"path\":\"$.result\",\"value\":\"=calculate('{{=fetch(@.age,18)}} * 100')\",\"command\":\"add\"}]";
+        var data = "{}";
+
+        // Act
+        var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executionContext);
+
+        // Assert
+        Assert.IsTrue(result.Success);
+        Assert.AreEqual(1800, result.Data.SelectToken("$.result")?.Value<double>()); // 18 (default) * 100 = 1800
+    }
+
+    [Test]
+    public void Max_WithFetchReturningNull_TreatsAsZero()
+    {
+        // Arrange - max with fetch returning null
+        var script = "[{\"path\":\"$.result\",\"value\":\"=max(fetch(@.score),-5)\",\"command\":\"add\"}]";
+        var data = "{}";
+
+        // Act
+        var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executionContext);
+
+        // Assert
+        Assert.IsTrue(result.Success);
+        Assert.AreEqual(0, result.Data.SelectToken("$.result")?.Value<double>()); // max(null, -5) = max(0, -5) = 0
+    }
+
+    [Test]
+    public void Avg_WithMultipleFetchCalls_HandlesNullCorrectly()
+    {
+        // Arrange - average with multiple fetch calls, some returning null
+        var script = "[{\"path\":\"$.result\",\"value\":\"=avg(fetch(@.a),fetch(@.b),fetch(@.c))\",\"command\":\"add\"}]";
+        var data = "{\"a\":10,\"c\":20}"; // b is missing
+
+        // Act
+        var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executionContext);
+
+        // Assert
+        Assert.IsTrue(result.Success);
+        Assert.AreEqual(10, result.Data.SelectToken("$.result")?.Value<double>()); // avg(10, null, 20) = avg(10, 0, 20) = 30/3 = 10
+    }
+
+    [Test]
+    public void Calculate_WithComplexNestedFetch_WorksCorrectly()
+    {
+        // Arrange - complex expression with multiple fetch calls
+        var script = "[{\"path\":\"$.result\",\"value\":\"=calculate('({{=fetch(@.price,100)}} * {{=fetch(@.quantity,1)}}) + {{=fetch(@.tax,0)}}')\",\"command\":\"add\"}]";
+        var data = "{\"price\":50,\"quantity\":2}"; // tax is missing, should use default 0
+
+        // Act
+        var result = JLioConvert.Parse(script, parseOptions).Execute(JToken.Parse(data), executionContext);
+
+        // Assert
+        Assert.IsTrue(result.Success);
+        Assert.AreEqual(100, result.Data.SelectToken("$.result")?.Value<double>()); // (50 * 2) + 0 = 100
+    }
+
+    #endregion
 }
