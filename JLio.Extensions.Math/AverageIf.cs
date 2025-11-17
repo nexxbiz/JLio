@@ -10,6 +10,8 @@ namespace JLio.Extensions.Math;
 
 public class AverageIf : FunctionBase
 {
+    public override string FunctionName => "averageif";
+    
     public AverageIf()
     {
     }

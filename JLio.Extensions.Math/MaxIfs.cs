@@ -10,6 +10,8 @@ namespace JLio.Extensions.Math;
 
 public class MaxIfs : FunctionBase
 {
+    public override string FunctionName => "maxifs";
+    
     public MaxIfs()
     {
     }

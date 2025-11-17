@@ -9,6 +9,8 @@ namespace JLio.Extensions.Math;
 
 public class CountIf : FunctionBase
 {
+    public override string FunctionName => "countif";
+    
     public CountIf()
     {
     }

@@ -10,6 +10,8 @@ namespace JLio.Extensions.Math;
 
 public class SumIf : FunctionBase
 {
+    public override string FunctionName => "sumif";
+    
     public SumIf()
     {
     }

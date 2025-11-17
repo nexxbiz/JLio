@@ -10,6 +10,8 @@ namespace JLio.Extensions.Math;
 
 public class MinIfs : FunctionBase
 {
+    public override string FunctionName => "minifs";
+    
     public MinIfs()
     {
     }
