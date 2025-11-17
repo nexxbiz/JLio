@@ -20,12 +20,12 @@ public class Sum : FunctionBase
 
     public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)
     {
-        var values = GetArguments(Arguments, currentToken, dataContext, context);
+        var values = GetArgumentsWithMetadata(Arguments, currentToken, dataContext, context);
         double result = 0;
 
-        foreach (var token in values)
+        foreach (var argValue in values)
         {
-            if (!TryAddTokenValue(token, ref result, context))
+            if (!TryAddTokenValue(argValue.Value, argValue.WasFound, ref result, context))
             {
                 return JLioFunctionResult.Failed(currentToken);
             }
@@ -34,7 +34,7 @@ public class Sum : FunctionBase
         return new JLioFunctionResult(true, new JValue(result));
     }
 
-    private bool TryAddTokenValue(JToken token, ref double result, IExecutionContext context)
+    private bool TryAddTokenValue(JToken token, bool wasFound, ref double result, IExecutionContext context)
     {
         switch (token.Type)
         {
@@ -45,6 +45,17 @@ public class Sum : FunctionBase
 
             case JTokenType.String when double.TryParse(token.Value<string>(), NumberStyles.Float, CultureInfo.InvariantCulture, out var numeric):
                 result += numeric;
+                return true;
+
+            case JTokenType.Null:
+                // If not found, return error
+                if (!wasFound)
+                {
+                    context.LogError(CoreConstants.FunctionExecution,
+                        $"{FunctionName} argument path not found");
+                    return false;
+                }
+                // If found but null, treat as 0 (do nothing, result += 0)
                 return true;
 
             case JTokenType.Array:
@@ -61,7 +72,8 @@ public class Sum : FunctionBase
     {
         foreach (var item in array)
         {
-            if (!TryAddTokenValue(item, ref result, context))
+            // Array items are always considered "found" - they exist in the array
+            if (!TryAddTokenValue(item, true, ref result, context))
             {
                 return false;
             }

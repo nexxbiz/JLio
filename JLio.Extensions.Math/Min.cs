@@ -20,7 +20,7 @@ public class Min : FunctionBase
 
     public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)
     {
-        var values = GetArguments(Arguments, currentToken, dataContext, context);
+        var values = GetArgumentsWithMetadata(Arguments, currentToken, dataContext, context);
         if (values.Count == 0)
         {
             context.LogError(CoreConstants.FunctionExecution,
@@ -31,9 +31,9 @@ public class Min : FunctionBase
         double minValue = double.MaxValue;
         bool hasValue = false;
 
-        foreach (var token in values)
+        foreach (var argValue in values)
         {
-            if (!TryFindMinValue(token, ref minValue, ref hasValue, context))
+            if (!TryFindMinValue(argValue.Value, argValue.WasFound, ref minValue, ref hasValue, context))
             {
                 return JLioFunctionResult.Failed(currentToken);
             }
@@ -49,7 +49,7 @@ public class Min : FunctionBase
         return new JLioFunctionResult(true, new JValue(minValue));
     }
 
-    private bool TryFindMinValue(JToken token, ref double minValue, ref bool hasValue, IExecutionContext context)
+    private bool TryFindMinValue(JToken token, bool wasFound, ref double minValue, ref bool hasValue, IExecutionContext context)
     {
         switch (token.Type)
         {
@@ -72,6 +72,19 @@ public class Min : FunctionBase
                 return true;
 
             case JTokenType.Null:
+                // If not found, return error
+                if (!wasFound)
+                {
+                    context.LogError(CoreConstants.FunctionExecution,
+                        $"{FunctionName} argument path not found");
+                    return false;
+                }
+                // If found but null, treat as 0 and compare
+                if (!hasValue || 0 < minValue)
+                {
+                    minValue = 0;
+                }
+                hasValue = true;
                 return true;
 
             case JTokenType.Array:
@@ -88,7 +101,8 @@ public class Min : FunctionBase
     {
         foreach (var item in array)
         {
-            if (!TryFindMinValue(item, ref minValue, ref hasValue, context))
+            // Array items are always considered "found" - they exist in the array
+            if (!TryFindMinValue(item, true, ref minValue, ref hasValue, context))
             {
                 return false;
             }

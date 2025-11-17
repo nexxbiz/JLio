@@ -20,7 +20,7 @@ public class Subtract : FunctionBase
 
     public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)
     {
-        var values = GetArguments(Arguments, currentToken, dataContext, context);
+        var values = GetArgumentsWithMetadata(Arguments, currentToken, dataContext, context);
         if (values.Count != 2)
         {
             context.LogError(CoreConstants.FunctionExecution,
@@ -29,13 +29,13 @@ public class Subtract : FunctionBase
         }
 
         double baseValue = 0;
-        if (!TryAddTokenValue(values[0], ref baseValue, context))
+        if (!TryAddTokenValue(values[0].Value, values[0].WasFound, ref baseValue, context))
         {
             return JLioFunctionResult.Failed(currentToken);
         }
 
         double subtractValue = 0;
-        if (!TryAddTokenValue(values[1], ref subtractValue, context))
+        if (!TryAddTokenValue(values[1].Value, values[1].WasFound, ref subtractValue, context))
         {
             return JLioFunctionResult.Failed(currentToken);
         }
@@ -44,7 +44,7 @@ public class Subtract : FunctionBase
         return new JLioFunctionResult(true, new JValue(result));
     }
 
-    private bool TryAddTokenValue(JToken token, ref double result, IExecutionContext context)
+    private bool TryAddTokenValue(JToken token, bool wasFound, ref double result, IExecutionContext context)
     {
         switch (token.Type)
         {
@@ -58,6 +58,14 @@ public class Subtract : FunctionBase
                 return true;
 
             case JTokenType.Null:
+                // If not found, return error
+                if (!wasFound)
+                {
+                    context.LogError(CoreConstants.FunctionExecution,
+                        $"{FunctionName} argument path not found");
+                    return false;
+                }
+                // If found but null, treat as 0 (do nothing, result += 0)
                 return true;
 
             case JTokenType.Array:
@@ -74,7 +82,8 @@ public class Subtract : FunctionBase
     {
         foreach (var item in array)
         {
-            if (!TryAddTokenValue(item, ref result, context))
+            // Array items are always considered "found" - they exist in the array
+            if (!TryAddTokenValue(item, true, ref result, context))
             {
                 return false;
             }

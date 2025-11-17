@@ -111,7 +111,14 @@ public class Calculate : FunctionBase
         }
         
         var result = FixedValue.DefaultFunctionConverter.ParseString(inner).GetValue(currentToken, dataContext, context);
-        if (!result.Success || result.Data.Count != 1) throw new Exception($"Failed to resolve token: {inner}");
+        if (!result.Success) throw new Exception($"Failed to resolve token: {inner}");
+        
+        // Check if path was not found (empty collection)
+        if (result.Data.Count == 0) throw new Exception($"Token path not found: {inner}");
+        
+        // Check if we got exactly one result
+        if (result.Data.Count != 1) throw new Exception($"Failed to resolve token: {inner}");
+        
         var replacement = ConvertToNumeric(result.Data.First(), inner);
         sb.Remove(match.Index, match.Length).Insert(match.Index, replacement);
     }
@@ -122,7 +129,7 @@ public class Calculate : FunctionBase
         {
             JTokenType.Integer or JTokenType.Float => token.Value<double>().ToString(Invariant),
             JTokenType.String => ParseStringToNumeric(token.Value<string>() ?? string.Empty),
-            JTokenType.Null => throw new Exception($"Token resolved to null: {name}"),
+            JTokenType.Null => "0", // Treat null as 0 instead of throwing an error
             _ => throw new Exception($"Token type not supported: {token.Type}")
         };
     }
