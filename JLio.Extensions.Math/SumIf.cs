@@ -50,7 +50,9 @@ public class SumIf : FunctionBase
             return JLioFunctionResult.Failed(currentToken);
         }
 
-        var criteria = criteriaValue.Value.ToString();
+        var criteria = criteriaValue.Value.Type == JTokenType.String 
+            ? criteriaValue.Value.Value<string>() 
+            : criteriaValue.Value.ToString();
         var range = ExtractArray(rangeValue.Value);
         
         // If sum_range is provided, use it; otherwise sum from range

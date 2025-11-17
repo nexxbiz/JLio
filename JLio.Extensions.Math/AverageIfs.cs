@@ -67,7 +67,7 @@ public class AverageIfs : FunctionBase
             }
 
             criteriaRanges.Add(ExtractArray(criteriaRangeValue.Value));
-            criteriaList.Add(criteriaValue.Value.ToString());
+            criteriaList.Add(ExtractCriteriaString(criteriaValue.Value));
         }
 
         double sum = 0;
@@ -148,5 +148,9 @@ public class AverageIfs : FunctionBase
             default:
                 return false;
         }
+    }
+    private string ExtractCriteriaString(JToken token)
+    {
+        return token.Type == JTokenType.String ? token.Value<string>() : token.ToString();
     }
 }

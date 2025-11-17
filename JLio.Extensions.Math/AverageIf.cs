@@ -50,7 +50,7 @@ public class AverageIf : FunctionBase
             return JLioFunctionResult.Failed(currentToken);
         }
 
-        var criteria = criteriaValue.Value.ToString();
+        var criteria = ExtractCriteriaString(criteriaValue.Value);
         var range = ExtractArray(rangeValue.Value);
         
         // If average_range is provided, use it; otherwise average from range
@@ -136,5 +136,9 @@ public class AverageIf : FunctionBase
             default:
                 return false;
         }
+    }
+    private string ExtractCriteriaString(JToken token)
+    {
+        return token.Type == JTokenType.String ? token.Value<string>() : token.ToString();
     }
 }

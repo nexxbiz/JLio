@@ -56,7 +56,7 @@ public class CountIfs : FunctionBase
             }
 
             criteriaRanges.Add(ExtractArray(criteriaRangeValue.Value));
-            criteriaList.Add(criteriaValue.Value.ToString());
+            criteriaList.Add(ExtractCriteriaString(criteriaValue.Value));
         }
 
         if (criteriaRanges.Count == 0)
@@ -117,5 +117,9 @@ public class CountIfs : FunctionBase
             JTokenType.Null => null,
             _ => token.ToString()
         };
+    }
+    private string ExtractCriteriaString(JToken token)
+    {
+        return token.Type == JTokenType.String ? token.Value<string>() : token.ToString();
     }
 }

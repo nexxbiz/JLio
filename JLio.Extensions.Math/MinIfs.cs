@@ -67,7 +67,7 @@ public class MinIfs : FunctionBase
             }
 
             criteriaRanges.Add(ExtractArray(criteriaRangeValue.Value));
-            criteriaList.Add(criteriaValue.Value.ToString());
+            criteriaList.Add(ExtractCriteriaString(criteriaValue.Value));
         }
 
         double minValue = double.MaxValue;
@@ -157,5 +157,9 @@ public class MinIfs : FunctionBase
             default:
                 return false;
         }
+    }
+    private string ExtractCriteriaString(JToken token)
+    {
+        return token.Type == JTokenType.String ? token.Value<string>() : token.ToString();
     }
 }
