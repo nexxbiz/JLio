@@ -20,6 +20,14 @@ public static class RegisterMathPack
         parseOptions.RegisterFunction<Pow>();
         parseOptions.RegisterFunction<Sqrt>();
         parseOptions.RegisterFunction<Median>();
+        parseOptions.RegisterFunction<SumIf>();
+        parseOptions.RegisterFunction<SumIfs>();
+        parseOptions.RegisterFunction<CountIf>();
+        parseOptions.RegisterFunction<CountIfs>();
+        parseOptions.RegisterFunction<AverageIf>();
+        parseOptions.RegisterFunction<AverageIfs>();
+        parseOptions.RegisterFunction<MinIfs>();
+        parseOptions.RegisterFunction<MaxIfs>();
         return parseOptions;
     }
 }
