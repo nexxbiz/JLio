@@ -20,7 +20,7 @@ public class Round : FunctionBase
 
     public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)
     {
-        var values = GetArguments(Arguments, currentToken, dataContext, context);
+        var values = GetArgumentsWithMetadata(Arguments, currentToken, dataContext, context);
         if (values.Count < 1 || values.Count > 2)
         {
             context.LogError(CoreConstants.FunctionExecution,
@@ -30,7 +30,8 @@ public class Round : FunctionBase
 
         // Get the value to round
         double value;
-        var valueToken = values[0];
+        var valueArg = values[0];
+        var valueToken = valueArg.Value;
         switch (valueToken.Type)
         {
             case JTokenType.Integer:
@@ -43,6 +44,14 @@ public class Round : FunctionBase
                 break;
 
             case JTokenType.Null:
+                // If not found, return error
+                if (!valueArg.WasFound)
+                {
+                    context.LogError(CoreConstants.FunctionExecution,
+                        $"{FunctionName} value argument path not found");
+                    return JLioFunctionResult.Failed(currentToken);
+                }
+                // If found but null, treat as 0
                 value = 0;
                 break;
 
@@ -56,7 +65,8 @@ public class Round : FunctionBase
         int decimals = 0;
         if (values.Count == 2)
         {
-            var decimalsToken = values[1];
+            var decimalsArg = values[1];
+            var decimalsToken = decimalsArg.Value;
             switch (decimalsToken.Type)
             {
                 case JTokenType.Integer:
@@ -68,6 +78,14 @@ public class Round : FunctionBase
                     break;
 
                 case JTokenType.Null:
+                    // If not found, return error
+                    if (!decimalsArg.WasFound)
+                    {
+                        context.LogError(CoreConstants.FunctionExecution,
+                            $"{FunctionName} decimals argument path not found");
+                        return JLioFunctionResult.Failed(currentToken);
+                    }
+                    // If found but null, treat as 0
                     decimals = 0;
                     break;
 

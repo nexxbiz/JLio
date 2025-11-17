@@ -20,13 +20,13 @@ public class Avg : FunctionBase
 
     public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)
     {
-        var values = GetArguments(Arguments, currentToken, dataContext, context);
+        var values = GetArgumentsWithMetadata(Arguments, currentToken, dataContext, context);
         double sum = 0;
         int count = 0;
 
-        foreach (var token in values)
+        foreach (var argValue in values)
         {
-            if (!TryAddTokenValue(token, ref sum, ref count, context))
+            if (!TryAddTokenValue(argValue.Value, argValue.WasFound, ref sum, ref count, context))
             {
                 return JLioFunctionResult.Failed(currentToken);
             }
@@ -36,7 +36,7 @@ public class Avg : FunctionBase
         return new JLioFunctionResult(true, new JValue(result));
     }
 
-    private bool TryAddTokenValue(JToken token, ref double sum, ref int count, IExecutionContext context)
+    private bool TryAddTokenValue(JToken token, bool wasFound, ref double sum, ref int count, IExecutionContext context)
     {
         switch (token.Type)
         {
@@ -48,6 +48,18 @@ public class Avg : FunctionBase
 
             case JTokenType.String when double.TryParse(token.Value<string>(), NumberStyles.Float, CultureInfo.InvariantCulture, out var numeric):
                 sum += numeric;
+                count++;
+                return true;
+
+            case JTokenType.Null:
+                // If not found, return error
+                if (!wasFound)
+                {
+                    context.LogError(CoreConstants.FunctionExecution,
+                        $"{FunctionName} argument path not found");
+                    return false;
+                }
+                // If found but null, treat as 0 and include in count
                 count++;
                 return true;
 
@@ -65,7 +77,8 @@ public class Avg : FunctionBase
     {
         foreach (var item in array)
         {
-            if (!TryAddTokenValue(item, ref sum, ref count, context))
+            // Array items are always considered "found" - they exist in the array
+            if (!TryAddTokenValue(item, true, ref sum, ref count, context))
             {
                 return false;
             }

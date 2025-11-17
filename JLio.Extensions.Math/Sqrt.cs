@@ -20,7 +20,7 @@ public class Sqrt : FunctionBase
 
     public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)
     {
-        var values = GetArguments(Arguments, currentToken, dataContext, context);
+        var values = GetArgumentsWithMetadata(Arguments, currentToken, dataContext, context);
         if (values.Count != 1)
         {
             context.LogError(CoreConstants.FunctionExecution,
@@ -28,7 +28,8 @@ public class Sqrt : FunctionBase
             return JLioFunctionResult.Failed(currentToken);
         }
 
-        var token = values[0];
+        var argValue = values[0];
+        var token = argValue.Value;
         double value;
 
         switch (token.Type)
@@ -43,6 +44,14 @@ public class Sqrt : FunctionBase
                 break;
 
             case JTokenType.Null:
+                // If not found, return error
+                if (!argValue.WasFound)
+                {
+                    context.LogError(CoreConstants.FunctionExecution,
+                        $"{FunctionName} argument path not found");
+                    return JLioFunctionResult.Failed(currentToken);
+                }
+                // If found but null, treat as 0
                 value = 0;
                 break;
 

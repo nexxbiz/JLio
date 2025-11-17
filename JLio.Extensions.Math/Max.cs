@@ -20,7 +20,7 @@ public class Max : FunctionBase
 
     public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)
     {
-        var values = GetArguments(Arguments, currentToken, dataContext, context);
+        var values = GetArgumentsWithMetadata(Arguments, currentToken, dataContext, context);
         if (values.Count == 0)
         {
             context.LogError(CoreConstants.FunctionExecution,
@@ -31,9 +31,9 @@ public class Max : FunctionBase
         double maxValue = double.MinValue;
         bool hasValue = false;
 
-        foreach (var token in values)
+        foreach (var argValue in values)
         {
-            if (!TryFindMaxValue(token, ref maxValue, ref hasValue, context))
+            if (!TryFindMaxValue(argValue.Value, argValue.WasFound, ref maxValue, ref hasValue, context))
             {
                 return JLioFunctionResult.Failed(currentToken);
             }
@@ -49,7 +49,7 @@ public class Max : FunctionBase
         return new JLioFunctionResult(true, new JValue(maxValue));
     }
 
-    private bool TryFindMaxValue(JToken token, ref double maxValue, ref bool hasValue, IExecutionContext context)
+    private bool TryFindMaxValue(JToken token, bool wasFound, ref double maxValue, ref bool hasValue, IExecutionContext context)
     {
         switch (token.Type)
         {
@@ -72,6 +72,19 @@ public class Max : FunctionBase
                 return true;
 
             case JTokenType.Null:
+                // If not found, return error
+                if (!wasFound)
+                {
+                    context.LogError(CoreConstants.FunctionExecution,
+                        $"{FunctionName} argument path not found");
+                    return false;
+                }
+                // If found but null, treat as 0 and compare
+                if (!hasValue || 0 > maxValue)
+                {
+                    maxValue = 0;
+                }
+                hasValue = true;
                 return true;
 
             case JTokenType.Array:
@@ -88,7 +101,8 @@ public class Max : FunctionBase
     {
         foreach (var item in array)
         {
-            if (!TryFindMaxValue(item, ref maxValue, ref hasValue, context))
+            // Array items are always considered "found" - they exist in the array
+            if (!TryFindMaxValue(item, true, ref maxValue, ref hasValue, context))
             {
                 return false;
             }

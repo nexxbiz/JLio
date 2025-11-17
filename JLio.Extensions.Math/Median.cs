@@ -20,7 +20,7 @@ public class Median : FunctionBase
 
     public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)
     {
-        var values = GetArguments(Arguments, currentToken, dataContext, context);
+        var values = GetArgumentsWithMetadata(Arguments, currentToken, dataContext, context);
         if (values.Count == 0)
         {
             context.LogError(CoreConstants.FunctionExecution,
@@ -30,9 +30,9 @@ public class Median : FunctionBase
 
         var numbers = new List<double>();
 
-        foreach (var token in values)
+        foreach (var argValue in values)
         {
-            if (!TryCollectNumbers(token, numbers, context))
+            if (!TryCollectNumbers(argValue.Value, argValue.WasFound, numbers, context))
             {
                 return JLioFunctionResult.Failed(currentToken);
             }
@@ -65,7 +65,7 @@ public class Median : FunctionBase
         return new JLioFunctionResult(true, new JValue(median));
     }
 
-    private bool TryCollectNumbers(JToken token, List<double> numbers, IExecutionContext context)
+    private bool TryCollectNumbers(JToken token, bool wasFound, List<double> numbers, IExecutionContext context)
     {
         switch (token.Type)
         {
@@ -79,6 +79,15 @@ public class Median : FunctionBase
                 return true;
 
             case JTokenType.Null:
+                // If not found, return error
+                if (!wasFound)
+                {
+                    context.LogError(CoreConstants.FunctionExecution,
+                        $"{FunctionName} argument path not found");
+                    return false;
+                }
+                // If found but null, treat as 0
+                numbers.Add(0);
                 return true;
 
             case JTokenType.Array:
@@ -95,7 +104,8 @@ public class Median : FunctionBase
     {
         foreach (var item in array)
         {
-            if (!TryCollectNumbers(item, numbers, context))
+            // Array items are always considered "found" - they exist in the array
+            if (!TryCollectNumbers(item, true, numbers, context))
             {
                 return false;
             }

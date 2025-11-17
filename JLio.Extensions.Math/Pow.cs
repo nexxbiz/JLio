@@ -20,7 +20,7 @@ public class Pow : FunctionBase
 
     public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)
     {
-        var values = GetArguments(Arguments, currentToken, dataContext, context);
+        var values = GetArgumentsWithMetadata(Arguments, currentToken, dataContext, context);
         if (values.Count != 2)
         {
             context.LogError(CoreConstants.FunctionExecution,
@@ -30,7 +30,8 @@ public class Pow : FunctionBase
 
         // Get base value
         double baseValue;
-        var baseToken = values[0];
+        var baseArg = values[0];
+        var baseToken = baseArg.Value;
         switch (baseToken.Type)
         {
             case JTokenType.Integer:
@@ -43,6 +44,14 @@ public class Pow : FunctionBase
                 break;
 
             case JTokenType.Null:
+                // If not found, return error
+                if (!baseArg.WasFound)
+                {
+                    context.LogError(CoreConstants.FunctionExecution,
+                        $"{FunctionName} base argument path not found");
+                    return JLioFunctionResult.Failed(currentToken);
+                }
+                // If found but null, treat as 0
                 baseValue = 0;
                 break;
 
@@ -54,7 +63,8 @@ public class Pow : FunctionBase
 
         // Get exponent value
         double exponent;
-        var exponentToken = values[1];
+        var exponentArg = values[1];
+        var exponentToken = exponentArg.Value;
         switch (exponentToken.Type)
         {
             case JTokenType.Integer:
@@ -67,6 +77,14 @@ public class Pow : FunctionBase
                 break;
 
             case JTokenType.Null:
+                // If not found, return error
+                if (!exponentArg.WasFound)
+                {
+                    context.LogError(CoreConstants.FunctionExecution,
+                        $"{FunctionName} exponent argument path not found");
+                    return JLioFunctionResult.Failed(currentToken);
+                }
+                // If found but null, treat as 0
                 exponent = 0;
                 break;
 
