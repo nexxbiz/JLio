@@ -105,7 +105,7 @@ public class AverageIfs : FunctionBase
         }
 
         var result = count == 0 ? 0 : sum / count;
-        return new JLioFunctionResult(true, new JValue(result));
+        return new JLioFunctionResult(true, MathHelper.CreateNumericValue(result));
     }
 
     private List<JToken> ExtractArray(JToken token)

@@ -62,6 +62,6 @@ public class Floor : FunctionBase
         }
 
         var result = System.Math.Floor(value);
-        return new JLioFunctionResult(true, new JValue(result));
+        return new JLioFunctionResult(true, MathHelper.CreateNumericValue(result));
     }
 }

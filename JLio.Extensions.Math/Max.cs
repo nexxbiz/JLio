@@ -46,7 +46,7 @@ public class Max : FunctionBase
             return JLioFunctionResult.Failed(currentToken);
         }
 
-        return new JLioFunctionResult(true, new JValue(maxValue));
+        return new JLioFunctionResult(true, MathHelper.CreateNumericValue(maxValue));
     }
 
     private bool TryFindMaxValue(JToken token, bool wasFound, ref double maxValue, ref bool hasValue, IExecutionContext context)
