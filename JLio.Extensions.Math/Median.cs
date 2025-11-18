@@ -62,7 +62,7 @@ public class Median : FunctionBase
             median = numbers[count / 2];
         }
 
-        return new JLioFunctionResult(true, new JValue(median));
+        return new JLioFunctionResult(true, MathHelper.CreateNumericValue(median));
     }
 
     private bool TryCollectNumbers(JToken token, bool wasFound, List<double> numbers, IExecutionContext context)

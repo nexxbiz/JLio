@@ -114,7 +114,7 @@ public class MinIfs : FunctionBase
             return JLioFunctionResult.Failed(currentToken);
         }
 
-        return new JLioFunctionResult(true, new JValue(minValue));
+        return new JLioFunctionResult(true, MathHelper.CreateNumericValue(minValue));
     }
 
     private List<JToken> ExtractArray(JToken token)

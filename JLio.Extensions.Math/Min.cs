@@ -46,7 +46,7 @@ public class Min : FunctionBase
             return JLioFunctionResult.Failed(currentToken);
         }
 
-        return new JLioFunctionResult(true, new JValue(minValue));
+        return new JLioFunctionResult(true, MathHelper.CreateNumericValue(minValue));
     }
 
     private bool TryFindMinValue(JToken token, bool wasFound, ref double minValue, ref bool hasValue, IExecutionContext context)

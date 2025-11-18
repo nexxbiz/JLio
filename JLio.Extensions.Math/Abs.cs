@@ -62,6 +62,6 @@ public class Abs : FunctionBase
         }
 
         var result = System.Math.Abs(value);
-        return new JLioFunctionResult(true, new JValue(result));
+        return new JLioFunctionResult(true, MathHelper.CreateNumericValue(result));
     }
 }

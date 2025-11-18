@@ -104,6 +104,6 @@ public class Pow : FunctionBase
             return JLioFunctionResult.Failed(currentToken);
         }
 
-        return new JLioFunctionResult(true, new JValue(result));
+        return new JLioFunctionResult(true, MathHelper.CreateNumericValue(result));
     }
 }

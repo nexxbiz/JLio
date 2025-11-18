@@ -33,7 +33,7 @@ public class Avg : FunctionBase
         }
 
         var result = count == 0 ? 0 : sum / count;
-        return new JLioFunctionResult(true, new JValue(result));
+        return new JLioFunctionResult(true, MathHelper.CreateNumericValue(result));
     }
 
     private bool TryAddTokenValue(JToken token, bool wasFound, ref double sum, ref int count, IExecutionContext context)

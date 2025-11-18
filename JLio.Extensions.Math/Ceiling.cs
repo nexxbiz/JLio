@@ -62,6 +62,6 @@ public class Ceiling : FunctionBase
         }
 
         var result = System.Math.Ceiling(value);
-        return new JLioFunctionResult(true, new JValue(result));
+        return new JLioFunctionResult(true, MathHelper.CreateNumericValue(result));
     }
 }

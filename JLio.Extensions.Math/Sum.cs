@@ -31,7 +31,7 @@ public class Sum : FunctionBase
             }
         }
 
-        return new JLioFunctionResult(true, new JValue(result));
+        return new JLioFunctionResult(true, MathHelper.CreateNumericValue(result));
     }
 
     private bool TryAddTokenValue(JToken token, bool wasFound, ref double result, IExecutionContext context)

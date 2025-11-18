@@ -114,7 +114,7 @@ public class MaxIfs : FunctionBase
             return JLioFunctionResult.Failed(currentToken);
         }
 
-        return new JLioFunctionResult(true, new JValue(maxValue));
+        return new JLioFunctionResult(true, MathHelper.CreateNumericValue(maxValue));
     }
 
     private List<JToken> ExtractArray(JToken token)

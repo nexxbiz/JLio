@@ -90,7 +90,7 @@ public class Calculate : FunctionBase
     private JLioFunctionResult ValidateResult(double value, IExecutionContext context, JToken currentToken)
     {
         if (double.IsNaN(value) || double.IsInfinity(value)) { LogError(context, "computation resulted in invalid number"); return JLioFunctionResult.Failed(currentToken); }
-        return new JLioFunctionResult(true, new JValue(value));
+        return new JLioFunctionResult(true, MathHelper.CreateNumericValue(value));
     }
 
     private string ReplaceTokens(string expression, JToken currentToken, JToken dataContext, IExecutionContext context)

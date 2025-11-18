@@ -104,6 +104,6 @@ public class Round : FunctionBase
         }
 
         var result = System.Math.Round(value, decimals);
-        return new JLioFunctionResult(true, new JValue(result));
+        return new JLioFunctionResult(true, MathHelper.CreateNumericValue(result));
     }
 }
