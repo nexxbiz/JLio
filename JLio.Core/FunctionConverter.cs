@@ -1,9 +1,10 @@
-﻿using System;
-using JLio.Core.Contracts;
+﻿using JLio.Core.Contracts;
 using JLio.Core.Models;
 using JLio.Core.Models.Path;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace JLio.Core;
 
@@ -39,7 +40,7 @@ public class FunctionConverter : JsonConverter
     public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
         JsonSerializer serializer)
     {
-        if (reader.TokenType == JsonToken.Null) return null;
+        if (reader.TokenType == JsonToken.Null) return new FunctionSupportedValue(new FixedValue(JValue.CreateNull(), this));
         var value = JToken.Load(reader);
         if (value.Type == JTokenType.String) return ParseString(value.ToString());
 
@@ -51,18 +52,8 @@ public class FunctionConverter : JsonConverter
             if (string.IsNullOrEmpty(text)) return new FunctionSupportedValue(new FixedValue(JValue.CreateNull(), this));
             if (!text.StartsWith(CoreConstants.FunctionStartCharacters))
             {
-                // Try to parse as JSON first to preserve types
-                JToken parsedValue;
-                try
-                {
-                    parsedValue = JToken.Parse(text);
-                }
-                catch
-                {
-                    // If JSON parsing fails, treat as string
-                    parsedValue = JToken.Parse($"\"{text}\"");
-                }
-                return new FunctionSupportedValue(new FixedValue(parsedValue, this));
+              
+                return new FunctionSupportedValue(new FixedValue(JToken.Parse($"\"{text}\""), this));
             }
             var (function, arguments) = GetFunctionAndArguments(text);
 
