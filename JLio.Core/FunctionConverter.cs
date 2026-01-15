@@ -1,9 +1,10 @@
-﻿using System;
-using JLio.Core.Contracts;
+﻿using JLio.Core.Contracts;
 using JLio.Core.Models;
 using JLio.Core.Models.Path;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace JLio.Core;
 
@@ -39,7 +40,7 @@ public class FunctionConverter : JsonConverter
     public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
         JsonSerializer serializer)
     {
-        if (reader.TokenType == JsonToken.Null) return null;
+        if (reader.TokenType == JsonToken.Null) return new FunctionSupportedValue(new FixedValue(JValue.CreateNull(), this));
         var value = JToken.Load(reader);
         if (value.Type == JTokenType.String) return ParseString(value.ToString());
 

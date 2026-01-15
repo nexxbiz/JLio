@@ -151,4 +151,114 @@ public class TextHandling
         Assert.AreEqual(JTokenType.String, newProperty.Type);
         Assert.AreEqual(stringValue, newProperty.Value<string>());
     }
+
+    [TestCase("42", JTokenType.Integer, 42)]
+    [TestCase("3.14", JTokenType.Float, 3.14)]
+    [TestCase("-100", JTokenType.Integer, -100)]
+    [TestCase("0", JTokenType.Integer, 0)]
+    [TestCase("123.456", JTokenType.Float, 123.456)]
+    public void NumericValuesPreserveNumericType(string scriptValue, JTokenType expectedType, object expectedValue)
+    {
+        var input = JToken.Parse("{\"sample\":{}}");
+        var scriptText = $"[{{\"path\":\"$.sample.newProperty\",\"value\":{scriptValue},\"command\":\"add\"}}]";
+        
+        var script = JLioConvert.Parse(scriptText);
+        var result = script.Execute(input);
+        
+        Assert.IsTrue(result.Success);
+        Assert.IsNotNull(result.Data);
+        
+        var newProperty = result.Data.SelectToken("$.sample.newProperty");
+        Assert.IsNotNull(newProperty);
+        Assert.AreEqual(expectedType, newProperty.Type);
+        
+        if (expectedType == JTokenType.Integer)
+        {
+            Assert.AreEqual((int)expectedValue, newProperty.Value<int>());
+        }
+        else if (expectedType == JTokenType.Float)
+        {
+            Assert.AreEqual((double)expectedValue, newProperty.Value<double>(), 0.001);
+        }
+    }
+
+    [TestCase("true", true)]
+    [TestCase("false", false)]
+    public void BooleanValuesPreserveBooleanType(string scriptValue, bool expectedValue)
+    {
+        var input = JToken.Parse("{\"sample\":{}}");
+        var scriptText = $"[{{\"path\":\"$.sample.newProperty\",\"value\":{scriptValue},\"command\":\"add\"}}]";
+        
+        var script = JLioConvert.Parse(scriptText);
+        var result = script.Execute(input);
+        
+        Assert.IsTrue(result.Success);
+        Assert.IsNotNull(result.Data);
+        
+        var newProperty = result.Data.SelectToken("$.sample.newProperty");
+        Assert.IsNotNull(newProperty);
+        Assert.AreEqual(JTokenType.Boolean, newProperty.Type);
+        Assert.AreEqual(expectedValue, newProperty.Value<bool>());
+    }
+
+    [Test]
+    public void NullValuePreservesNullType()
+    {
+        var input = JToken.Parse("{\"sample\":{}}");
+        var scriptText = "[{\"path\":\"$.sample.newProperty\",\"value\":null,\"command\":\"add\"}]";
+        
+        var script = JLioConvert.Parse(scriptText);
+        var result = script.Execute(input);
+        
+        Assert.IsTrue(result.Success);
+        Assert.IsNotNull(result.Data);
+        
+        var newProperty = result.Data.SelectToken("$.sample.newProperty");
+        Assert.IsNotNull(newProperty);
+        Assert.AreEqual(JTokenType.Null, newProperty.Type);
+    }
+
+    [Test]
+    public void ObjectValuePreservesObjectType()
+    {
+        var input = JToken.Parse("{\"sample\":{}}");
+        var scriptText = "[{\"path\":\"$.sample.newProperty\",\"value\":{\"nested\":\"value\",\"count\":5},\"command\":\"add\"}]";
+        
+        var script = JLioConvert.Parse(scriptText);
+        var result = script.Execute(input);
+        
+        Assert.IsTrue(result.Success);
+        Assert.IsNotNull(result.Data);
+        
+        var newProperty = result.Data.SelectToken("$.sample.newProperty");
+        Assert.IsNotNull(newProperty);
+        Assert.AreEqual(JTokenType.Object, newProperty.Type);
+        Assert.AreEqual("value", newProperty.SelectToken("$.nested")?.Value<string>());
+        Assert.AreEqual(5, newProperty.SelectToken("$.count")?.Value<int>());
+    }
+
+    [Test]
+    public void ArrayValuePreservesArrayType()
+    {
+        var input = JToken.Parse("{\"sample\":{}}");
+        var scriptText = "[{\"path\":\"$.sample.newProperty\",\"value\":[\"item1\",42,true,null],\"command\":\"add\"}]";
+        
+        var script = JLioConvert.Parse(scriptText);
+        var result = script.Execute(input);
+        
+        Assert.IsTrue(result.Success);
+        Assert.IsNotNull(result.Data);
+        
+        var newProperty = result.Data.SelectToken("$.sample.newProperty");
+        Assert.IsNotNull(newProperty);
+        Assert.AreEqual(JTokenType.Array, newProperty.Type);
+        
+        var array = newProperty as JArray;
+        Assert.IsNotNull(array);
+        Assert.AreEqual(4, array.Count);
+        Assert.AreEqual("item1", array[0].Value<string>());
+        Assert.AreEqual(42, array[1].Value<int>());
+        Assert.AreEqual(true, array[2].Value<bool>());
+        Assert.AreEqual(JTokenType.Null, array[3].Type);
+    }
 }
