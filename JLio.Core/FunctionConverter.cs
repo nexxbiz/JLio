@@ -51,18 +51,8 @@ public class FunctionConverter : JsonConverter
             if (string.IsNullOrEmpty(text)) return new FunctionSupportedValue(new FixedValue(JValue.CreateNull(), this));
             if (!text.StartsWith(CoreConstants.FunctionStartCharacters))
             {
-                // Try to parse as JSON first to preserve types
-                JToken parsedValue;
-                try
-                {
-                    parsedValue = JToken.Parse(text);
-                }
-                catch
-                {
-                    // If JSON parsing fails, treat as string
-                    parsedValue = JToken.Parse($"\"{text}\"");
-                }
-                return new FunctionSupportedValue(new FixedValue(parsedValue, this));
+              
+                return new FunctionSupportedValue(new FixedValue(JToken.Parse($"\"{text}\""), this));
             }
             var (function, arguments) = GetFunctionAndArguments(text);
 

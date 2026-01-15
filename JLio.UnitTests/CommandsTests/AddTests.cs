@@ -44,13 +44,17 @@ public class AddTests
         Assert.IsTrue(result.Success);
     }
 
+    [TestCase("$.newNumber", "01")]
+    [TestCase("$.newNumber", 1)]
     [TestCase("$.myObject.newItem", "newData")]
     [TestCase("$.NewObject.newItem.NewSubItem", "newData")]
     [TestCase("$.myArray", "newData")]
     [TestCase("$..myObject.newItem", "newData")]
     [TestCase("$..myArray", "newData")]
     [TestCase("$.newProperty", "newData")]
-    public void CanAddCorrectValues(string path, string value)
+    
+
+    public void CanAddCorrectValues(string path, object value)
     {
         var valueToAdd = new FunctionSupportedValue(new FixedValue(new JValue(value), functionConverter));
         var result = new Add(path, valueToAdd).Execute(data, executeOptions);
@@ -112,8 +116,6 @@ public class AddTests
         Assert.IsTrue(executeOptions.GetLogEntries().Any(l => l.Message == message));
     }
 
-    //[TestCase("$.newProperty", "{\"demo\" : \"=newGuid()\"}")]
-    //[TestCase("$.newProperty", "{\"demo\" : \"=concat($.myString, '-demo-', newGuid())\", \"demo2\" : \"=concat($.myString, '-demo2-', newGuid())\"}")]
     [TestCase("$.newProperty", "{\"newprop\" : { \"newSubProp\" : 56},   \"demo\" : \"=fetch($.myObject.myArray)\", \"demo2\" : { \"prop\": \"=concat($.myString, '-demo2-', newGuid())\", \"demo2\" : \"=fetch($.myArray[1])\"}}")]
     public void CanAddCorrectValuesAsFunctions(string path, string value)
     {

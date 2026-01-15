@@ -124,4 +124,31 @@ public class TextHandling
         var intellisense = JsonPathMethods.GetIntellisense(text, dataObject, new JsonPathItemsFetcher());
         Assert.AreEqual(numberOfItems, intellisense.Count);
     }
+
+    [TestCase("01")]           // Leading zero
+    [TestCase("007")]          // Multiple leading zeros  
+    [TestCase("A123")]         // Letter prefix with numbers
+    [TestCase("123B")]         // Numbers with letter suffix
+    [TestCase("ID-123")]       // Alphanumeric with separator
+    [TestCase("+31612345678")] // Phone number format
+    [TestCase("1.0.0")]        // Version number
+    [TestCase("2023-01-01")]   // Date format
+    [TestCase("ABC123DEF")]    // Mixed alphanumeric
+    [TestCase("00100")]        // Leading zeros with trailing zeros
+    public void StringContainingNumbersPreservesStringType(string stringValue)
+    {
+        var input = JToken.Parse("{\"sample\":{}}");
+        var scriptText = $"[{{\"path\":\"$.sample.newProperty\",\"value\":\"{stringValue}\",\"command\":\"add\"}}]";
+        
+        var script = JLioConvert.Parse(scriptText);
+        var result = script.Execute(input);
+        
+        Assert.IsTrue(result.Success);
+        Assert.IsNotNull(result.Data);
+        
+        var newProperty = result.Data.SelectToken("$.sample.newProperty");
+        Assert.IsNotNull(newProperty);
+        Assert.AreEqual(JTokenType.String, newProperty.Type);
+        Assert.AreEqual(stringValue, newProperty.Value<string>());
+    }
 }
