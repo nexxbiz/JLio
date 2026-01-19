@@ -28,6 +28,7 @@ public static class RegisterMathPack
         parseOptions.RegisterFunction<AverageIfs>();
         parseOptions.RegisterFunction<MinIfs>();
         parseOptions.RegisterFunction<MaxIfs>();
+        parseOptions.RegisterFunction<Modulo>();
         return parseOptions;
     }
 }
