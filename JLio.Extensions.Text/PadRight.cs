@@ -14,11 +14,8 @@ public class PadRight : FunctionBase
     public PadRight(params string[] arguments)
     {
         foreach (var a in arguments)
-
         {
-
             Arguments.Add(new FunctionSupportedValue(new FixedValue(a)));
-
         }
     }
 

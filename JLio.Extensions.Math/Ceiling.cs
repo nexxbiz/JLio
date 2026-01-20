@@ -15,11 +15,8 @@ public class Ceiling : FunctionBase
     public Ceiling(params string[] arguments)
     {
         foreach (var a in arguments)
-
         {
-
             Arguments.Add(new FunctionSupportedValue(new FixedValue(a)));
-
         }
     }
 

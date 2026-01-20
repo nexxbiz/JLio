@@ -19,11 +19,8 @@ public class MinIfs : FunctionBase
     public MinIfs(params string[] arguments)
     {
         foreach (var a in arguments)
-
         {
-
             Arguments.Add(new FunctionSupportedValue(new FixedValue(a)));
-
         }
     }
 

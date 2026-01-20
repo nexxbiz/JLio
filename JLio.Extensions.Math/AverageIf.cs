@@ -19,11 +19,8 @@ public class AverageIf : FunctionBase
     public AverageIf(params string[] arguments)
     {
         foreach (var a in arguments)
-
         {
-
             Arguments.Add(new FunctionSupportedValue(new FixedValue(a)));
-
         }
     }
 

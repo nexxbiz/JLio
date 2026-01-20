@@ -15,11 +15,8 @@ public class Abs : FunctionBase
     public Abs(params string[] arguments)
     {
         foreach (var a in arguments)
-
         {
-
             Arguments.Add(new FunctionSupportedValue(new FixedValue(a)));
-
         }
     }
 

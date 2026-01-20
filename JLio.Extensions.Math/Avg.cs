@@ -15,11 +15,8 @@ public class Avg : FunctionBase
     public Avg(params string[] arguments)
     {
         foreach (var a in arguments)
-
         {
-
             Arguments.Add(new FunctionSupportedValue(new FixedValue(a)));
-
         }
     }
 
