@@ -16,8 +16,10 @@ public class Partial : FunctionBase
 
     public Partial(params string[] arguments)
     {
-        arguments.ToList().ForEach(a =>
-            Arguments.Add(new FunctionSupportedValue(new FixedValue(a))));
+        foreach (var a in arguments)
+        {
+            Arguments.Add(new FunctionSupportedValue(new FixedValue(a)));
+        }
     }
 
     public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)
@@ -50,14 +52,20 @@ public class Partial : FunctionBase
     {
         var pathsToRemove = GetPathsToRemove(source, values, context);
         var result = source.DeepClone();
-        pathsToRemove.ToList().ForEach(i => Remove(i, result));
+        foreach (var i in pathsToRemove)
+        {
+            Remove(i, result);
+        }
         return new JLioFunctionResult(true, result);
     }
 
     private void Remove(string path, JToken result)
     {
         var tokens = result.SelectTokens(path);
-        tokens.ToList().ForEach(t => JsonMethods.RemoveItemFromTarget(t));
+        foreach (var t in tokens)
+        {
+            JsonMethods.RemoveItemFromTarget(t);
+        }
     }
 
     private IEnumerable<string> GetPathsToRemove(JToken currentToken, List<JToken> values,
@@ -65,13 +73,20 @@ public class Partial : FunctionBase
     {
         var sourcePaths = currentToken.GetAllElements().Select(i => i.Path).ToList();
         var selectionPaths = new List<JToken>();
-        values.Where(v  => !JToken.DeepEquals(v, JValue.CreateNull())).ToList().ForEach(v => selectionPaths.AddRange(v.GetAllElements()));
-        selectionPaths.Select(s => s.Path).ToList().ForEach(p =>
+        foreach (var v in values)
         {
+            if (!JToken.DeepEquals(v, JValue.CreateNull()))
+            {
+                selectionPaths.AddRange(v.GetAllElements());
+            }
+        }
+        foreach (var s in selectionPaths)
+        {
+            var p = s.Path;
             RemoveSelectionItems(p, sourcePaths);
             RemoveLeadingElementsOfSelectionItems(p,
                 sourcePaths); //remove all items that are in the path of the selections
-        });
+        }
         sourcePaths = OptimizeRemovePaths(sourcePaths);
         sourcePaths = RemoveLeadingPath(sourcePaths, currentToken.Path, context);
         return sourcePaths.Distinct();

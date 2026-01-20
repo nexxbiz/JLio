@@ -159,7 +159,10 @@ public abstract class CopyMove : CommandBase
 
     private JLioExecutionResult HandleRootObject(JToken dataContext, SelectedTokens sourceItems)
     {
-        dataContext.Children().ToList().ForEach(c => c.Remove());
+        foreach (var c in dataContext.Children().ToList())
+        {
+            c.Remove();
+        }
         if (dataContext is JObject o) o.Merge(sourceItems.First());
         else
             executionContext.LogWarning(CoreConstants.CommandExecution,

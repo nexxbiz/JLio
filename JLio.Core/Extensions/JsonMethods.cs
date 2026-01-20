@@ -13,7 +13,10 @@ public static class JsonMethods
     public static Dictionary<string, JToken> ConvertToDictionary(this JObject data)
     {
         var result = new Dictionary<string, JToken>();
-        data.Properties().ToList().ForEach(p => result.Add(p.Name, p.Value));
+        foreach (var p in data.Properties())
+        {
+            result.Add(p.Name, p.Value);
+        }
         return result;
     }
 
@@ -21,11 +24,13 @@ public static class JsonMethods
     {
         if (!outputFilter.Any()) return ConvertToDictionary(data);
         var result = new Dictionary<string, JToken>();
-        outputFilter.ForEach(f =>
+        foreach (var f in outputFilter)
         {
-            if (data.Properties().Any(p => p.Name == f))
-                result.Add(f, data[f]);
-        });
+            if (data.TryGetValue(f, out var value))
+            {
+                result.Add(f, value);
+            }
+        }
         return result;
     }
 
@@ -99,14 +104,20 @@ public static class JsonMethods
     public static List<JToken> GetAllElements(this JToken item, Func<JToken, bool> filter)
     {
         var result = new List<JToken> {item};
-        item.Children().Where(filter).ToList().ForEach(c => result.AddRange(c.GetAllElements(filter)));
+        foreach (var c in item.Children().Where(filter))
+        {
+            result.AddRange(c.GetAllElements(filter));
+        }
         return result;
     }
 
     public static List<JToken> GetAllElements(this JToken item)
     {
         var result = new List<JToken> {item};
-        item.Children().ToList().ForEach(c => result.AddRange(c.GetAllElements()));
+        foreach (var c in item.Children())
+        {
+            result.AddRange(c.GetAllElements());
+        }
         return result;
     }
 }

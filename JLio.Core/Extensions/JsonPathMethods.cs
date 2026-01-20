@@ -37,7 +37,10 @@ public static class JsonPathMethods
     private static List<string> GetIntellisense(SelectedTokens tokens, string path)
     {
         var result = new List<string>();
-        tokens.ToList().ForEach(t => result.AddRange(GetIntellisense(t, path)));
+        foreach (var t in tokens)
+        {
+            result.AddRange(GetIntellisense(t, path));
+        }
         return result;
     }
 
@@ -60,7 +63,10 @@ public static class JsonPathMethods
     private static List<string> GetPropertyPaths(JObject jObject, string path)
     {
         var result = new List<string>();
-        jObject.Properties().ToList().ForEach(p => result.Add($"{path}.{p.Name}"));
+        foreach (var p in jObject.Properties())
+        {
+            result.Add($"{path}.{p.Name}");
+        }
         return result;
     }
 }

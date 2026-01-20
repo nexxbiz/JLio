@@ -17,8 +17,13 @@ public class Modulo : FunctionBase
 
     public Modulo(params string[] arguments)
     {
-        arguments.ToList().ForEach(a =>
-            Arguments.Add(new FunctionSupportedValue(new FixedValue(a))));
+        foreach (var a in arguments)
+
+        {
+
+            Arguments.Add(new FunctionSupportedValue(new FixedValue(a)));
+
+        }
     }
 
     public override JLioFunctionResult Execute(JToken currentToken, JToken dataContext, IExecutionContext context)
