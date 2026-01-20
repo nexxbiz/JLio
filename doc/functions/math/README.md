@@ -19,6 +19,7 @@ This directory contains comprehensive documentation for all JLio mathematical fu
 - [abs](abs.md) - Calculate absolute value
 - [pow](pow.md) - Raise number to a power
 - [sqrt](sqrt.md) - Calculate square root
+- [modulo](modulo.md) - Calculate remainder of division
 - [round](round.md) - Round numbers to specified decimal places
 - [floor](floor.md) - Round down to nearest integer
 - [ceiling](ceiling.md) - Round up to nearest integer
