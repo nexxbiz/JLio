@@ -19,11 +19,8 @@ public class IsDateBetween : FunctionBase
     public IsDateBetween(params string[] arguments)
     {
         foreach (var a in arguments)
-
         {
-
             Arguments.Add(new FunctionSupportedValue(new FixedValue(a)));
-
         }
     }
 
