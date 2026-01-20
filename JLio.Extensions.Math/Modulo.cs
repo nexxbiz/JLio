@@ -6,6 +6,9 @@ using System.Globalization;
 
 namespace JLio.Extensions.Math;
 
+/// <summary>
+/// Calculates the modulo (remainder) of dividend divided by divisor.
+/// </summary>
 public class Modulo : FunctionBase
 {
     public Modulo()
@@ -28,70 +31,16 @@ public class Modulo : FunctionBase
             return JLioFunctionResult.Failed(currentToken);
         }
 
-        // Get dividend value
-        double dividend;
-        var dividendArg = values[0];
-        var dividendToken = dividendArg.Value;
-        switch (dividendToken.Type)
+        double dividend = 0;
+        if (!TryGetNumericValue(values[0].Value, values[0].WasFound, ref dividend, context))
         {
-            case JTokenType.Integer:
-            case JTokenType.Float:
-                dividend = dividendToken.Value<double>();
-                break;
-
-            case JTokenType.String when double.TryParse(dividendToken.Value<string>(), NumberStyles.Float, CultureInfo.InvariantCulture, out var numeric):
-                dividend = numeric;
-                break;
-
-            case JTokenType.Null:
-                // If not found, return error
-                if (!dividendArg.WasFound)
-                {
-                    context.LogError(CoreConstants.FunctionExecution,
-                        $"{FunctionName} dividend argument path not found");
-                    return JLioFunctionResult.Failed(currentToken);
-                }
-                // If found but null, treat as 0
-                dividend = 0;
-                break;
-
-            default:
-                context.LogError(CoreConstants.FunctionExecution,
-                    $"{FunctionName} dividend argument must be numeric. Current type = {dividendToken.Type}");
-                return JLioFunctionResult.Failed(currentToken);
+            return JLioFunctionResult.Failed(currentToken);
         }
 
-        // Get divisor value
-        double divisor;
-        var divisorArg = values[1];
-        var divisorToken = divisorArg.Value;
-        switch (divisorToken.Type)
+        double divisor = 0;
+        if (!TryGetNumericValue(values[1].Value, values[1].WasFound, ref divisor, context))
         {
-            case JTokenType.Integer:
-            case JTokenType.Float:
-                divisor = divisorToken.Value<double>();
-                break;
-
-            case JTokenType.String when double.TryParse(divisorToken.Value<string>(), NumberStyles.Float, CultureInfo.InvariantCulture, out var numeric):
-                divisor = numeric;
-                break;
-
-            case JTokenType.Null:
-                // If not found, return error
-                if (!divisorArg.WasFound)
-                {
-                    context.LogError(CoreConstants.FunctionExecution,
-                        $"{FunctionName} divisor argument path not found");
-                    return JLioFunctionResult.Failed(currentToken);
-                }
-                // If found but null, treat as 0
-                divisor = 0;
-                break;
-
-            default:
-                context.LogError(CoreConstants.FunctionExecution,
-                    $"{FunctionName} divisor argument must be numeric. Current type = {divisorToken.Type}");
-                return JLioFunctionResult.Failed(currentToken);
+            return JLioFunctionResult.Failed(currentToken);
         }
 
         // Check for division by zero
@@ -103,15 +52,38 @@ public class Modulo : FunctionBase
         }
 
         var result = dividend % divisor;
-
-        // Check for invalid results
-        if (double.IsNaN(result) || double.IsInfinity(result))
-        {
-            context.LogError(CoreConstants.FunctionExecution,
-                $"{FunctionName} calculation resulted in an invalid number (dividend={dividend}, divisor={divisor})");
-            return JLioFunctionResult.Failed(currentToken);
-        }
-
         return new JLioFunctionResult(true, MathHelper.CreateNumericValue(result));
+    }
+
+    private bool TryGetNumericValue(JToken token, bool wasFound, ref double result, IExecutionContext context)
+    {
+        switch (token.Type)
+        {
+            case JTokenType.Integer:
+            case JTokenType.Float:
+                result = token.Value<double>();
+                return true;
+
+            case JTokenType.String when double.TryParse(token.Value<string>(), NumberStyles.Float, CultureInfo.InvariantCulture, out var numeric):
+                result = numeric;
+                return true;
+
+            case JTokenType.Null:
+                // If not found, return error
+                if (!wasFound)
+                {
+                    context.LogError(CoreConstants.FunctionExecution,
+                        $"{FunctionName} argument path not found");
+                    return false;
+                }
+                // If found but null, treat as 0
+                result = 0;
+                return true;
+
+            default:
+                context.LogError(CoreConstants.FunctionExecution,
+                    $"{FunctionName} can only handle numeric values. Current type = {token.Type}");
+                return false;
+        }
     }
 }
