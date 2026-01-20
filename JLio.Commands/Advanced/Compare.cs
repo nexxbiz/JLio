@@ -77,7 +77,15 @@ public class Compare : CommandBase
     {
         if (Settings.ResultTypes == null || !Settings.ResultTypes.Any()) return results;
 
-        return new CompareResults(results.Where(r => Settings.ResultTypes.Contains(r.DifferenceType)).ToList());
+        var filtered = new List<CompareResult>();
+        foreach (var r in results)
+        {
+            if (Settings.ResultTypes.Contains(r.DifferenceType))
+            {
+                filtered.Add(r);
+            }
+        }
+        return new CompareResults(filtered);
     }
 
     private void SetResults(JToken dataContext, JToken compareResults)

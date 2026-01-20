@@ -46,11 +46,19 @@ public static class ArrayHelpers
     {
         var result = new List<JToken>();
         if (keys.Any())
-            item.Where(t => AllKeyMatch(t, keys, itemToMatch)).ToList()
-                .ForEach(t => result.Add(t));
+        {
+            foreach (var t in item.Where(t => AllKeyMatch(t, keys, itemToMatch)))
+            {
+                result.Add(t);
+            }
+        }
         else
-            item.Where(t => JToken.DeepEquals(t, itemToMatch)).ToList()
-                .ForEach(t => result.Add(t));
+        {
+            foreach (var t in item.Where(t => JToken.DeepEquals(t, itemToMatch)))
+            {
+                result.Add(t);
+            }
+        }
         return result;
     }
 

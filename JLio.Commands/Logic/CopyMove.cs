@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using JLio.Core;
 using JLio.Core.Contracts;
 using JLio.Core.Extensions;
@@ -21,6 +22,11 @@ namespace JLio.Commands.Logic;
 
 public abstract class CopyMove : CommandBase
 {
+    // Cache compiled regex for better performance
+    private static readonly Regex IndirectPatternRegex = new Regex(
+        @"=indirect\(([^)]+)\)", 
+        RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    
     [JsonProperty("destinationAsArray")]
     public bool DestinationAsArray { get; set; } = false;
     //private eAction action;
@@ -49,10 +55,7 @@ public abstract class CopyMove : CommandBase
                 // This mimics what ProcessIndirectPath does in JsonPathItemsFetcher
                 if (ToPath.Contains("=indirect("))
                 {
-                    var indirectPattern = new System.Text.RegularExpressions.Regex(@"=indirect\(([^)]+)\)", 
-                        System.Text.RegularExpressions.RegexOptions.Compiled | System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-                    
-                    var match = indirectPattern.Match(ToPath);
+                    var match = IndirectPatternRegex.Match(ToPath);
                     if (match.Success)
                     {
                         var indirectPathReference = match.Groups[1].Value.Trim();
@@ -72,7 +75,7 @@ public abstract class CopyMove : CommandBase
                             if (!string.IsNullOrEmpty(actualPath))
                             {
                                 // Replace the =indirect(...) part with the actual path
-                                ToPath = indirectPattern.Replace(ToPath, actualPath);
+                                ToPath = IndirectPatternRegex.Replace(ToPath, actualPath);
                             }
                         }
                     }
