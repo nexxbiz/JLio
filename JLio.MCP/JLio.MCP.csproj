@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>JLio.MCP</AssemblyName>
+    <RootNamespace>JLio.MCP</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ModelContextProtocol" Version="1.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\JLio.CLient\JLio.Client.csproj" />
+    <ProjectReference Include="..\JLio.Commands\JLio.Commands.csproj" />
+    <ProjectReference Include="..\JLio.Core\JLio.Core.csproj" />
+    <ProjectReference Include="..\JLio.Extensions.ETL\JLio.Extensions.ETL.csproj" />
+    <ProjectReference Include="..\JLio.Extensions.JSchema\JLio.Extensions.JSchema.csproj" />
+    <ProjectReference Include="..\JLio.Extensions.Math\JLio.Extensions.Math.csproj" />
+    <ProjectReference Include="..\JLio.Extensions.Text\JLio.Extensions.Text.csproj" />
+    <ProjectReference Include="..\JLio.Extensions.TimeDate\JLio.Extensions.TimeDate.csproj" />
+    <ProjectReference Include="..\JLio.Functions\JLio.Functions.csproj" />
+  </ItemGroup>
+
+</Project>
