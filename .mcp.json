@@ -1,0 +1,14 @@
+{
+  "servers": {
+    "jlio": {
+      "type": "stdio",
+      "command": "dotnet",
+      "args": [
+        "run",
+        "--project",
+        "JLio.MCP\\JLio.MCP.csproj",
+        "--no-build"
+      ]
+    }
+  }
+}
