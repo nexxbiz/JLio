@@ -18,6 +18,8 @@ builder.Services
     .AddMcpServer()
     .WithStdioServerTransport()
     .WithTools<JLioTools>()
-    .WithTools<JLioReferenceTools>();
+    .WithTools<JLioReferenceTools>()
+    .WithTools<JLioScriptProposerTools>()
+    .WithTools<JLioSearchTools>();
 
 await builder.Build().RunAsync();

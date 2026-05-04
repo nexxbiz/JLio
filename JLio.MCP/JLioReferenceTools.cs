@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Linq;
 using ModelContextProtocol.Server;
 using Newtonsoft.Json;
 
@@ -13,96 +14,33 @@ public sealed class JLioReferenceTools
 
     [McpServerTool(Name = "list_jlio_capabilities")]
     [Description(
-        "Returns a structured index of every JLio command and function that is available in the V3 engine. " +
-        "Use this first to discover what is available, then call get_jlio_item_details for full schema, " +
-        "parameters, and examples of a specific item.")]
+        "Returns a structured index of every JLio command and function available in the V3 engine. " +
+        "Each entry includes 'whenToUse' guidance. " +
+        "Also includes 'writerCommandMatrix' (add vs set vs put decision table) and 'functionArgumentConventions' (how path resolution works in function args). " +
+        "For a keyword/intent search use search_jlio. " +
+        "For a side-by-side comparison of overlapping commands use compare_jlio_commands. " +
+        "For full schema, parameters, and examples call get_jlio_item_details.")]
     public string ListCapabilities()
     {
+        var reg = JLioCapabilityRegistry.AllCapabilities;
+
         var index = new
         {
             note = "All commands go in the top-level JSON array of a script. Functions are used as values inside commands.",
             scriptSyntax = "A JLio script is a JSON array: [ { \"command\": \"<name>\", ... }, ... ]",
-            functionSyntax = "A function value looks like: \"=functionName(arg1, arg2)\" or a nested object representation.",
-            commands = new[]
-            {
-                new { name = "add",           category = "core",     summary = "Adds a property/element only if it does not already exist." },
-                new { name = "set",           category = "core",     summary = "Creates or replaces a property with a new value." },
-                new { name = "put",           category = "core",     summary = "Creates a property if missing, or replaces its value if present." },
-                new { name = "remove",        category = "core",     summary = "Removes all tokens matched by a JSONPath." },
-                new { name = "copy",          category = "core",     summary = "Copies values from one JSONPath to another." },
-                new { name = "move",          category = "core",     summary = "Moves values from one JSONPath to another (copy + remove)." },
-                new { name = "compare",       category = "advanced", summary = "Deep-compares two subtrees and writes a diff result to a path." },
-                new { name = "merge",         category = "advanced", summary = "Merges a source subtree into a target subtree." },
-                new { name = "decisionTable", category = "advanced", summary = "Evaluates a rule table against each matched token and writes outputs." },
-                new { name = "ifElse",        category = "advanced", summary = "Conditionally runs an ifScript or elseScript based on a condition or value equality." },
-                new { name = "flatten",       category = "etl",      summary = "Flattens a nested JSON object into a single-level key/value structure." },
-                new { name = "restore",       category = "etl",      summary = "Restores a previously flattened structure back to its nested form." },
-                new { name = "resolve",       category = "etl",      summary = "Looks up values from a reference collection and writes them onto matched tokens." },
-                new { name = "toCsv",         category = "etl",      summary = "Converts an array of objects (or a single object) to a CSV string." },
-            },
-            functions = new[]
-            {
-                // Core
-                new { name = "datetime",     category = "core",     summary = "Returns the current date/time, optionally formatted." },
-                new { name = "fetch",        category = "core",     summary = "Reads a value from a JSONPath; returns a default when path is absent." },
-                new { name = "partial",      category = "core",     summary = "Returns a deep clone of a token with selected properties removed." },
-                new { name = "promote",      category = "core",     summary = "Wraps a value inside a new object with a named property." },
-                new { name = "indirect",     category = "core",     summary = "Reads a JSONPath string from the data and uses it as a dynamic path." },
-                new { name = "path",         category = "core",     summary = "Returns the JSONPath string of the current or a relative token." },
-                // Math extension
-                new { name = "sum",          category = "math",     summary = "Sums all numeric arguments or values from a JSONPath array." },
-                new { name = "avg",          category = "math",     summary = "Averages all numeric arguments or values from a JSONPath array." },
-                new { name = "count",        category = "math",     summary = "Counts elements in a JSONPath array." },
-                new { name = "min",          category = "math",     summary = "Returns the minimum numeric value from arguments." },
-                new { name = "max",          category = "math",     summary = "Returns the maximum numeric value from arguments." },
-                new { name = "subtract",     category = "math",     summary = "Subtracts subsequent numeric arguments from the first." },
-                new { name = "calculate",    category = "math",     summary = "Evaluates a math expression string, supports {{$.path}} token substitution." },
-                new { name = "abs",          category = "math",     summary = "Returns the absolute value of a number." },
-                new { name = "round",        category = "math",     summary = "Rounds a number to a given number of decimals." },
-                new { name = "floor",        category = "math",     summary = "Rounds a number down to the nearest integer." },
-                new { name = "ceiling",      category = "math",     summary = "Rounds a number up to the nearest integer." },
-                new { name = "pow",          category = "math",     summary = "Raises a base number to an exponent." },
-                new { name = "sqrt",         category = "math",     summary = "Returns the square root of a number." },
-                new { name = "median",       category = "math",     summary = "Returns the median of a set of numbers." },
-                new { name = "modulo",       category = "math",     summary = "Returns the remainder of a division (dividend % divisor)." },
-                new { name = "sumif",        category = "math",     summary = "Sums values in a range that meet a criteria (like Excel SUMIF)." },
-                new { name = "sumifs",       category = "math",     summary = "Sums values meeting multiple criteria (like Excel SUMIFS)." },
-                new { name = "countif",      category = "math",     summary = "Counts elements in a range that meet a criteria." },
-                new { name = "countifs",     category = "math",     summary = "Counts elements meeting multiple criteria." },
-                new { name = "averageif",    category = "math",     summary = "Averages values in a range that meet a criteria." },
-                new { name = "averageifs",   category = "math",     summary = "Averages values meeting multiple criteria." },
-                new { name = "minifs",       category = "math",     summary = "Returns the minimum value from a range that meets criteria." },
-                new { name = "maxifs",       category = "math",     summary = "Returns the maximum value from a range that meets criteria." },
-                // Text extension
-                new { name = "concat",       category = "text",     summary = "Concatenates all string arguments into one string." },
-                new { name = "format",       category = "text",     summary = "Formats a value using a .NET composite format string." },
-                new { name = "newGuid",      category = "text",     summary = "Generates a new random GUID string." },
-                new { name = "parse",        category = "text",     summary = "Parses a JSON string into a JToken." },
-                new { name = "toString",     category = "text",     summary = "Converts any value to its string representation." },
-                new { name = "length",       category = "text",     summary = "Returns the length of a string or array." },
-                new { name = "substring",    category = "text",     summary = "Extracts a substring by start index and optional length." },
-                new { name = "replace",      category = "text",     summary = "Replaces occurrences of a pattern inside a string." },
-                new { name = "indexOf",      category = "text",     summary = "Returns the index of the first occurrence of a substring." },
-                new { name = "trim",         category = "text",     summary = "Removes leading and trailing whitespace from a string." },
-                new { name = "trimStart",    category = "text",     summary = "Removes leading whitespace from a string." },
-                new { name = "trimEnd",      category = "text",     summary = "Removes trailing whitespace from a string." },
-                new { name = "toUpper",      category = "text",     summary = "Converts a string to upper-case." },
-                new { name = "toLower",      category = "text",     summary = "Converts a string to lower-case." },
-                new { name = "contains",     category = "text",     summary = "Returns true if a string contains a given substring." },
-                new { name = "startsWith",   category = "text",     summary = "Returns true if a string starts with a given prefix." },
-                new { name = "endsWith",     category = "text",     summary = "Returns true if a string ends with a given suffix." },
-                new { name = "isEmpty",      category = "text",     summary = "Returns true if a string is null, empty, or whitespace." },
-                new { name = "split",        category = "text",     summary = "Splits a string on a delimiter and returns a JSON array." },
-                new { name = "join",         category = "text",     summary = "Joins a JSON array of strings with a separator." },
-                new { name = "padLeft",      category = "text",     summary = "Left-pads a string to a given total width." },
-                new { name = "padRight",     category = "text",     summary = "Right-pads a string to a given total width." },
-                // TimeDate extension
-                new { name = "maxDate",      category = "timedate", summary = "Returns the latest date from a set of date values or an array path." },
-                new { name = "minDate",      category = "timedate", summary = "Returns the earliest date from a set of date values or an array path." },
-                new { name = "avgDate",      category = "timedate", summary = "Returns the average (midpoint) date from a set of dates." },
-                new { name = "dateCompare",  category = "timedate", summary = "Compares two dates; returns -1, 0, or 1." },
-                new { name = "isDateBetween",category = "timedate", summary = "Returns true if a date falls between a start and end date (inclusive)." },
-            }
+            functionSyntax = "A function value looks like: \"=functionName(arg1, arg2)\"",
+            writerCommandMatrix = JLioCapabilityRegistry.WriterCommandMatrix,
+            functionArgumentConventions = JLioCapabilityRegistry.FunctionArgumentConventions,
+            commands = reg
+                .Where(e => e.Type == "command")
+                .Select(e => new { e.Name, e.Category, e.Summary, e.WhenToUse })
+                .ToArray(),
+            functions = reg
+                .Where(e => e.Type == "function")
+                .GroupBy(e => e.Name)          // deduplicate (datetime appears in core + timedate)
+                .Select(g => g.First())
+                .Select(e => new { e.Name, e.Category, e.Summary, e.WhenToUse })
+                .ToArray()
         };
 
         return JsonConvert.SerializeObject(index, Formatting.Indented);
@@ -185,24 +123,25 @@ public sealed class JLioReferenceTools
             type = "command",
             name = "set",
             category = "core",
-            description = "Creates a property if it is absent, or overwrites its value when it already exists.",
+            description = "Replaces the value of an EXISTING property or element. Has NO effect (silent no-op) when the path or property does not exist yet.",
             schema = new
             {
                 command = "set",
-                path = "<JSONPath – target token(s)>",
+                path = "<JSONPath – target token(s) that ALREADY EXIST>",
                 property = "<string – optional when path already targets the leaf>",
                 value = "<any JSON value or function expression>"
             },
             parameters = new[]
             {
-                new { name = "path",     required = true,  description = "JSONPath selecting the tokens to set." },
-                new { name = "property", required = false, description = "Property name for new-syntax usage (path points to parent)." },
-                new { name = "value",    required = true,  description = "The value to assign." },
+                new { name = "path",     required = true,  description = "JSONPath selecting existing tokens to replace. If the path matches no tokens, the command silently does nothing." },
+                new { name = "property", required = false, description = "Property name for new-syntax usage (path points to parent object)." },
+                new { name = "value",    required = true,  description = "The replacement value." },
             },
             notes = new[]
             {
-                "Unlike 'add', set always writes, even when the property already exists.",
-                "When path selects an existing leaf node, it is replaced in-place.",
+                "CRITICAL: 'set' does NOT create new properties. If the path or property does not exist, set is a silent no-op — success:true with no changes.",
+                "To create a property that may or may not exist yet, use 'put' (upsert) or 'add' (create-only).",
+                "Use 'set' only when you are certain the property already exists in the document.",
             },
             examples = new[]
             {
@@ -237,8 +176,9 @@ public sealed class JLioReferenceTools
             },
             notes = new[]
             {
+                "put is the safest general-purpose writer: use it when you want 'the property must end up with this value' regardless of current state.",
+                "Use 'add' only when you must guarantee not overwriting. Use 'set' only when you know the property already exists.",
                 "For arrays: replaces the entire array content with the new value.",
-                "Use 'add' when you need to guarantee not overwriting and 'set' when you always want to overwrite."
             },
             examples = new[]
             {
@@ -461,11 +401,19 @@ public sealed class JLioReferenceTools
             type = "command",
             name = "ifElse",
             category = "advanced",
-            description = "Conditionally executes 'ifScript' or 'elseScript'. The condition can be a boolean-returning function, or a deep-equality check between 'first' and 'second'.",
+            description = "Conditionally executes 'ifScript' or 'elseScript'. Use EITHER 'condition' (a boolean function expression) OR 'first'+'second' (equality check). Never both.",
             schema = new
             {
+                comment    = "Form 1: boolean function condition",
                 command    = "ifElse",
-                condition  = "<function expression returning boolean – OR use first+second instead>",
+                condition  = "\"=booleanFunction(...)\"  e.g. \"=contains($.flags, 'urgent')\"",
+                ifScript   = new[] { new { command = "..." } },
+                elseScript = new[] { new { command = "..." } }
+            },
+            schemaForm2 = new
+            {
+                comment    = "Form 2: equality check (first == second)",
+                command    = "ifElse",
                 first      = "<value or function expression>",
                 second     = "<value or function expression>",
                 ifScript   = new[] { new { command = "..." } },
@@ -473,15 +421,17 @@ public sealed class JLioReferenceTools
             },
             parameters = new[]
             {
-                new { name = "condition",  required = false, description = "A function expression that must evaluate to a boolean. Mutually exclusive with first/second." },
-                new { name = "first",      required = false, description = "Left value for equality comparison. Used when condition is absent." },
-                new { name = "second",     required = false, description = "Right value for equality comparison." },
+                new { name = "condition",  required = false, description = "A '=function(...)' expression returning boolean. Use THIS or first+second, never both." },
+                new { name = "first",      required = false, description = "Left operand for equality comparison. Use with 'second' as an alternative to 'condition'." },
+                new { name = "second",     required = false, description = "Right operand for equality comparison." },
                 new { name = "ifScript",   required = true,  description = "JLio script executed when condition is true (or first == second)." },
                 new { name = "elseScript", required = false, description = "JLio script executed when condition is false (or first != second)." },
             },
             notes = new[]
             {
-                "Either 'condition' OR 'first'+'second' must be provided.",
+                "SCHEMA: provide EITHER 'condition' OR both 'first'+'second'. Providing neither (or an object-typed condition) causes 'Sequence contains no elements'.",
+                "ifElse does NOT use a 'path' property — do not add one.",
+                "condition must be a quoted string starting with '=': e.g. \"=contains($.field, 'value')\"",
                 "Scripts are full JLio script arrays and share the same data context.",
                 "elseScript is optional; omitting it results in a no-op on the false branch."
             },
